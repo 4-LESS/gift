@@ -1,0 +1,5 @@
+# Ignorar binarios de ADB y archivos temporales de diagnostico
+platform-tools/
+check_*.txt
+check_*.sh
+gemini-code-*.html

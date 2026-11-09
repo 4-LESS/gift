@@ -1,0 +1,1215 @@
+﻿#pragma once
+#include <pgmspace.h>
+
+const char INDEX_HTML[] PROGMEM = R"rawliteral(
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
+<title>Holographic Jukebox - HoloDeck</title>
+<style>
+:root {
+  --bg: #000000;
+  --fg: #eae6df;
+  --mid: #78756f;
+  --dim: #2e2d2a;
+  --ac: #ff7a00;
+  --ok: #00ff66;
+  --err: #ff3333;
+  --mono: "JetBrains Mono", "IBM Plex Mono", "SF Mono", Consolas, "Liberation Mono", monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  overflow: hidden;
+  color: var(--fg);
+  font-family: var(--mono);
+  -webkit-font-smoothing: antialiased;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.stage {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 4vh 5vw;
+}
+.stage.mirror { transform: scaleX(-1); }
+
+.box {
+  position: relative;
+  container-type: inline-size;
+  display: grid;
+  width: clamp(200px, min(86vw, calc(88vh - 220px)), 360px);
+}
+
+.sec {
+  grid-area: 1/1;
+  align-self: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s ease;
+}
+.sec.on {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* CABECERA TÉCNICA */
+.hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 2.8cqw;
+  letter-spacing: .16em;
+  color: var(--mid);
+  border-bottom: 1px solid var(--dim);
+  padding-bottom: 2.2cqw;
+  margin-bottom: 4.5cqw;
+  gap: 1.5cqw;
+}
+.hdr .dot {
+  display: inline-block;
+  width: 1.8cqw;
+  height: 1.8cqw;
+  background: var(--mid);
+  margin-right: 1.5cqw;
+  vertical-align: middle;
+}
+.pl.play .hdr .dot { background: var(--ac); }
+
+.pills-wrap {
+  display: flex;
+  gap: 1.2cqw;
+  align-items: center;
+}
+
+/* PÍLDORAS DE ESTADO (WS + NET) */
+.ws-pill {
+  background: #111;
+  border: 1px solid var(--dim);
+  color: var(--mid);
+  padding: 1.1cqw 2cqw;
+  border-radius: 2px;
+  font-family: inherit;
+  font-size: 2.4cqw;
+  letter-spacing: .1em;
+  display: inline-flex;
+  align-items: center;
+  gap: 1.3cqw;
+  cursor: pointer;
+  transition: all .2s;
+}
+.ws-pill.online {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+.ws-pill.warn {
+  border-color: var(--ac);
+  color: var(--ac);
+}
+.ws-pill .ws-dot {
+  width: 1.5cqw;
+  height: 1.5cqw;
+  border-radius: 50%;
+  background: var(--mid);
+}
+.ws-pill.online .ws-dot {
+  background: var(--ok);
+  box-shadow: 0 0 6px var(--ok);
+  animation: pulse-ws 1.5s infinite;
+}
+.ws-pill.warn .ws-dot {
+  background: var(--ac);
+  box-shadow: 0 0 6px var(--ac);
+}
+@keyframes pulse-ws { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+
+/* STANDBY */
+.sb { text-align: left; }
+.clock {
+  font-size: 18.5cqw;
+  font-weight: 300;
+  line-height: .95;
+  letter-spacing: -.03em;
+  color: var(--fg);
+  font-variant-numeric: tabular-nums;
+}
+.secbar {
+  height: 1px;
+  margin: 4.5cqw 0 3.5cqw;
+  background: var(--dim);
+  position: relative;
+}
+.secbar i {
+  position: absolute;
+  left: 0;
+  top: -1px;
+  height: 3px;
+  background: var(--ac);
+  width: 0;
+}
+.sb-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 3.1cqw;
+  letter-spacing: .18em;
+  color: var(--mid);
+}
+
+/* TARJETA OFFLINE + QR */
+.offline-card {
+  margin-top: 4.5cqw;
+  border: 1px solid var(--ac);
+  background: rgba(255, 122, 0, 0.04);
+  padding: 3.2cqw;
+  display: none;
+  grid-template-columns: 28cqw 1fr;
+  gap: 3.2cqw;
+  align-items: center;
+}
+.offline-card.show {
+  display: grid;
+}
+.qr-box {
+  width: 28cqw;
+  height: 28cqw;
+  background: #fff;
+  padding: 1.4cqw;
+  border-radius: 2px;
+  display: grid;
+  place-items: center;
+}
+.qr-box svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.offline-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4cqw;
+}
+.offline-title {
+  font-size: 3cqw;
+  color: var(--ac);
+  letter-spacing: .14em;
+  font-weight: 600;
+}
+.offline-desc {
+  font-size: 2.5cqw;
+  color: var(--fg);
+  line-height: 1.35;
+  letter-spacing: .06em;
+}
+.offline-ver {
+  font-size: 2.3cqw;
+  color: var(--mid);
+  letter-spacing: .1em;
+  border-top: 1px solid var(--dim);
+  padding-top: 1.4cqw;
+  margin-top: 0.5cqw;
+}
+
+.sys {
+  margin-top: 6cqw;
+  padding: 2.8cqw 0;
+  border-top: 1px solid var(--dim);
+  border-bottom: 1px solid var(--dim);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 3cqw;
+  letter-spacing: .18em;
+  color: var(--fg);
+}
+.sys-ind {
+  color: var(--ac);
+  animation: pulse 2s steps(2, jump-none) infinite;
+}
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: .15; } }
+
+.ver-footer {
+  margin-top: 2.5cqw;
+  display: flex;
+  justify-content: space-between;
+  font-size: 2.3cqw;
+  letter-spacing: .12em;
+  color: var(--mid);
+}
+
+/* PLAYER */
+.pl {
+  display: flex;
+  flex-direction: column;
+}
+.fade { transition: opacity .2s ease; }
+.swap .fade { opacity: 0; }
+
+.frame {
+  aspect-ratio: 1;
+  position: relative;
+  border: 1px solid var(--dim);
+  display: grid;
+  place-items: center;
+  margin-bottom: 4.5cqw;
+}
+.frame::before, .frame::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  border: 1.5px solid var(--fg);
+  clip-path: polygon(
+    0 0, 4cqw 0, 4cqw 4cqw, 0 4cqw, 0 0,
+    calc(100% - 4cqw) 0, 100% 0, 100% 4cqw, calc(100% - 4cqw) 4cqw, calc(100% - 4cqw) 0,
+    0 calc(100% - 4cqw), 4cqw calc(100% - 4cqw), 4cqw 100%, 0 100%, 0 calc(100% - 4cqw),
+    calc(100% - 4cqw) calc(100% - 4cqw), 100% calc(100% - 4cqw), 100% 100%, calc(100% - 4cqw) 100%, calc(100% - 4cqw) calc(100% - 4cqw)
+  );
+}
+.frame-tag {
+  position: absolute;
+  top: 2.5cqw;
+  left: 3cqw;
+  font-size: 2.5cqw;
+  letter-spacing: .15em;
+  color: var(--mid);
+}
+.frame-rpm {
+  position: absolute;
+  bottom: 2.5cqw;
+  right: 3cqw;
+  font-size: 2.6cqw;
+  letter-spacing: .16em;
+  color: var(--mid);
+}
+
+.art {
+  width: 78%;
+  height: 78%;
+  border-radius: 50%;
+  position: relative;
+  animation: spin 6s linear infinite;
+  animation-play-state: paused;
+}
+.pl.play .art { animation-play-state: running; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.art svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: var(--fg);
+  stroke-width: 1;
+  stroke-linecap: butt;
+}
+.art .groove { stroke: var(--dim); stroke-width: .75; }
+.art .accent { stroke: var(--ac); stroke-width: 1.4; }
+.art .solid { fill: var(--fg); stroke: none; }
+.art .solid-ac { fill: var(--ac); stroke: none; }
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 3cqw;
+  border-top: 1px solid var(--dim);
+  border-bottom: 1px solid var(--dim);
+  padding: 2.6cqw 0;
+  margin-bottom: 4cqw;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.meta b {
+  font-size: 4cqw;
+  font-weight: 500;
+  letter-spacing: .1em;
+  color: var(--fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.meta span {
+  font-size: 3.2cqw;
+  letter-spacing: .16em;
+  color: var(--ac);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+
+.vis {
+  height: 11cqw;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-bottom: 1px;
+  border-bottom: 1px solid var(--dim);
+  margin-bottom: 4cqw;
+}
+.vis i {
+  display: block;
+  width: 1.2cqw;
+  min-height: 2px;
+  background: var(--fg);
+}
+.vis i.peak { background: var(--ac); }
+
+.tl { margin-bottom: 4.5cqw; }
+.line {
+  height: 1px;
+  background: var(--dim);
+  position: relative;
+  margin: 2cqw 0 3cqw;
+}
+.line .f {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 1px;
+  background: var(--fg);
+  width: 0;
+}
+.head {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 2px;
+  height: 3.6cqw;
+  background: var(--ac);
+  transform: translate(-50%, -50%);
+}
+.times {
+  display: flex;
+  justify-content: space-between;
+  font-size: 3.1cqw;
+  letter-spacing: .14em;
+  color: var(--mid);
+  font-variant-numeric: tabular-nums;
+}
+.times #tc { color: var(--fg); }
+
+.ctl {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ctl button {
+  background: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  color: var(--mid);
+  display: grid;
+  place-items: center;
+  width: 9.5cqw;
+  height: 9.5cqw;
+  transition: color .2s, border-color .2s;
+}
+.ctl button:hover { color: var(--fg); }
+.ctl svg {
+  width: 68%;
+  height: 68%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+}
+.ctl .tog { opacity: .5; }
+.ctl .tog.act {
+  opacity: 1;
+  color: var(--ac);
+  border-color: var(--dim);
+}
+.ctl .pp {
+  width: 14cqw;
+  height: 14cqw;
+  color: var(--fg);
+  border: 1px solid var(--fg);
+}
+.pl.play .ctl .pp {
+  color: var(--ac);
+  border-color: var(--ac);
+}
+.pp svg { width: 55%; height: 55%; }
+.pp .ic-pause { display: none; }
+.play .pp .ic-pause { display: block; }
+.play .pp .ic-play { display: none; }
+
+.vol {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -8.5cqw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 3.2cqw;
+  letter-spacing: .16em;
+  color: var(--fg);
+  background: #000;
+  border: 1px solid var(--dim);
+  padding: 1.4cqw 2.5cqw;
+  opacity: 0;
+  transition: opacity .3s;
+  pointer-events: none;
+  z-index: 10;
+}
+.vol.show {
+  opacity: 1;
+  transition: opacity .05s;
+}
+.vol-bars { letter-spacing: .06em; color: var(--ac); }
+.vol-bars u { text-decoration: none; color: var(--dim); }
+
+/* BARRA SUPERIOR DE MONITOREO TÉCNICO */
+.status-log {
+  position: fixed;
+  top: 10px;
+  right: 12px;
+  font-size: 10px;
+  letter-spacing: .08em;
+  color: var(--mid);
+  background: rgba(0,0,0,0.88);
+  border: 1px solid var(--dim);
+  padding: 5px 10px;
+  border-radius: 2px;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.status-log .ip-input {
+  background: #111;
+  border: 1px solid var(--dim);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 10px;
+  padding: 2px 6px;
+  width: 105px;
+  border-radius: 2px;
+}
+.status-log .last-cmd { color: var(--ac); font-weight: bold; }
+
+/* REPRODUCTOR YOUTUBE OCULTO */
+#yt-wrap {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  bottom: -10px;
+  left: -10px;
+  opacity: 0.01;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.hint {
+  position: fixed;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 10px;
+  color: #333;
+  letter-spacing: .12em;
+}
+</style>
+</head>
+<body>
+
+<div class="status-log">
+  <span>ESP32:</span>
+  <input class="ip-input" id="ipInput" type="text" placeholder="192.168.1.XX">
+  <span id="wsStatusTxt" style="color:var(--mid)">INICIANDO</span> |
+  <span>NET:</span> <span id="netStatusTxt" style="color:var(--mid)">...</span> |
+  <span>CMD:</span> <span class="last-cmd" id="lastCmdTxt">---</span>
+</div>
+
+<!-- Contenedor invisible para YouTube IFrame API (Audio Stream) -->
+<div id="yt-wrap"><div id="yt-player"></div></div>
+
+<div class="stage" id="stage">
+ <div class="box">
+  <div class="vol" id="vol">
+   <span>GAIN</span>
+   <span class="vol-bars" id="vbars"></span>
+   <span id="vnum">70%</span>
+  </div>
+
+  <!-- STANDBY -->
+  <section class="sec sb on" id="sb">
+   <div class="hdr">
+    <span>UNIT // HG-01</span>
+    <div class="pills-wrap">
+      <button class="ws-pill" id="netPillSb" title="Alternar QR Wi-Fi">
+        <i class="ws-dot"></i><span class="net-lbl">ONLINE</span>
+      </button>
+      <button class="ws-pill" id="wsPillSb">
+        <i class="ws-dot"></i><span class="ws-lbl">WS</span>
+      </button>
+    </div>
+   </div>
+
+   <div class="clock" id="clock">00:00:00</div>
+   <div class="secbar"><i id="sbar"></i></div>
+   <div class="sb-meta">
+    <span id="date">--- -- ---</span>
+    <span id="modeLabel">YT MUSIC // READY</span>
+   </div>
+
+   <!-- TARJETA OFFLINE CON QR INTEGRADO (NO REQUIERE INTERNET) -->
+   <div class="offline-card" id="offlineCard">
+    <div class="qr-box" id="qrContainer">
+      <!-- SVG embebido de WIFI:T:WPA;S:HoloJukebox-Setup;P:12345678;; -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 174 174">
+        <rect fill="#ffffff" x="0" y="0" width="174" height="174"/>
+        <path fill="#000000" d="M 0,0 l 6,0 0,6 -6,0 z M 6,0 l 6,0 0,6 -6,0 z M 12,0 l 6,0 0,6 -6,0 z M 18,0 l 6,0 0,6 -6,0 z M 24,0 l 6,0 0,6 -6,0 z M 30,0 l 6,0 0,6 -6,0 z M 36,0 l 6,0 0,6 -6,0 z M 60,0 l 6,0 0,6 -6,0 z M 72,0 l 6,0 0,6 -6,0 z M 108,0 l 6,0 0,6 -6,0 z M 132,0 l 6,0 0,6 -6,0 z M 138,0 l 6,0 0,6 -6,0 z M 144,0 l 6,0 0,6 -6,0 z M 150,0 l 6,0 0,6 -6,0 z M 156,0 l 6,0 0,6 -6,0 z M 162,0 l 6,0 0,6 -6,0 z M 168,0 l 6,0 0,6 -6,0 z M 0,6 l 6,0 0,6 -6,0 z M 36,6 l 6,0 0,6 -6,0 z M 48,6 l 6,0 0,6 -6,0 z M 60,6 l 6,0 0,6 -6,0 z M 78,6 l 6,0 0,6 -6,0 z M 90,6 l 6,0 0,6 -6,0 z M 96,6 l 6,0 0,6 -6,0 z M 102,6 l 6,0 0,6 -6,0 z M 108,6 l 6,0 0,6 -6,0 z M 114,6 l 6,0 0,6 -6,0 z M 120,6 l 6,0 0,6 -6,0 z M 132,6 l 6,0 0,6 -6,0 z M 168,6 l 6,0 0,6 -6,0 z M 0,12 l 6,0 0,6 -6,0 z M 12,12 l 6,0 0,6 -6,0 z M 18,12 l 6,0 0,6 -6,0 z M 24,12 l 6,0 0,6 -6,0 z M 36,12 l 6,0 0,6 -6,0 z M 72,12 l 6,0 0,6 -6,0 z M 96,12 l 6,0 0,6 -6,0 z M 102,12 l 6,0 0,6 -6,0 z M 108,12 l 6,0 0,6 -6,0 z M 114,12 l 6,0 0,6 -6,0 z M 120,12 l 6,0 0,6 -6,0 z M 132,12 l 6,0 0,6 -6,0 z M 144,12 l 6,0 0,6 -6,0 z M 150,12 l 6,0 0,6 -6,0 z M 156,12 l 6,0 0,6 -6,0 z M 168,12 l 6,0 0,6 -6,0 z M 0,18 l 6,0 0,6 -6,0 z M 12,18 l 6,0 0,6 -6,0 z M 18,18 l 6,0 0,6 -6,0 z M 24,18 l 6,0 0,6 -6,0 z M 36,18 l 6,0 0,6 -6,0 z M 48,18 l 6,0 0,6 -6,0 z M 54,18 l 6,0 0,6 -6,0 z M 60,18 l 6,0 0,6 -6,0 z M 72,18 l 6,0 0,6 -6,0 z M 78,18 l 6,0 0,6 -6,0 z M 84,18 l 6,0 0,6 -6,0 z M 90,18 l 6,0 0,6 -6,0 z M 96,18 l 6,0 0,6 -6,0 z M 120,18 l 6,0 0,6 -6,0 z M 132,18 l 6,0 0,6 -6,0 z M 144,18 l 6,0 0,6 -6,0 z M 150,18 l 6,0 0,6 -6,0 z M 156,18 l 6,0 0,6 -6,0 z M 168,18 l 6,0 0,6 -6,0 z M 0,24 l 6,0 0,6 -6,0 z M 12,24 l 6,0 0,6 -6,0 z M 18,24 l 6,0 0,6 -6,0 z M 24,24 l 6,0 0,6 -6,0 z M 36,24 l 6,0 0,6 -6,0 z M 54,24 l 6,0 0,6 -6,0 z M 84,24 l 6,0 0,6 -6,0 z M 114,24 l 6,0 0,6 -6,0 z M 120,24 l 6,0 0,6 -6,0 z M 132,24 l 6,0 0,6 -6,0 z M 144,24 l 6,0 0,6 -6,0 z M 150,24 l 6,0 0,6 -6,0 z M 156,24 l 6,0 0,6 -6,0 z M 168,24 l 6,0 0,6 -6,0 z M 0,30 l 6,0 0,6 -6,0 z M 36,30 l 6,0 0,6 -6,0 z M 48,30 l 6,0 0,6 -6,0 z M 54,30 l 6,0 0,6 -6,0 z M 66,30 l 6,0 0,6 -6,0 z M 72,30 l 6,0 0,6 -6,0 z M 78,30 l 6,0 0,6 -6,0 z M 96,30 l 6,0 0,6 -6,0 z M 114,30 l 6,0 0,6 -6,0 z M 132,30 l 6,0 0,6 -6,0 z M 168,30 l 6,0 0,6 -6,0 z M 0,36 l 6,0 0,6 -6,0 z M 6,36 l 6,0 0,6 -6,0 z M 12,36 l 6,0 0,6 -6,0 z M 18,36 l 6,0 0,6 -6,0 z M 24,36 l 6,0 0,6 -6,0 z M 30,36 l 6,0 0,6 -6,0 z M 36,36 l 6,0 0,6 -6,0 z M 48,36 l 6,0 0,6 -6,0 z M 60,36 l 6,0 0,6 -6,0 z M 72,36 l 6,0 0,6 -6,0 z M 84,36 l 6,0 0,6 -6,0 z M 96,36 l 6,0 0,6 -6,0 z M 108,36 l 6,0 0,6 -6,0 z M 120,36 l 6,0 0,6 -6,0 z M 132,36 l 6,0 0,6 -6,0 z M 138,36 l 6,0 0,6 -6,0 z M 144,36 l 6,0 0,6 -6,0 z M 150,36 l 6,0 0,6 -6,0 z M 156,36 l 6,0 0,6 -6,0 z M 162,36 l 6,0 0,6 -6,0 z M 168,36 l 6,0 0,6 -6,0 z M 54,42 l 6,0 0,6 -6,0 z M 60,42 l 6,0 0,6 -6,0 z M 66,42 l 6,0 0,6 -6,0 z M 96,42 l 6,0 0,6 -6,0 z M 114,42 l 6,0 0,6 -6,0 z M 120,42 l 6,0 0,6 -6,0 z M 0,48 l 6,0 0,6 -6,0 z M 6,48 l 6,0 0,6 -6,0 z M 12,48 l 6,0 0,6 -6,0 z M 18,48 l 6,0 0,6 -6,0 z M 24,48 l 6,0 0,6 -6,0 z M 36,48 l 6,0 0,6 -6,0 z M 42,48 l 6,0 0,6 -6,0 z M 48,48 l 6,0 0,6 -6,0 z M 54,48 l 6,0 0,6 -6,0 z M 66,48 l 6,0 0,6 -6,0 z M 90,48 l 6,0 0,6 -6,0 z M 102,48 l 6,0 0,6 -6,0 z M 108,48 l 6,0 0,6 -6,0 z M 126,48 l 6,0 0,6 -6,0 z M 138,48 l 6,0 0,6 -6,0 z M 150,48 l 6,0 0,6 -6,0 z M 162,48 l 6,0 0,6 -6,0 z M 48,54 l 6,0 0,6 -6,0 z M 60,54 l 6,0 0,6 -6,0 z M 72,54 l 6,0 0,6 -6,0 z M 90,54 l 6,0 0,6 -6,0 z M 114,54 l 6,0 0,6 -6,0 z M 126,54 l 6,0 0,6 -6,0 z M 150,54 l 6,0 0,6 -6,0 z M 168,54 l 6,0 0,6 -6,0 z M 24,60 l 6,0 0,6 -6,0 z M 36,60 l 6,0 0,6 -6,0 z M 42,60 l 6,0 0,6 -6,0 z M 60,60 l 6,0 0,6 -6,0 z M 90,60 l 6,0 0,6 -6,0 z M 102,60 l 6,0 0,6 -6,0 z M 144,60 l 6,0 0,6 -6,0 z M 156,60 l 6,0 0,6 -6,0 z M 168,60 l 6,0 0,6 -6,0 z M 0,66 l 6,0 0,6 -6,0 z M 12,66 l 6,0 0,6 -6,0 z M 18,66 l 6,0 0,6 -6,0 z M 24,66 l 6,0 0,6 -6,0 z M 30,66 l 6,0 0,6 -6,0 z M 48,66 l 6,0 0,6 -6,0 z M 72,66 l 6,0 0,6 -6,0 z M 84,66 l 6,0 0,6 -6,0 z M 108,66 l 6,0 0,6 -6,0 z M 114,66 l 6,0 0,6 -6,0 z M 120,66 l 6,0 0,6 -6,0 z M 126,66 l 6,0 0,6 -6,0 z M 132,66 l 6,0 0,6 -6,0 z M 138,66 l 6,0 0,6 -6,0 z M 144,66 l 6,0 0,6 -6,0 z M 150,66 l 6,0 0,6 -6,0 z M 168,66 l 6,0 0,6 -6,0 z M 12,72 l 6,0 0,6 -6,0 z M 24,72 l 6,0 0,6 -6,0 z M 36,72 l 6,0 0,6 -6,0 z M 54,72 l 6,0 0,6 -6,0 z M 60,72 l 6,0 0,6 -6,0 z M 72,72 l 6,0 0,6 -6,0 z M 90,72 l 6,0 0,6 -6,0 z M 120,72 l 6,0 0,6 -6,0 z M 132,72 l 6,0 0,6 -6,0 z M 150,72 l 6,0 0,6 -6,0 z M 156,72 l 6,0 0,6 -6,0 z M 162,72 l 6,0 0,6 -6,0 z M 168,72 l 6,0 0,6 -6,0 z M 12,78 l 6,0 0,6 -6,0 z M 42,78 l 6,0 0,6 -6,0 z M 48,78 l 6,0 0,6 -6,0 z M 54,78 l 6,0 0,6 -6,0 z M 78,78 l 6,0 0,6 -6,0 z M 84,78 l 6,0 0,6 -6,0 z M 90,78 l 6,0 0,6 -6,0 z M 120,78 l 6,0 0,6 -6,0 z M 132,78 l 6,0 0,6 -6,0 z M 150,78 l 6,0 0,6 -6,0 z M 156,78 l 6,0 0,6 -6,0 z M 162,78 l 6,0 0,6 -6,0 z M 168,78 l 6,0 0,6 -6,0 z M 12,84 l 6,0 0,6 -6,0 z M 18,84 l 6,0 0,6 -6,0 z M 30,84 l 6,0 0,6 -6,0 z M 36,84 l 6,0 0,6 -6,0 z M 54,84 l 6,0 0,6 -6,0 z M 66,84 l 6,0 0,6 -6,0 z M 72,84 l 6,0 0,6 -6,0 z M 84,84 l 6,0 0,6 -6,0 z M 90,84 l 6,0 0,6 -6,0 z M 96,84 l 6,0 0,6 -6,0 z M 102,84 l 6,0 0,6 -6,0 z M 138,84 l 6,0 0,6 -6,0 z M 156,84 l 6,0 0,6 -6,0 z M 0,90 l 6,0 0,6 -6,0 z M 18,90 l 6,0 0,6 -6,0 z M 48,90 l 6,0 0,6 -6,0 z M 54,90 l 6,0 0,6 -6,0 z M 66,90 l 6,0 0,6 -6,0 z M 78,90 l 6,0 0,6 -6,0 z M 84,90 l 6,0 0,6 -6,0 z M 90,90 l 6,0 0,6 -6,0 z M 114,90 l 6,0 0,6 -6,0 z M 120,90 l 6,0 0,6 -6,0 z M 126,90 l 6,0 0,6 -6,0 z M 132,90 l 6,0 0,6 -6,0 z M 144,90 l 6,0 0,6 -6,0 z M 150,90 l 6,0 0,6 -6,0 z M 156,90 l 6,0 0,6 -6,0 z M 6,96 l 6,0 0,6 -6,0 z M 30,96 l 6,0 0,6 -6,0 z M 36,96 l 6,0 0,6 -6,0 z M 42,96 l 6,0 0,6 -6,0 z M 48,96 l 6,0 0,6 -6,0 z M 54,96 l 6,0 0,6 -6,0 z M 66,96 l 6,0 0,6 -6,0 z M 90,96 l 6,0 0,6 -6,0 z M 96,96 l 6,0 0,6 -6,0 z M 120,96 l 6,0 0,6 -6,0 z M 132,96 l 6,0 0,6 -6,0 z M 138,96 l 6,0 0,6 -6,0 z M 156,96 l 6,0 0,6 -6,0 z M 0,102 l 6,0 0,6 -6,0 z M 6,102 l 6,0 0,6 -6,0 z M 12,102 l 6,0 0,6 -6,0 z M 18,102 l 6,0 0,6 -6,0 z M 24,102 l 6,0 0,6 -6,0 z M 42,102 l 6,0 0,6 -6,0 z M 54,102 l 6,0 0,6 -6,0 z M 72,102 l 6,0 0,6 -6,0 z M 78,102 l 6,0 0,6 -6,0 z M 84,102 l 6,0 0,6 -6,0 z M 90,102 l 6,0 0,6 -6,0 z M 108,102 l 6,0 0,6 -6,0 z M 114,102 l 6,0 0,6 -6,0 z M 126,102 l 6,0 0,6 -6,0 z M 144,102 l 6,0 0,6 -6,0 z M 150,102 l 6,0 0,6 -6,0 z M 162,102 l 6,0 0,6 -6,0 z M 168,102 l 6,0 0,6 -6,0 z M 0,108 l 6,0 0,6 -6,0 z M 12,108 l 6,0 0,6 -6,0 z M 18,108 l 6,0 0,6 -6,0 z M 24,108 l 6,0 0,6 -6,0 z M 30,108 l 6,0 0,6 -6,0 z M 36,108 l 6,0 0,6 -6,0 z M 48,108 l 6,0 0,6 -6,0 z M 54,108 l 6,0 0,6 -6,0 z M 60,108 l 6,0 0,6 -6,0 z M 84,108 l 6,0 0,6 -6,0 z M 90,108 l 6,0 0,6 -6,0 z M 96,108 l 6,0 0,6 -6,0 z M 102,108 l 6,0 0,6 -6,0 z M 114,108 l 6,0 0,6 -6,0 z M 138,108 l 6,0 0,6 -6,0 z M 144,108 l 6,0 0,6 -6,0 z M 162,108 l 6,0 0,6 -6,0 z M 0,114 l 6,0 0,6 -6,0 z M 12,114 l 6,0 0,6 -6,0 z M 42,114 l 6,0 0,6 -6,0 z M 48,114 l 6,0 0,6 -6,0 z M 72,114 l 6,0 0,6 -6,0 z M 78,114 l 6,0 0,6 -6,0 z M 84,114 l 6,0 0,6 -6,0 z M 90,114 l 6,0 0,6 -6,0 z M 114,114 l 6,0 0,6 -6,0 z M 120,114 l 6,0 0,6 -6,0 z M 126,114 l 6,0 0,6 -6,0 z M 132,114 l 6,0 0,6 -6,0 z M 138,114 l 6,0 0,6 -6,0 z M 144,114 l 6,0 0,6 -6,0 z M 150,114 l 6,0 0,6 -6,0 z M 168,114 l 6,0 0,6 -6,0 z M 0,120 l 6,0 0,6 -6,0 z M 18,120 l 6,0 0,6 -6,0 z M 36,120 l 6,0 0,6 -6,0 z M 42,120 l 6,0 0,6 -6,0 z M 54,120 l 6,0 0,6 -6,0 z M 60,120 l 6,0 0,6 -6,0 z M 72,120 l 6,0 0,6 -6,0 z M 120,120 l 6,0 0,6 -6,0 z M 126,120 l 6,0 0,6 -6,0 z M 132,120 l 6,0 0,6 -6,0 z M 138,120 l 6,0 0,6 -6,0 z M 144,120 l 6,0 0,6 -6,0 z M 156,120 l 6,0 0,6 -6,0 z M 162,120 l 6,0 0,6 -6,0 z M 168,120 l 6,0 0,6 -6,0 z M 48,126 l 6,0 0,6 -6,0 z M 54,126 l 6,0 0,6 -6,0 z M 90,126 l 6,0 0,6 -6,0 z M 96,126 l 6,0 0,6 -6,0 z M 114,126 l 6,0 0,6 -6,0 z M 120,126 l 6,0 0,6 -6,0 z M 144,126 l 6,0 0,6 -6,0 z M 150,126 l 6,0 0,6 -6,0 z M 156,126 l 6,0 0,6 -6,0 z M 0,132 l 6,0 0,6 -6,0 z M 6,132 l 6,0 0,6 -6,0 z M 12,132 l 6,0 0,6 -6,0 z M 18,132 l 6,0 0,6 -6,0 z M 24,132 l 6,0 0,6 -6,0 z M 30,132 l 6,0 0,6 -6,0 z M 36,132 l 6,0 0,6 -6,0 z M 48,132 l 6,0 0,6 -6,0 z M 54,132 l 6,0 0,6 -6,0 z M 66,132 l 6,0 0,6 -6,0 z M 72,132 l 6,0 0,6 -6,0 z M 90,132 l 6,0 0,6 -6,0 z M 96,132 l 6,0 0,6 -6,0 z M 102,132 l 6,0 0,6 -6,0 z M 120,132 l 6,0 0,6 -6,0 z M 132,132 l 6,0 0,6 -6,0 z M 144,132 l 6,0 0,6 -6,0 z M 150,132 l 6,0 0,6 -6,0 z M 156,132 l 6,0 0,6 -6,0 z M 0,138 l 6,0 0,6 -6,0 z M 36,138 l 6,0 0,6 -6,0 z M 60,138 l 6,0 0,6 -6,0 z M 66,138 l 6,0 0,6 -6,0 z M 90,138 l 6,0 0,6 -6,0 z M 114,138 l 6,0 0,6 -6,0 z M 120,138 l 6,0 0,6 -6,0 z M 144,138 l 6,0 0,6 -6,0 z M 150,138 l 6,0 0,6 -6,0 z M 0,144 l 6,0 0,6 -6,0 z M 12,144 l 6,0 0,6 -6,0 z M 18,144 l 6,0 0,6 -6,0 z M 24,144 l 6,0 0,6 -6,0 z M 36,144 l 6,0 0,6 -6,0 z M 48,144 l 6,0 0,6 -6,0 z M 66,144 l 6,0 0,6 -6,0 z M 90,144 l 6,0 0,6 -6,0 z M 108,144 l 6,0 0,6 -6,0 z M 120,144 l 6,0 0,6 -6,0 z M 126,144 l 6,0 0,6 -6,0 z M 132,144 l 6,0 0,6 -6,0 z M 138,144 l 6,0 0,6 -6,0 z M 144,144 l 6,0 0,6 -6,0 z M 0,150 l 6,0 0,6 -6,0 z M 12,150 l 6,0 0,6 -6,0 z M 18,150 l 6,0 0,6 -6,0 z M 24,150 l 6,0 0,6 -6,0 z M 36,150 l 6,0 0,6 -6,0 z M 48,150 l 6,0 0,6 -6,0 z M 60,150 l 6,0 0,6 -6,0 z M 72,150 l 6,0 0,6 -6,0 z M 78,150 l 6,0 0,6 -6,0 z M 90,150 l 6,0 0,6 -6,0 z M 108,150 l 6,0 0,6 -6,0 z M 114,150 l 6,0 0,6 -6,0 z M 120,150 l 6,0 0,6 -6,0 z M 132,150 l 6,0 0,6 -6,0 z M 138,150 l 6,0 0,6 -6,0 z M 162,150 l 6,0 0,6 -6,0 z M 0,156 l 6,0 0,6 -6,0 z M 12,156 l 6,0 0,6 -6,0 z M 18,156 l 6,0 0,6 -6,0 z M 24,156 l 6,0 0,6 -6,0 z M 36,156 l 6,0 0,6 -6,0 z M 48,156 l 6,0 0,6 -6,0 z M 54,156 l 6,0 0,6 -6,0 z M 78,156 l 6,0 0,6 -6,0 z M 84,156 l 6,0 0,6 -6,0 z M 90,156 l 6,0 0,6 -6,0 z M 102,156 l 6,0 0,6 -6,0 z M 108,156 l 6,0 0,6 -6,0 z M 114,156 l 6,0 0,6 -6,0 z M 132,156 l 6,0 0,6 -6,0 z M 150,156 l 6,0 0,6 -6,0 z M 162,156 l 6,0 0,6 -6,0 z M 0,162 l 6,0 0,6 -6,0 z M 36,162 l 6,0 0,6 -6,0 z M 48,162 l 6,0 0,6 -6,0 z M 60,162 l 6,0 0,6 -6,0 z M 72,162 l 6,0 0,6 -6,0 z M 78,162 l 6,0 0,6 -6,0 z M 102,162 l 6,0 0,6 -6,0 z M 120,162 l 6,0 0,6 -6,0 z M 138,162 l 6,0 0,6 -6,0 z M 150,162 l 6,0 0,6 -6,0 z M 162,162 l 6,0 0,6 -6,0 z M 168,162 l 6,0 0,6 -6,0 z M 0,168 l 6,0 0,6 -6,0 z M 6,168 l 6,0 0,6 -6,0 z M 12,168 l 6,0 0,6 -6,0 z M 18,168 l 6,0 0,6 -6,0 z M 24,168 l 6,0 0,6 -6,0 z M 30,168 l 6,0 0,6 -6,0 z M 36,168 l 6,0 0,6 -6,0 z M 48,168 l 6,0 0,6 -6,0 z M 54,168 l 6,0 0,6 -6,0 z M 60,168 l 6,0 0,6 -6,0 z M 72,168 l 6,0 0,6 -6,0 z M 84,168 l 6,0 0,6 -6,0 z M 90,168 l 6,0 0,6 -6,0 z M 96,168 l 6,0 0,6 -6,0 z M 102,168 l 6,0 0,6 -6,0 z M 108,168 l 6,0 0,6 -6,0 z M 120,168 l 6,0 0,6 -6,0 z M 126,168 l 6,0 0,6 -6,0 z M 144,168 l 6,0 0,6 -6,0 z M 150,168 l 6,0 0,6 -6,0 z M 162,168 l 6,0 0,6 -6,0 z"/>
+      </svg>
+    </div>
+    <div class="offline-info">
+      <div class="offline-title">SIN INTERNET // WIFI SETUP</div>
+      <div class="offline-desc">
+        1. Escanea el QR (<b>HoloJukebox-Setup</b>)<br>
+        2. Abre <b>192.168.4.1</b> y elige tu Wi-Fi
+      </div>
+      <div class="offline-ver" id="offlineVerTxt">CACHE: v2.1.0 // SYNC: ---</div>
+    </div>
+   </div>
+
+   <div class="sys">
+    <span>NO DISC LOADED</span>
+    <span class="sys-ind">[ INSERT ]</span>
+   </div>
+   <div class="ver-footer">
+    <span id="buildVerTxt">BUILD // v2.1.0</span>
+    <span id="lastSyncFooter">SYNC // --</span>
+   </div>
+  </section>
+
+  <!-- PLAYER -->
+  <section class="sec pl" id="pl">
+   <div class="hdr">
+    <span><i class="dot"></i>DECK A // <b id="dnum" style="font-weight:400;color:var(--fg)">DISC 01</b></span>
+    <div class="pills-wrap">
+      <button class="ws-pill" id="netPillPl">
+        <i class="ws-dot"></i><span class="net-lbl">ONLINE</span>
+      </button>
+      <button class="ws-pill" id="wsPillPl">
+        <i class="ws-dot"></i><span class="ws-lbl">WS</span>
+      </button>
+    </div>
+   </div>
+   <div class="frame fade">
+    <span class="frame-tag" id="sourceTag">YT STREAM // NO-ADS</span>
+    <div class="art" id="art"></div>
+    <span class="frame-rpm">33 ⅓</span>
+   </div>
+   <div class="meta fade">
+    <b id="ttl">—</b>
+    <span id="art2">—</span>
+   </div>
+   <div class="vis" id="vis"></div>
+   <div class="tl">
+    <div class="line"><div class="f" id="fill"></div><div class="head" id="head"></div></div>
+    <div class="times"><span id="tc">00:00</span><span id="td">00:00</span></div>
+   </div>
+   <div class="ctl">
+    <button class="tog" id="bShuf" aria-label="Aleatorio"><svg viewBox="0 0 24 24"><path d="M3 7h4l10 10h4M3 17h4l3-3M14 10l3-3h4M18 4l3 3-3 3M18 14l3 3-3 3"/></svg></button>
+    <button id="bPrev" aria-label="Anterior"><svg viewBox="0 0 24 24"><path d="M6 6v12M18 6l-9 6 9 6z"/></svg></button>
+    <button class="pp" id="bPP" aria-label="Reproducir o pausar">
+     <svg viewBox="0 0 24 24">
+      <path class="ic-play" d="M7 5v14l12-7z"/>
+      <path class="ic-pause" d="M8 5v14M16 5v14"/>
+     </svg>
+    </button>
+    <button id="bNext" aria-label="Siguiente"><svg viewBox="0 0 24 24"><path d="M18 6v12M6 6l9 6-9 6z"/></svg></button>
+    <button class="tog" id="bRep" aria-label="Repetir"><svg viewBox="0 0 24 24"><path d="M17 3l3 3-3 3M4 11V6h16M7 21l-3-3 3-3M20 13v5H4"/></svg></button>
+   </div>
+  </section>
+ </div>
+</div>
+<div class="hint">[1-5] DISCO · [ESPACIO] PLAY · [↑↓] VOL · [←→] PISTA · [M] ESPEJO · [Q] QR WIFI · [0/ESC] EXPULSAR</div>
+
+<script>
+const APP_VERSION = "v2.1.0";
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2, '0');
+const mmss = s => pad(Math.floor(s / 60)) + ':' + pad(Math.floor(s % 60));
+
+// =========================================================================
+// 1. REGISTRO DE SERVICE WORKER Y CONTROL DE VERSIÓN / CACHÉ OFFLINE
+// =========================================================================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      console.log('[PWA] Service Worker activo:', reg.scope);
+    }).catch(err => console.warn('[PWA] Error SW:', err));
+  });
+}
+
+function recordOnlineSync() {
+  const now = new Date();
+  const MES = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+  const stamp = `${pad(now.getDate())} ${MES[now.getMonth()]} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  localStorage.setItem('holo_last_sync', stamp);
+  localStorage.setItem('holo_last_ver', APP_VERSION);
+  updateVersionLabels();
+}
+
+function updateVersionLabels() {
+  const sync = localStorage.getItem('holo_last_sync') || 'LOCAL INIT';
+  const ver  = localStorage.getItem('holo_last_ver') || APP_VERSION;
+  $('buildVerTxt').textContent  = `BUILD // ${ver}`;
+  $('lastSyncFooter').textContent = `SYNC // ${sync}`;
+  $('offlineVerTxt').textContent  = `ULT. VERSION: ${ver} (${sync})`;
+}
+updateVersionLabels();
+
+// =========================================================================
+// 2. DETECCIÓN DE CONEXIÓN A INTERNET (ONLINE / OFFLINE + QR)
+// =========================================================================
+let isInternetOnline = navigator.onLine;
+let forceQrToggle = false;
+
+async function checkInternetConnection() {
+  if (!navigator.onLine) {
+    setInternetStatus(false);
+    return;
+  }
+  try {
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), 3500);
+    await fetch('https://www.google.com/generate_204?t=' + Date.now(), {
+      mode: 'no-cors',
+      cache: 'no-store',
+      signal: ctrl.signal
+    });
+    clearTimeout(tid);
+    setInternetStatus(true);
+  } catch (e) {
+    setInternetStatus(false);
+  }
+}
+
+function setInternetStatus(online) {
+  const changed = (online !== isInternetOnline);
+  isInternetOnline = online;
+
+  const netPills = [$('netPillSb'), $('netPillPl')];
+  netPills.forEach(p => {
+    p.classList.toggle('online', online);
+    p.classList.toggle('warn', !online);
+    p.querySelector('.net-lbl').textContent = online ? 'ONLINE' : 'OFFLINE';
+  });
+
+  $('netStatusTxt').textContent = online ? 'ONLINE' : 'OFFLINE';
+  $('netStatusTxt').style.color = online ? 'var(--ok)' : 'var(--ac)';
+  $('modeLabel').textContent = online ? 'YT MUSIC // ONLINE' : 'LOCAL // SIN RED';
+  $('sourceTag').textContent = online ? 'YT STREAM // NO-ADS' : 'LOCAL SYNTH // OFFLINE';
+
+  // Mostrar QR automáticamente cuando no hay internet (o si el usuario lo abrió con click/'Q')
+  const showQr = !online || forceQrToggle;
+  $('offlineCard').classList.toggle('show', showQr);
+
+  if (online) {
+    recordOnlineSync();
+    if (!ytApiLoaded) loadYouTubeApi();
+  }
+}
+
+window.addEventListener('online',  () => checkInternetConnection());
+window.addEventListener('offline', () => setInternetStatus(false));
+setInterval(checkInternetConnection, 10000);
+
+$('netPillSb').onclick = () => {
+  forceQrToggle = !forceQrToggle;
+  $('offlineCard').classList.toggle('show', !isInternetOnline || forceQrToggle);
+};
+$('netPillPl').onclick = () => {
+  eject();
+  forceQrToggle = true;
+  $('offlineCard').classList.add('show');
+};
+
+// =========================================================================
+// 3. CATÁLOGO DE DISCOS (CON IDs DE YOUTUBE MUSIC / YOUTUBE)
+// =========================================================================
+const vinylWrap = inner => `
+<svg viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48"/>
+  <circle class="groove" cx="50" cy="50" r="42"/>
+  <circle class="groove" cx="50" cy="50" r="36"/>
+  <circle class="groove" cx="50" cy="50" r="30"/>
+  <circle cx="50" cy="50" r="22"/>
+  ${inner}
+  <circle class="solid" cx="50" cy="50" r="2.2"/>
+</svg>`;
+
+const ART = [
+  vinylWrap(`<line x1="50" y1="28" x2="50" y2="72"/><line x1="28" y1="50" x2="72" y2="50"/><circle class="accent" cx="50" cy="50" r="12"/><circle class="solid-ac" cx="50" cy="5" r="1.8"/>`),
+  vinylWrap(`<path class="solid" d="M50 28 A22 22 0 0 1 50 72 Z"/><circle class="solid-ac" cx="42" cy="50" r="3.5"/><line class="accent" x1="50" y1="2" x2="50" y2="14"/>`),
+  vinylWrap(`<polygon points="50,30 67,60 33,60"/><line class="accent" x1="50" y1="30" x2="50" y2="50"/><circle class="solid-ac" cx="50" cy="11" r="1.8"/>`),
+  vinylWrap(`<line x1="37" y1="36" x2="63" y2="36"/><line class="accent" x1="34" y1="45" x2="66" y2="45"/><line x1="34" y1="55" x2="66" y2="55"/><line x1="37" y1="64" x2="63" y2="64"/><circle class="solid" cx="50" cy="8" r="1.5"/>`),
+  vinylWrap(`<rect x="36" y="36" width="28" height="28" transform="rotate(45 50 50)"/><circle class="accent" cx="50" cy="50" r="8"/><line class="accent" x1="50" y1="2" x2="50" y2="12"/>`)
+];
+
+// Formato de cada pista: [ "TÍTULO", duración_fallback_seg, "YOUTUBE_VIDEO_ID" ]
+// Puedes cambiar los IDs de YouTube por cualquier canción de YouTube / YouTube Music
+const DISCS = [
+  {
+    a: "DAFT PUNK",
+    t: [
+      ["VERIDIS QUO",       345, "TCd6PfxOy0Y"],
+      ["INSTANT CRUSH",     337, "a5uQMwRMHcs"],
+      ["GET LUCKY",         248, "5NV6Rdv1a3I"]
+    ]
+  },
+  {
+    a: "SYNTHWAVE MIX",
+    t: [
+      ["NIGHTCALL",         258, "MV_3Dpw-BRY"],
+      ["RESONANCE",         212, "8GW6sLrK40k"]
+    ]
+  },
+  {
+    a: "GORILLAZ",
+    t: [
+      ["FEEL GOOD INC.",    222, "HyHNuVaZJ-k"],
+      ["ON MELANCHOLY HILL",233, "04mfKJWDSzI"]
+    ]
+  },
+  {
+    a: "THE WEEKND",
+    t: [
+      ["BLINDING LIGHTS",   200, "4NRXx6U8ABQ"],
+      ["STARBOY",           230, "34Na4j8AVgA"]
+    ]
+  },
+  {
+    a: "LOFI CHILL",
+    t: [
+      ["MIDNIGHT COFFEE",   196, "jfKfPfyJRdk"],
+      ["TOKYO RAIN",        168, "DWcJFNfaw9c"]
+    ]
+  }
+];
+
+let disc = -1, trk = 0, pos = 0, playing = false, vol = 70, shuf = false, rep = false, volT = 0;
+
+// =========================================================================
+// 4. MOTOR YOUTUBE EMBED (NOCOOOKIE + ANTI-ADS GUARD)
+// =========================================================================
+let ytPlayer = null;
+let ytReady = false;
+let ytApiLoaded = false;
+let expectedVideoId = null;
+
+function loadYouTubeApi() {
+  if (ytApiLoaded) return;
+  ytApiLoaded = true;
+  const tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.head.appendChild(tag);
+}
+
+window.onYouTubeIframeAPIReady = function() {
+  ytPlayer = new YT.Player('yt-player', {
+    height: '1',
+    width: '1',
+    host: 'https://www.youtube-nocookie.com',
+    playerVars: {
+      autoplay: 0,
+      controls: 0,
+      disablekb: 1,
+      fs: 0,
+      iv_load_policy: 3, // Desactiva anotaciones
+      modestbranding: 1,
+      rel: 0,
+      playsinline: 1,
+      origin: window.location.origin
+    },
+    events: {
+      onReady: () => {
+        ytReady = true;
+        ytPlayer.setVolume(vol);
+        console.log('[YT] Motor YouTube NoCookie listo.');
+        if (disc >= 0 && playing) {
+          playCurrentYouTubeTrack();
+        }
+      },
+      onStateChange: (e) => {
+        // YT.PlayerState.ENDED === 0
+        if (e.data === 0 && disc >= 0) {
+          if (rep) {
+            ytPlayer.seekTo(0);
+            ytPlayer.playVideo();
+          } else {
+            step(1);
+          }
+        }
+      },
+      onError: (e) => {
+        console.warn('[YT] Error en pista, pasando a modo simulado/siguiente:', e.data);
+      }
+    }
+  });
+};
+
+function playCurrentYouTubeTrack() {
+  if (!isInternetOnline || !ytReady || !ytPlayer || disc < 0) return;
+  const trackData = DISCS[disc].t[trk];
+  const vid = trackData[2];
+  if (!vid) return;
+  expectedVideoId = vid;
+  ytPlayer.loadVideoById({ videoId: vid, startSeconds: 0 });
+  ytPlayer.setVolume(vol);
+}
+
+// Guardián Anti-Anuncios y Sincronizador de Tiempo Real (cada 250ms)
+setInterval(() => {
+  if (disc < 0 || !playing) return;
+
+  if (isInternetOnline && ytReady && ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
+    try {
+      const vData = ytPlayer.getVideoData ? ytPlayer.getVideoData() : null;
+      // Si YouTube inyecta un video de anuncio distinto al ID solicitado, lo saltamos de inmediato
+      if (vData && vData.video_id && expectedVideoId && vData.video_id !== expectedVideoId) {
+        console.log('[AdGuard] Saltando anuncio detectado:', vData.video_id);
+        const adDur = ytPlayer.getDuration();
+        if (adDur > 0) ytPlayer.seekTo(adDur, true);
+        ytPlayer.loadVideoById(expectedVideoId);
+        return;
+      }
+
+      const cur = ytPlayer.getCurrentTime();
+      if (cur > 0) pos = cur;
+    } catch (err) {}
+  } else {
+    // Fallback Offline: avance por reloj interno
+    pos += 0.25;
+    if (pos >= dur()) {
+      pos = 0;
+      if (!rep) step(1);
+    }
+  }
+  paintTime();
+}, 250);
+
+const dur = () => {
+  if (isInternetOnline && ytReady && ytPlayer && typeof ytPlayer.getDuration === 'function') {
+    const d = ytPlayer.getDuration();
+    if (d && d > 0) return d;
+  }
+  return (disc >= 0 && DISCS[disc]) ? DISCS[disc].t[trk][1] : 180;
+};
+
+// =========================================================================
+// 5. INTERFAZ HOLOGRÁFICA Y CONTROLES
+// =========================================================================
+const DIAS = ['DOM','LUN','MAR','MIE','JUE','VIE','SAB'];
+const MES  = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+function tick() {
+  const d = new Date();
+  $('clock').textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+  $('sbar').style.width = ((d.getSeconds() + d.getMilliseconds() / 1000) / 60 * 100) + '%';
+  $('date').textContent = DIAS[d.getDay()] + ' ' + pad(d.getDate()) + ' ' + MES[d.getMonth()];
+}
+setInterval(tick, 250);
+tick();
+
+/* Vúmetro reactivo */
+const N = 28, vis = $('vis'), bars = [], lv = new Array(N).fill(0);
+for (let i = 0; i < N; i++) {
+  const b = document.createElement('i');
+  vis.appendChild(b);
+  bars.push(b);
+}
+let lastF = 0;
+function frame(t) {
+  requestAnimationFrame(frame);
+  if (t - lastF < 36 || disc < 0) return;
+  lastF = t;
+  const beat = .55 + .45 * Math.abs(Math.sin(t / 1000 * Math.PI * 1.9)), H = vis.clientHeight;
+  for (let i = 0; i < N; i++) {
+    const env = 1 - Math.abs(i - N / 2) / (N * .75);
+    const tgt = playing ? (.18 + .82 * Math.random()) * env * beat : 0;
+    lv[i] += (tgt - lv[i]) * (tgt > lv[i] ? .55 : .18);
+    bars[i].style.height = Math.max(2, Math.round(lv[i] * H)) + 'px';
+    bars[i].classList.toggle('peak', lv[i] > 0.68);
+  }
+}
+requestAnimationFrame(frame);
+
+function setPlay(p) {
+  playing = p;
+  $('pl').classList.toggle('play', p);
+  if (ytReady && ytPlayer && typeof ytPlayer.playVideo === 'function') {
+    if (p) ytPlayer.playVideo();
+    else ytPlayer.pauseVideo();
+  }
+}
+function paintTime() {
+  const d = dur(), p = Math.min(pos / d, 1) * 100;
+  $('tc').textContent = mmss(pos);
+  $('td').textContent = mmss(d);
+  $('fill').style.width = p + '%';
+  $('head').style.left = p + '%';
+}
+function paintMeta() {
+  const t = DISCS[disc].t[trk];
+  $('dnum').textContent = 'DISC 0' + (disc + 1);
+  $('ttl').textContent = t[0];
+  $('art2').textContent = DISCS[disc].a;
+  $('art').innerHTML = ART[disc];
+  paintTime();
+}
+function swap(fn) {
+  const pl = $('pl');
+  pl.classList.add('swap');
+  setTimeout(() => { fn(); pl.classList.remove('swap'); }, 200);
+}
+function load(i) {
+  if (i < 0 || i >= DISCS.length) return;
+  if (i === disc) return;
+  const first = disc < 0;
+  disc = i; trk = 0; pos = 0;
+  if (first) {
+    paintMeta();
+    $('sb').classList.remove('on');
+    $('pl').classList.add('on');
+  } else {
+    swap(paintMeta);
+  }
+  setPlay(true);
+  playCurrentYouTubeTrack();
+}
+function eject() {
+  if (disc < 0) return;
+  setPlay(false);
+  if (ytReady && ytPlayer && typeof ytPlayer.stopVideo === 'function') {
+    ytPlayer.stopVideo();
+  }
+  disc = -1; pos = 0;
+  $('pl').classList.remove('on');
+  $('sb').classList.add('on');
+}
+function toggle() { 
+  if (disc >= 0) {
+    setPlay(!playing);
+  } else {
+    load(0);
+  }
+}
+function step(d) {
+  if (disc < 0) return;
+  const n = DISCS[disc].t.length;
+  if (shuf && n > 1) trk = (trk + 1 + Math.floor(Math.random() * (n - 1))) % n;
+  else trk = (trk + d + n) % n;
+  pos = 0;
+  swap(() => {
+    paintMeta();
+    playCurrentYouTubeTrack();
+  });
+}
+function changeVol(delta) {
+  vol = Math.max(0, Math.min(100, vol + delta));
+  if (ytReady && ytPlayer && typeof ytPlayer.setVolume === 'function') {
+    ytPlayer.setVolume(vol);
+  }
+  // Si corre dentro de Fully Kiosk, también ajusta el volumen multimedia de Android
+  if (window.fully && typeof window.fully.setAudioVolume === 'function') {
+    try { window.fully.setAudioVolume(vol, 3); } catch(e) {}
+  }
+  showVol();
+}
+function showVol() {
+  const on = Math.round(vol / 5);
+  let s = '';
+  for (let i = 0; i < 20; i++) s += i < on ? '|' : '<u>|</u>';
+  $('vbars').innerHTML = s;
+  $('vnum').textContent = pad(vol) + '%';
+  $('vol').classList.add('show');
+  clearTimeout(volT);
+  volT = setTimeout(() => $('vol').classList.remove('show'), 2000);
+}
+
+$('bPP').onclick = toggle;
+$('bPrev').onclick = () => step(-1);
+$('bNext').onclick = () => step(1);
+$('bShuf').onclick = () => { shuf = !shuf; $('bShuf').classList.toggle('act', shuf); };
+$('bRep').onclick  = () => { rep = !rep; $('bRep').classList.toggle('act', rep); };
+
+addEventListener('keydown', e => {
+  const k = e.key;
+  if (k >= '1' && k <= '5') load(+k - 1);
+  else if (k === ' ') { e.preventDefault(); toggle(); }
+  else if (k === 'ArrowUp') { e.preventDefault(); changeVol(+5); }
+  else if (k === 'ArrowDown') { e.preventDefault(); changeVol(-5); }
+  else if (k === 'ArrowRight') step(1);
+  else if (k === 'ArrowLeft') step(-1);
+  else if (k === '0' || k === 'Escape') eject();
+  else if (k === 'm' || k === 'M') $('stage').classList.toggle('mirror');
+  else if (k === 'q' || k === 'Q') $('netPillSb').click();
+});
+
+// =========================================================================
+// 6. MOTOR WEBSOCKET + AUTO-CONFIGURACIÓN WIFI CON FULLY KIOSK
+// =========================================================================
+let ws = null;
+let reconnectTimer = null;
+let hostCandidates = [];
+let candidateIdx = 0;
+
+function buildHostCandidates() {
+  const stored = localStorage.getItem('esp32_ip');
+  const list = [];
+  if (stored) list.push(stored);
+  if (!list.includes('192.168.4.1')) list.push('192.168.4.1'); // IP fija del AP HoloJukebox-Setup
+  if (!list.includes('holojukebox.local')) list.push('holojukebox.local');
+  hostCandidates = list;
+}
+
+function updateWsUi(status, isOnline) {
+  const pills = [$('wsPillSb'), $('wsPillPl')];
+  pills.forEach(p => {
+    p.classList.toggle('online', isOnline);
+    p.querySelector('.ws-lbl').textContent = isOnline ? 'ESP OK' : status;
+  });
+  $('wsStatusTxt').textContent = status;
+  $('wsStatusTxt').style.color = isOnline ? "var(--ok)" : (status === "BUSCANDO" ? "var(--ac)" : "var(--err)");
+}
+
+// Aplica nuevas credenciales Wi-Fi en el celular mediante Fully Kiosk Browser JS Interface
+function applyWifiInFullyKiosk(ssid, pass, newEspIp) {
+  console.log(`[WIFI_CFG] Recibido nuevo Wi-Fi: SSID=${ssid}, ESP_IP=${newEspIp}`);
+  if (newEspIp && newEspIp !== '0.0.0.0') {
+    localStorage.setItem('esp32_ip', newEspIp);
+    $('ipInput').value = newEspIp;
+  }
+
+  if (window.fully) {
+    try {
+      // Configura la red en Fully Kiosk Browser y fuerza reconexión Wi-Fi
+      window.fully.setStringSetting("wifiSSID", ssid);
+      window.fully.setStringSetting("wifiKey", pass);
+      if (typeof window.fully.enableWifi === 'function') window.fully.enableWifi();
+      if (typeof window.fully.showToast === 'function') {
+        window.fully.showToast("Conectando a Wi-Fi: " + ssid);
+      }
+    } catch (e) {
+      console.warn("Error aplicando Wi-Fi en Fully Kiosk:", e);
+    }
+  }
+}
+
+function handleCommand(cmd) {
+  cmd = cmd.trim();
+  $('lastCmdTxt').textContent = cmd;
+  console.log("[WS RX]:", cmd);
+
+  if (cmd === "ENC:UP") {
+    changeVol(+5);
+  } else if (cmd === "ENC:DOWN") {
+    changeVol(-5);
+  } else if (cmd === "BTN:CLICK") {
+    toggle();
+  } else if (cmd.startsWith("TAG:")) {
+    const val = cmd.substring(4).trim();
+    if (val === "EJECT") {
+      eject();
+    } else {
+      const idx = parseInt(val, 10);
+      if (!isNaN(idx) && idx >= 1 && idx <= 5) {
+        load(idx - 1);
+      } else {
+        load(0);
+      }
+    }
+  } else if (cmd.startsWith("WIFI_CFG:")) {
+    // Formato enviado por la ESP32 al guardar Wi-Fi en el portal: WIFI_CFG:SSID|PASS|NEW_IP
+    const parts = cmd.substring(9).split('|');
+    if (parts.length >= 2) {
+      applyWifiInFullyKiosk(parts[0], parts[1], parts[2] || '');
+    }
+  } else if (cmd.startsWith("ESP_IP:")) {
+    const newIp = cmd.substring(7).trim();
+    if (newIp) {
+      localStorage.setItem('esp32_ip', newIp);
+      $('ipInput').value = newIp;
+    }
+  }
+}
+
+function initWebSocket(manualHost) {
+  buildHostCandidates();
+  const ip = manualHost || hostCandidates[candidateIdx % hostCandidates.length] || "192.168.4.1";
+  $('ipInput').value = ip;
+
+  const wsUrl = `ws://${ip}:81/`;
+  console.log("Intentando WebSocket a:", wsUrl);
+  updateWsUi("BUSCANDO", false);
+
+  if (ws) {
+    try { ws.onclose = null; ws.close(); } catch(e) {}
+  }
+
+  try {
+    ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+      console.log("¡WebSocket CONECTADO a", wsUrl);
+      localStorage.setItem('esp32_ip', ip);
+      updateWsUi("ONLINE", true);
+      clearTimeout(reconnectTimer);
+    };
+
+    ws.onmessage = (event) => {
+      const lines = event.data.split('\n');
+      for (const line of lines) {
+        if (line.trim().length > 0) handleCommand(line);
+      }
+    };
+
+    ws.onerror = () => {};
+
+    ws.onclose = () => {
+      updateWsUi("REINTENTANDO", false);
+      candidateIdx++;
+      clearTimeout(reconnectTimer);
+      reconnectTimer = setTimeout(() => initWebSocket(), 2200);
+    };
+  } catch (err) {
+    candidateIdx++;
+    clearTimeout(reconnectTimer);
+    reconnectTimer = setTimeout(() => initWebSocket(), 2500);
+  }
+}
+
+$('ipInput').addEventListener('change', () => {
+  const customIp = $('ipInput').value.trim();
+  if (customIp) {
+    localStorage.setItem('esp32_ip', customIp);
+    initWebSocket(customIp);
+  }
+});
+$('wsPillSb').onclick = () => initWebSocket($('ipInput').value.trim());
+$('wsPillPl').onclick = () => initWebSocket($('ipInput').value.trim());
+
+window.addEventListener('load', () => {
+  checkInternetConnection();
+  if (navigator.onLine) loadYouTubeApi();
+  initWebSocket();
+});
+</script>
+</body>
+</html>
+
+)rawliteral";
+
