@@ -122,15 +122,20 @@ void IRAM_ATTR isrEncoder() {
   }
 }
 
-// ================= ENVÍO WEBSOCKET Y MONITOR WEB =================
+// ================= ENVÍO WEBSOCKET Y SERIAL USB =================
 void broadcastCommand(String cmd) {
-  Serial.print("[WS TX] ");
+  // 1. Envío directo por USB Serial al celular (cable USB OTG)
   Serial.print(cmd);
+  if (!cmd.endsWith("\n")) {
+    Serial.println();
+  }
+
+  // 2. Envío por WebSocket (Wi-Fi)
   webSocket.broadcastTXT(cmd);
 }
 
 void logWireless(String msg) {
-  Serial.println(msg);
+  Serial.println("[LOG] " + msg);
   String pkt = "LOG:" + msg + "\n";
   webSocket.broadcastTXT(pkt);
 }

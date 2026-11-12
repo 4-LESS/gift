@@ -2169,9 +2169,74 @@ function initWebSocket() {
   }
 }
 
+// =========================================================================
+// 8.1 COMUNICACIÓN DIRECTA USB SERIAL (WEB SERIAL API + FULLY BROADCAST)
+// =========================================================================
+function initFullyBroadcastReceiver() {
+  if (window.fully && typeof window.fully.registerBroadcastReceiver === 'function') {
+    try {
+      window.fully.registerBroadcastReceiver("com.holodeck.COMMAND");
+      window.fully.bind('broadcastReceived', 'onHoloBroadcast("$action", "$extras");');
+    } catch (e) {}
+  }
+}
+
+window.onHoloBroadcast = function(action, extras) {
+  if (!extras) return;
+  try {
+    const p = JSON.parse(extras);
+    if (p.cmd) handleCommand(p.cmd);
+    else if (p.extra_cmd) handleCommand(p.extra_cmd);
+  } catch (e) {
+    handleCommand(extras);
+  }
+};
+
+let serialPort = null;
+let serialReader = null;
+
+async function initWebSerial() {
+  if (!('serial' in navigator)) return;
+  try {
+    const ports = await navigator.serial.getPorts();
+    if (ports && ports.length > 0) {
+      connectToSerialPort(ports[0]);
+    }
+    navigator.serial.addEventListener('connect', (e) => {
+      connectToSerialPort(e.target);
+    });
+  } catch (e) {}
+}
+
+async function connectToSerialPort(port) {
+  try {
+    serialPort = port;
+    await serialPort.open({ baudRate: 115200 });
+    const textDecoder = new TextDecoderStream();
+    serialPort.readable.pipeTo(textDecoder.writable);
+    serialReader = textDecoder.readable.getReader();
+    let buffer = "";
+    while (true) {
+      const { value, done } = await serialReader.read();
+      if (done) break;
+      if (value) {
+        buffer += value;
+        const lines = buffer.split('\n');
+        buffer = lines.pop();
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (trimmed) handleCommand(trimmed);
+        }
+      }
+    }
+  } catch (e) {}
+}
+
 window.addEventListener('load', () => {
   checkInternetConnection();
   if (navigator.onLine) loadYouTubeApi();
+  initFullyBroadcastReceiver();
+  initWebSerial();
   initWebSocket();
 });
 </script>
