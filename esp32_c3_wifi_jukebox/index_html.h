@@ -719,7 +719,7 @@ html, body {
           <!-- Espacio para Mensaje Bonito del Día -->
           <div class="daily-msg show" id="dailyMsgBox">
             <span class="heart">♥</span>
-            <span class="msg-text" id="dailyMsgTxt">QUE TENGAS UN DIA HERMOSO MI AMOR</span>
+            <span class="msg-text" id="dailyMsgTxt">Feliz cumple mi vida muack muack &lt;3</span>
             <span class="heart">♥</span>
           </div>
         </div>
