@@ -1,5 +1,7 @@
 # Canal de YouTube Music vinculado:
 https://www.youtube.com/@aless_oreo
 
-# Playlists directas:
-https://music.youtube.com/playlist?list=PLxclEHUe-orfaFetoCq9KsBRZD5-LDLzb
+# Álbumes de YouTube Music (solo pega los links aquí, uno por línea):
+https://music.youtube.com/playlist?list=OLAK5uy_ktsNq_asQthl1xOm_tXwpD9tZa5413YFc
+https://music.youtube.com/playlist?list=OLAK5uy_mtnHS42OzbtQ7iSxEDnTcbrwfEAW85ano
+https://music.youtube.com/playlist?list=OLAK5uy_nAF_sXI8U1xc8DjaTMUcf7v1BTxYfCQTQ

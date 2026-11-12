@@ -931,11 +931,25 @@ setInterval(checkInternetConnection, 10000);
 // =========================================================================
 const DEFAULT_DISCS = [
   {
-    title: "MI PLAYLIST",
-    a: "ALESS OREO",
-    listId: "PLxclEHUe-orfaFetoCq9KsBRZD5-LDLzb",
-    cover: "",
-    t: [["MI PLAYLIST", 240, ""]]
+    title: "THE LIFE OF A SHOWGIRL",
+    a: "TAYLOR SWIFT",
+    listId: "OLAK5uy_ktsNq_asQthl1xOm_tXwpD9tZa5413YFc",
+    cover: "https://i.ytimg.com/vi/7nVctvQVz0U/hqdefault.jpg",
+    t: [["THE LIFE OF A SHOWGIRL", 240, ""]]
+  },
+  {
+    title: "1989 (DELUXE)",
+    a: "TAYLOR SWIFT",
+    listId: "OLAK5uy_mtnHS42OzbtQ7iSxEDnTcbrwfEAW85ano",
+    cover: "https://i.ytimg.com/vi/RfjPHmgBPF0/hqdefault.jpg",
+    t: [["1989 (DELUXE)", 240, ""]]
+  },
+  {
+    title: "LOVER",
+    a: "TAYLOR SWIFT",
+    listId: "OLAK5uy_nAF_sXI8U1xc8DjaTMUcf7v1BTxYfCQTQ",
+    cover: "https://i.ytimg.com/vi/gLLE3B75UJw/hqdefault.jpg",
+    t: [["LOVER", 240, ""]]
   }
 ];
 
@@ -979,6 +993,18 @@ async function resolveYouTubeOembed(rawUrlOrId, customArtist) {
       }
       if (data.thumbnail_url) {
         cover = data.thumbnail_url;
+      }
+      if (!artist && cover) {
+        const vm = cover.match(/\/vi\/([a-zA-Z0-9_-]{11})\//);
+        if (vm) {
+          try {
+            const vRes = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent('https://www.youtube.com/watch?v=' + vm[1])}&format=json`);
+            if (vRes.ok) {
+              const vData = await vRes.json();
+              if (vData.author_name) artist = cleanArtistName(vData.author_name);
+            }
+          } catch (e2) {}
+        }
       }
     }
   } catch (e) {}

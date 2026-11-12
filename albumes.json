@@ -1,5 +1,20 @@
 [
   {
-    "url": "https://www.youtube.com/playlist?list=PLxclEHUe-orfaFetoCq9KsBRZD5-LDLzb"
+    "titulo": "THE LIFE OF A SHOWGIRL",
+    "artista": "TAYLOR SWIFT",
+    "url": "https://www.youtube.com/playlist?list=OLAK5uy_ktsNq_asQthl1xOm_tXwpD9tZa5413YFc",
+    "cover": "https://i.ytimg.com/vi/7nVctvQVz0U/hqdefault.jpg"
+  },
+  {
+    "titulo": "1989 (DELUXE)",
+    "artista": "TAYLOR SWIFT",
+    "url": "https://www.youtube.com/playlist?list=OLAK5uy_mtnHS42OzbtQ7iSxEDnTcbrwfEAW85ano",
+    "cover": "https://i.ytimg.com/vi/RfjPHmgBPF0/hqdefault.jpg"
+  },
+  {
+    "titulo": "LOVER",
+    "artista": "TAYLOR SWIFT",
+    "url": "https://www.youtube.com/playlist?list=OLAK5uy_nAF_sXI8U1xc8DjaTMUcf7v1BTxYfCQTQ",
+    "cover": "https://i.ytimg.com/vi/gLLE3B75UJw/hqdefault.jpg"
   }
 ]

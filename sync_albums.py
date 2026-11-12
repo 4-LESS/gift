@@ -64,14 +64,27 @@ def resolve_playlist_oembed(playlist_id: str) -> dict:
     try:
         raw = fetch_text(oembed_url)
         data = json.loads(raw)
+        cover = data.get("thumbnail_url", "")
+        artist = clean_artist(data.get("author_name", ""))
+        # En álbumes OLAK5uy_, author_name viene vacío en el oembed de playlist;
+        # lo obtenemos del primer video usando el ID que viene en thumbnail_url
+        if not artist and cover:
+            m_vid = re.search(r"/vi/([a-zA-Z0-9_-]{11})/", cover)
+            if m_vid:
+                vid_url = f"https://www.youtube.com/watch?v={m_vid.group(1)}"
+                vid_oembed = f"https://www.youtube.com/oembed?url={urllib.parse.quote(vid_url, safe='')}&format=json"
+                try:
+                    vdata = json.loads(fetch_text(vid_oembed))
+                    artist = clean_artist(vdata.get("author_name", ""))
+                except Exception:
+                    pass
         return {
             "titulo": clean_title(data.get("title", "")),
-            "artista": clean_artist(data.get("author_name", "")),
+            "artista": artist,
             "url": pl_url,
-            "cover": data.get("thumbnail_url", ""),
+            "cover": cover,
         }
     except Exception:
-        # Si aún está en Privada (403), guarda la URL para que el navegador la resuelva apenas pase a Pública/No listada
         return {"url": pl_url}
 
 
