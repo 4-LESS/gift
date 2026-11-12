@@ -1,0 +1,28 @@
+name: Sync YouTube Playlists & Albums
+
+on:
+  push:
+    paths:
+      - 'canal_youtube.txt'
+      - 'sync_albums.py'
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run YouTube Playlist Sync
+        run: python3 sync_albums.py
+      - name: Commit updated albumes.json
+        run: |
+          git config user.name "HoloDeck AutoSync"
+          git config user.email "actions@github.com"
+          git add albumes.json
+          git diff --staged --quiet || git commit -m "chore(albums): auto-sync playlists from YouTube"
+          git push

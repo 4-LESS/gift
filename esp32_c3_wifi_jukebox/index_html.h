@@ -650,133 +650,6 @@ html, body {
   border-radius: 50%;
   display: inline-block;
 }
-.sys-menu-ftr {
-  border-top: 1px dashed var(--dim);
-  padding-top: 8px;
-  margin-top: 8px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 9px;
-  letter-spacing: 0.12em;
-  color: rgba(255,255,255,0.35);
-}
-
-/* GESTOR DE ÁLBUMES DE YOUTUBE MUSIC (MODAL PARA PEGAR LINKS / EDITAR BIBLIOTECA) */
-.alb-mgr-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 95;
-  background: rgba(0, 0, 0, 0.88);
-  backdrop-filter: blur(4px);
-  display: grid;
-  place-items: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
-  padding: 16px;
-}
-.alb-mgr-backdrop.open {
-  opacity: 1;
-  pointer-events: auto;
-}
-.alb-mgr-box {
-  width: min(92vw, 500px);
-  max-height: 88vh;
-  background: #050505;
-  border: 1.5px solid rgba(255, 255, 255, 0.35);
-  border-radius: 12px;
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  overflow: hidden;
-}
-.alb-mgr-hdr {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px dashed var(--dim);
-  padding-bottom: 10px;
-  font-size: 11px;
-  color: var(--ac);
-  letter-spacing: 0.15em;
-}
-.alb-mgr-form {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.alb-mgr-row {
-  display: flex;
-  gap: 8px;
-}
-.alb-mgr-inp {
-  flex: 1;
-  background: #0d0d0d;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 6px;
-  padding: 9px 10px;
-  color: #fff;
-  font-family: inherit;
-  font-size: 10px;
-  outline: none;
-}
-.alb-mgr-inp:focus {
-  border-color: var(--ac);
-}
-.alb-mgr-btn {
-  background: var(--ac);
-  color: #000;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-family: inherit;
-  font-size: 10px;
-  cursor: pointer;
-  letter-spacing: 0.08em;
-  white-space: nowrap;
-}
-.alb-mgr-btn.sec-btn {
-  background: transparent;
-  color: var(--fg);
-  border: 1px solid rgba(255,255,255,0.28);
-}
-.alb-mgr-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  overflow-y: auto;
-  max-height: 220px;
-  padding-right: 4px;
-}
-.alb-mgr-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 6px 8px;
-  border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 7px;
-  background: #0a0a0a;
-}
-.alb-mgr-item img {
-  width: 28px;
-  height: 28px;
-  border-radius: 5px;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-.alb-mgr-del {
-  background: transparent;
-  border: 1px solid rgba(255,80,80,0.4);
-  color: #ff6666;
-  border-radius: 5px;
-  padding: 4px 7px;
-  font-family: inherit;
-  font-size: 9px;
-  cursor: pointer;
-}
-
 /* PANTALLA APAGADA (MODO SLEEP SILENCIOSO) */
 .sleep-screen {
   position: fixed;
@@ -807,54 +680,15 @@ html, body {
 </head>
 <body>
 
-<!-- Notificación flotante de volumen (solo al girar la perilla) -->
+<!-- Barra flotante de volumen (solo al girar el encoder) -->
 <div class="vol-toast" id="vol">
-  <span>VOL</span>
   <span class="vol-bars" id="vbars"></span>
-  <span id="vnum">70%</span>
 </div>
 
-<!-- Cajón Lateral Izquierdo Oculto: Álbumes + Opciones (Se abre manteniendo 1.8s el encoder) -->
+<!-- Cajón Lateral Izquierdo Oculto: Álbumes + Opciones (Se abre manteniendo presionado el encoder) -->
 <div class="sys-menu-backdrop" id="sysMenu">
   <div class="sys-menu-box">
-    <div>
-      <div class="sys-menu-hdr">
-        <span id="sysMenuTitle">BIBLIOTECA</span>
-        <span style="color:var(--mid);font-size:9px" id="sysMenuSub">[GIRO / CLIC]</span>
-      </div>
-      <div class="sys-menu-list" id="sysMenuList"></div>
-    </div>
-    <div class="sys-menu-ftr">
-      <span>AUTO-OCULTA</span>
-      <span>HOLD: CERRAR</span>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Gestor de Álbumes de YouTube / YouTube Music -->
-<div class="alb-mgr-backdrop" id="albMgrModal">
-  <div class="alb-mgr-box">
-    <div class="alb-mgr-hdr">
-      <span>MIS ÁLBUMES DE YOUTUBE MUSIC</span>
-      <button class="alb-mgr-btn sec-btn" onclick="closeAlbumManager()">CERRAR [ESC]</button>
-    </div>
-    <div style="font-size:9px;color:var(--mid);line-height:1.5">
-      PEGA EL LINK DE CUALQUIER ÁLBUM O PLAYLIST DE YOUTUBE MUSIC (<span style="color:var(--fg)">music.youtube.com/playlist?list=...</span>). LA CARÁTULA Y EL TÍTULO SE DETECTAN AUTOMÁTICAMENTE:
-    </div>
-    <div class="alb-mgr-form">
-      <div class="alb-mgr-row">
-        <input class="alb-mgr-inp" id="albUrlInp" placeholder="https://music.youtube.com/playlist?list=OLAK5uy_... o PL..." />
-      </div>
-      <div class="alb-mgr-row">
-        <input class="alb-mgr-inp" id="albArtInp" placeholder="ARTISTA (OPCIONAL - SE DETECTA SOLO)" />
-        <button class="alb-mgr-btn" id="albAddBtn" onclick="addAlbumFromInput()">+ AÑADIR ÁLBUM</button>
-      </div>
-    </div>
-    <div class="alb-mgr-list" id="albMgrList"></div>
-    <div style="display:flex;justify-content:space-between;gap:8px;border-top:1px dashed var(--dim);padding-top:10px">
-      <button class="alb-mgr-btn sec-btn" onclick="clearAllAlbums()">VACIAR LISTA</button>
-      <button class="alb-mgr-btn sec-btn" id="copyJsonBtn" onclick="copyAlbumsJson()">COPIAR albumes.json</button>
-    </div>
+    <div class="sys-menu-list" id="sysMenuList"></div>
   </div>
 </div>
 
@@ -902,9 +736,7 @@ html, body {
               </svg>
             </div>
             <div class="qr-meta">
-              <div class="qr-title">SIN INTERNET</div>
-              <div class="qr-sub">1. ESCANEA EL QR<br>2. ENTRA A 192.168.4.1</div>
-              <div class="qr-ver" id="offlineVerTxt">VER 2.4 // LOCAL</div>
+              <div class="qr-title">192.168.4.1</div>
             </div>
           </div>
         </div>
@@ -1007,20 +839,8 @@ if ('serviceWorker' in navigator) {
 }
 
 function recordOnlineSync() {
-  const now = new Date();
-  const MES = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
-  const stamp = `${pad(now.getDate())} ${MES[now.getMonth()]}`;
-  localStorage.setItem('holo_last_sync', stamp);
   localStorage.setItem('holo_last_ver', APP_VERSION);
-  updateOfflineBadge();
 }
-
-function updateOfflineBadge() {
-  const sync = localStorage.getItem('holo_last_sync') || 'LOCAL';
-  const ver  = localStorage.getItem('holo_last_ver') || APP_VERSION;
-  $('offlineVerTxt').textContent = `ULT. VER: ${ver} (${sync})`;
-}
-updateOfflineBadge();
 
 // =========================================================================
 // 2. MENSAJE BONITO DEL DÍA (CON FALLBACK A RELOJ LIMPIO SI NO ES DE HOY)
@@ -1212,8 +1032,6 @@ async function resolveYouTubeOembed(rawUrlOrId, customArtist) {
 }
 
 async function syncAlbumsFromRepoJson() {
-  // Si el usuario ya personalizó sus álbumes localmente en este navegador, respetamos su lista local
-  if (localStorage.getItem('holo_user_albums_v2')) return;
   try {
     const res = await fetch('albumes.json?t=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) return;
@@ -1226,7 +1044,7 @@ async function syncAlbumsFromRepoJson() {
       if (item.titulo && item.cover) {
         loaded.push({
           title: item.titulo.toUpperCase(),
-          a: (item.artista || "YOUTUBE MUSIC").toUpperCase(),
+          a: (item.artista || "").toUpperCase(),
           listId: parsed.type === 'list' ? parsed.id : undefined,
           cover: item.cover,
           t: [[item.titulo.toUpperCase(), 240, parsed.type === 'video' ? parsed.id : ""]]
@@ -1240,12 +1058,16 @@ async function syncAlbumsFromRepoJson() {
       }
     }
     if (loaded.length > 0) {
-      DISCS = loaded;
+      // Añadir también los que se hayan guardado con 1 clic desde el encoder
+      let savedEncoder = [];
+      try { savedEncoder = JSON.parse(localStorage.getItem('holo_encoder_saved') || '[]'); } catch(e) {}
+      DISCS = [...loaded, ...savedEncoder];
       if (isMenuOpen) renderSysMenu();
     }
   } catch (e) {}
 }
 setTimeout(syncAlbumsFromRepoJson, 300);
+setInterval(syncAlbumsFromRepoJson, 60000);
 
 // =========================================================================
 // 5. MOTOR DE LYRICS SINCRONIZADOS (LRCLIB API + CACHÉ LOCAL)
@@ -1273,7 +1095,7 @@ function parseLrc(lrcText) {
 async function fetchLyricsForTrack(artist, title) {
   currentLyrics = [];
   lastLyricIdx = -1;
-  setLyricLines("", "BUSCANDO LETRA...", "");
+  setLyricLines("", "♪", "");
 
   const cacheKey = `lyr_${artist}_${title}`.toLowerCase();
   const cached = localStorage.getItem(cacheKey);
@@ -1281,7 +1103,7 @@ async function fetchLyricsForTrack(artist, title) {
     try {
       const parsed = JSON.parse(cached);
       if (parsed.instrumental) {
-        setLyricLines("", "[ INSTRUMENTAL ]", "");
+        setLyricLines("", "♪", "");
         return;
       }
       if (parsed.lines && parsed.lines.length > 0) {
@@ -1309,7 +1131,7 @@ async function fetchLyricsForTrack(artist, title) {
     const best = list.find(item => item.syncedLyrics) || list[0];
     if (best.instrumental) {
       localStorage.setItem(cacheKey, JSON.stringify({ instrumental: true }));
-      setLyricLines("", "[ INSTRUMENTAL ]", "");
+      setLyricLines("", "♪", "");
       return;
     }
 
@@ -1366,7 +1188,7 @@ let ytApiLoaded = false;
 let expectedVideoId = null;
 
 function cleanArtistName(rawAuthor) {
-  if (!rawAuthor) return "YOUTUBE MUSIC";
+  if (!rawAuthor) return "";
   return rawAuthor
     .replace(/\s*-\s*Topic$/i, '')
     .replace(/VEVO$/i, '')
@@ -1376,7 +1198,7 @@ function cleanArtistName(rawAuthor) {
 }
 
 function cleanTrackTitle(rawTitle, artist) {
-  if (!rawTitle) return "CARGANDO...";
+  if (!rawTitle) return "—";
   let t = rawTitle
     .replace(/\(Official.*?\)/gi, '')
     .replace(/\[Official.*?\]/gi, '')
@@ -1649,8 +1471,8 @@ function paintMeta() {
   if (!dObj) return;
 
   if (dObj.listId) {
-    $('ttl').textContent = dObj.title || dObj.a || "CARGANDO ÁLBUM...";
-    $('art2').textContent = dObj.a || "YOUTUBE MUSIC";
+    $('ttl').textContent = dObj.title || dObj.a || "—";
+    $('art2').textContent = dObj.a || "";
     const img = $('albumImg');
     const fb  = $('albumFallback');
     if (dObj.cover && isInternetOnline) {
@@ -1661,7 +1483,7 @@ function paintMeta() {
       img.style.display = 'none';
       fb.style.display = 'grid';
     }
-    setLyricLines("", "CARGANDO ÁLBUM...", "");
+    setLyricLines("", "♪", "");
     return;
   }
 
@@ -1762,7 +1584,6 @@ function showVol() {
   let s = '';
   for (let i = 0; i < 20; i++) s += i < on ? '|' : '<u>|</u>';
   $('vbars').innerHTML = s;
-  $('vnum').textContent = pad(vol) + '%';
   $('vol').classList.add('show');
   clearTimeout(volT);
   volT = setTimeout(() => $('vol').classList.remove('show'), 1800);
@@ -1806,14 +1627,36 @@ function applySavedVisualSettings() {
 }
 applySavedVisualSettings();
 
+function saveCurrentPlayingTrackFromEncoder() {
+  if (!lastDynamicVid) return;
+  const title = $('ttl').textContent || "FAVORITO";
+  const artist = $('art2').textContent || "";
+  const cover = `https://i.ytimg.com/vi/${lastDynamicVid}/hqdefault.jpg`;
+  const newEntry = {
+    title,
+    a: artist,
+    cover,
+    fromEncoder: true,
+    t: [[title, 240, lastDynamicVid]]
+  };
+  let saved = [];
+  try { saved = JSON.parse(localStorage.getItem('holo_encoder_saved') || '[]'); } catch(e) {}
+  if (!saved.some(x => x.t && x.t[0] && x.t[0][2] === lastDynamicVid)) {
+    saved.push(newEntry);
+    localStorage.setItem('holo_encoder_saved', JSON.stringify(saved));
+    DISCS.push(newEntry);
+  }
+  closeSysMenu();
+}
+
 function getActiveMenuItems() {
   if (menuPage === 'root') {
     const albumItems = DISCS.map((d, idx) => {
-      const firstTrack = (d.t && d.t[0]) || ["ÁLBUM", 200, ""];
+      const firstTrack = (d.t && d.t[0]) || ["", 200, ""];
       const vid = firstTrack[2] || "";
       const thumbUrl = d.cover || (vid ? `https://i.ytimg.com/vi/${vid}/default.jpg` : "");
       const albumTitle = d.title || (d.listId ? d.a : (firstTrack[0] || d.a));
-      const artistSub  = d.a || "YOUTUBE MUSIC";
+      const artistSub  = d.a || "";
       return {
         isAlbum: true,
         idx,
@@ -1829,15 +1672,19 @@ function getActiveMenuItems() {
     });
 
     const sysItems = [
-      { isSep: true },
-      { label: "+ MIS ÁLBUMES YT", val: "EDITAR", run: () => { closeSysMenu(); openAlbumManager(); } },
-      { label: "⚙ OPCIONES", val: "→", run: () => { menuPage = 'options'; menuSel = 0; renderSysMenu(); } }
+      { isSep: true }
     ];
-    if (disc >= 0) {
-      sysItems.push({ label: "⌂ MODO RELOJ", val: "EJECT", run: () => { eject(); closeSysMenu(); } });
+    if (disc >= 0 && lastDynamicVid) {
+      sysItems.push({ label: "+ GUARDAR", val: "", run: () => saveCurrentPlayingTrackFromEncoder() });
     }
     sysItems.push(
-      { label: "☾ APAGAR", val: "REPOSO", run: () => enterSleepMode() }
+      { label: "OPCIONES", val: "", run: () => { menuPage = 'options'; menuSel = 0; renderSysMenu(); } }
+    );
+    if (disc >= 0) {
+      sysItems.push({ label: "RELOJ", val: "", run: () => { eject(); closeSysMenu(); } });
+    }
+    sysItems.push(
+      { label: "APAGAR", val: "", run: () => enterSleepMode() }
     );
     return [...albumItems, ...sysItems];
   }
@@ -1846,13 +1693,8 @@ function getActiveMenuItems() {
     const items = getActiveMenuItemsForRootCount();
     return [
       {
-        label: "MIS ÁLBUMES YT",
-        val: "EDITAR",
-        run: () => { closeSysMenu(); openAlbumManager(); }
-      },
-      {
-        label: "COLOR ACENTO",
-        val: ac.name,
+        label: "COLOR",
+        val: "",
         dot: ac.hex,
         run: () => {
           accentIdx = (accentIdx + 1) % ACCENT_PALETTE.length;
@@ -1863,16 +1705,16 @@ function getActiveMenuItems() {
       },
       {
         label: "PANTALLA",
-        val: "→",
+        val: "",
         run: () => { menuPage = 'screen'; menuSel = 0; renderSysMenu(); }
       },
       {
-        label: "CUENTA YT",
-        val: "→",
+        label: "CUENTA",
+        val: "",
         run: () => { menuPage = 'account'; menuSel = 0; renderSysMenu(); }
       },
       {
-        label: "← BIBLIOTECA",
+        label: "←",
         val: "",
         run: () => { menuPage = 'root'; menuSel = items; renderSysMenu(); }
       }
@@ -1901,8 +1743,8 @@ function getActiveMenuItems() {
         }
       },
       {
-        label: "QR WIFI",
-        val: forceQrToggle ? "VISIBLE" : "MOSTRAR",
+        label: "QR",
+        val: forceQrToggle ? "ON" : "OFF",
         run: () => {
           forceQrToggle = !forceQrToggle;
           $('sbLayout').classList.toggle('is-offline', !isInternetOnline || forceQrToggle);
@@ -1910,17 +1752,17 @@ function getActiveMenuItems() {
         }
       },
       {
-        label: "← ATRAS",
+        label: "←",
         val: "",
-        run: () => { menuPage = 'options'; menuSel = 2; renderSysMenu(); }
+        run: () => { menuPage = 'options'; menuSel = 1; renderSysMenu(); }
       }
     ];
   }
   if (menuPage === 'account') {
     return [
       {
-        label: "LOGIN YOUTUBE",
-        val: "ABRIR",
+        label: "SESION",
+        val: "",
         run: () => {
           closeSysMenu();
           const ytLoginUrl = "https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2F";
@@ -1931,19 +1773,14 @@ function getActiveMenuItems() {
         }
       },
       {
-        label: "MIS ÁLBUMES YT",
-        val: "EDITAR",
-        run: () => { closeSysMenu(); openAlbumManager(); }
-      },
-      {
-        label: "SYNC ROCOLA",
-        val: "RELOAD",
+        label: "RECARGAR",
+        val: "",
         run: () => { window.location.reload(); }
       },
       {
-        label: "← ATRAS",
+        label: "←",
         val: "",
-        run: () => { menuPage = 'options'; menuSel = 3; renderSysMenu(); }
+        run: () => { menuPage = 'options'; menuSel = 2; renderSysMenu(); }
       }
     ];
   }
@@ -1951,94 +1788,7 @@ function getActiveMenuItems() {
 }
 
 function getActiveMenuItemsForRootCount() {
-  return DISCS.length + 2; // Índice de "⚙ OPCIONES" en root (después de + MIS ÁLBUMES YT)
-}
-
-function saveUserAlbums() {
-  localStorage.setItem('holo_user_albums_v2', JSON.stringify(DISCS));
-}
-
-function openAlbumManager() {
-  renderAlbumManagerList();
-  $('albMgrModal').classList.add('open');
-  setTimeout(() => $('albUrlInp').focus(), 80);
-}
-
-function closeAlbumManager() {
-  $('albMgrModal').classList.remove('open');
-}
-
-function renderAlbumManagerList() {
-  if (!DISCS.length) {
-    $('albMgrList').innerHTML = `<div style="font-size:10px;color:var(--mid);text-align:center;padding:16px">SIN ÁLBUMES. PEGA UN LINK DE YOUTUBE MUSIC ARRIBA.</div>`;
-    return;
-  }
-  $('albMgrList').innerHTML = DISCS.map((d, idx) => {
-    const firstTrack = (d.t && d.t[0]) || ["ÁLBUM", 200, ""];
-    const vid = firstTrack[2] || "";
-    const thumb = d.cover || (vid ? `https://i.ytimg.com/vi/${vid}/default.jpg` : "");
-    const title = d.title || (firstTrack[0] || d.a);
-    return `
-      <div class="alb-mgr-item">
-        <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1">
-          ${thumb ? `<img src="${thumb}" alt="">` : `<div style="width:28px;height:28px;background:#181818;border-radius:5px"></div>`}
-          <div style="min-width:0;flex:1">
-            <div style="font-size:10px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${title}</div>
-            <div style="font-size:8px;color:var(--ac);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.a || 'YOUTUBE MUSIC'}</div>
-          </div>
-        </div>
-        <button class="alb-mgr-del" onclick="removeAlbumAt(${idx})">BORRAR</button>
-      </div>
-    `;
-  }).join('');
-}
-
-async function addAlbumFromInput() {
-  const rawUrl = $('albUrlInp').value.trim();
-  const rawArt = $('albArtInp').value.trim();
-  if (!rawUrl) return;
-  const btn = $('albAddBtn');
-  btn.textContent = "CARGANDO...";
-  const resolved = await resolveYouTubeOembed(rawUrl, rawArt);
-  btn.textContent = "+ AÑADIR ÁLBUM";
-  if (!resolved) {
-    btn.textContent = "LINK INVÁLIDO";
-    setTimeout(() => { btn.textContent = "+ AÑADIR ÁLBUM"; }, 1600);
-    return;
-  }
-  DISCS.push(resolved);
-  saveUserAlbums();
-  $('albUrlInp').value = "";
-  $('albArtInp').value = "";
-  renderAlbumManagerList();
-}
-
-function removeAlbumAt(idx) {
-  DISCS.splice(idx, 1);
-  saveUserAlbums();
-  renderAlbumManagerList();
-}
-
-function clearAllAlbums() {
-  DISCS = [];
-  saveUserAlbums();
-  renderAlbumManagerList();
-}
-
-function copyAlbumsJson() {
-  const exportArr = DISCS.map(d => ({
-    titulo: d.title || d.a,
-    artista: d.a || "YOUTUBE MUSIC",
-    url: d.listId
-      ? `https://www.youtube.com/playlist?list=${d.listId}`
-      : `https://www.youtube.com/watch?v=${(d.t && d.t[0] && d.t[0][2]) || ''}`,
-    cover: d.cover || ""
-  }));
-  navigator.clipboard.writeText(JSON.stringify(exportArr, null, 2)).then(() => {
-    const b = $('copyJsonBtn');
-    b.textContent = "¡COPIADO!";
-    setTimeout(() => { b.textContent = "COPIAR albumes.json"; }, 1800);
-  });
+  return DISCS.length + (disc >= 0 && lastDynamicVid ? 2 : 1);
 }
 
 let menuAutoHideTimer = null;
@@ -2052,13 +1802,6 @@ function resetMenuAutoHide() {
 }
 
 function renderSysMenu() {
-  const titles = {
-    root:    "BIBLIOTECA",
-    options: "OPCIONES",
-    screen:  "PANTALLA",
-    account: "CUENTA YT"
-  };
-  $('sysMenuTitle').textContent = titles[menuPage] || "BIBLIOTECA";
   const items = getActiveMenuItems();
   $('sysMenuList').innerHTML = items.map((it, idx) => {
     if (it.isSep) {
@@ -2189,17 +1932,6 @@ let spaceHeldTriggered = false;
 
 addEventListener('keydown', e => {
   const k = e.key;
-  if ($('albMgrModal').classList.contains('open')) {
-    if (k === 'Escape') {
-      e.preventDefault();
-      closeAlbumManager();
-    } else if (k === 'Enter' && (document.activeElement === $('albUrlInp') || document.activeElement === $('albArtInp'))) {
-      e.preventDefault();
-      addAlbumFromInput();
-    }
-    return;
-  }
-
   if (isSleeping) {
     e.preventDefault();
     wakeFromSleep();
@@ -2247,7 +1979,6 @@ addEventListener('keydown', e => {
 });
 
 addEventListener('keyup', e => {
-  if ($('albMgrModal').classList.contains('open')) return;
   if (e.key === ' ') {
     clearTimeout(spaceHoldTimer);
     if (!isMenuOpen && !spaceHeldTriggered && !isSleeping) {
