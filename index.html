@@ -1321,6 +1321,9 @@ function playCurrentYouTubeTrack() {
   if (dObj.listId) {
     expectedVideoId = null;
     lastDynamicVid = "";
+    if (typeof ytPlayer.stopVideo === 'function') {
+      try { ytPlayer.stopVideo(); } catch(e) {}
+    }
     ytPlayer.loadPlaylist({
       list: dObj.listId,
       listType: 'playlist',
@@ -1518,6 +1521,22 @@ function paintMeta() {
 
   paintTime();
   fetchLyricsForTrack(artist, title);
+}
+
+function handleNfcTag(targetDisc) {
+  if (targetDisc < 0 || targetDisc >= DISCS.length) return;
+
+  // Si ya estamos reproduciendo este mismo álbum y vuelven a introducir o pasar el tag:
+  if (disc === targetDisc && playing) {
+    step(1); // Avanza a la siguiente canción
+    return;
+  }
+
+  // Si es un álbum diferente, detiene lo anterior y carga el nuevo álbum desde el inicio
+  if (ytReady && ytPlayer && typeof ytPlayer.stopVideo === 'function') {
+    try { ytPlayer.stopVideo(); } catch(e) {}
+  }
+  load(targetDisc);
 }
 
 function load(i) {
@@ -2076,8 +2095,8 @@ function handleCommand(cmd) {
       eject();
     } else {
       const idx = parseInt(val, 10);
-      if (!isNaN(idx) && idx >= 1 && idx <= 5) load(idx - 1);
-      else load(0);
+      const targetDisc = (!isNaN(idx) && idx >= 1 && idx <= DISCS.length) ? (idx - 1) : 0;
+      handleNfcTag(targetDisc);
     }
   } else if (cmd.startsWith("WIFI_CFG:")) {
     const parts = cmd.substring(9).split('|');

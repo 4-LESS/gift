@@ -57,21 +57,35 @@ WebSocketsServer webSocket(81);
 DNSServer dnsServer;
 MFRC522 rfid(PIN_NFC_SDA, PIN_NFC_RST);
 
-// ================= TARJETAS / TAGS NFC (UIDs EN HEX) =================
-// Reemplaza estos UIDs por los que aparezcan en el Monitor Serial al acercar cada tag
-struct NfcAlbumMap {
-  const char* uid;
-  const char* tagCmd;
-};
+// ================= TARJETAS / TAGS NFC CON AUTO-MEMORIA =================
+// Guarda automáticamente cada tarjeta física que acerques en la memoria Flash
+// Slot 1 = Primer tag que acerques -> Álbum 1 (THE LIFE OF A SHOWGIRL)
+// Slot 2 = Segundo tag que acerques -> Álbum 2 (1989 DELUXE)
+// Slot 3 = Tercer tag que acerques -> Álbum 3 (LOVER)
+unsigned long lastNfcScanTime = 0;
+unsigned long nfcCooldownUntil = 0;
 
-const NfcAlbumMap NFC_CATALOG[] = {
-  { "04A1B2C3", "TAG:01\n" }, // Álbum 1: THE LIFE OF A SHOWGIRL
-  { "04D4E5F6", "TAG:02\n" }, // Álbum 2: 1989 (DELUXE)
-  { "04112233", "TAG:03\n" }  // Álbum 3: LOVER
-};
-const int NFC_CATALOG_COUNT = sizeof(NFC_CATALOG) / sizeof(NFC_CATALOG[0]);
-String lastNfcUid = "";
-unsigned long lastNfcCheck = 0;
+String getStoredTagUid(int albumIndex) {
+  prefs.begin("nfc_tags", true);
+  String key = "tag" + String(albumIndex);
+  String val = prefs.getString(key.c_str(), "");
+  prefs.end();
+  return val;
+}
+
+void storeTagUid(int albumIndex, const String& uid) {
+  prefs.begin("nfc_tags", false);
+  String key = "tag" + String(albumIndex);
+  prefs.putString(key.c_str(), uid);
+  prefs.end();
+}
+
+void resetStoredTags() {
+  prefs.begin("nfc_tags", false);
+  prefs.clear();
+  prefs.end();
+  logWireless("[NFC] ¡Memoria de tarjetas reseteada! Las proximas tarjetas se asignaran como Album 1, 2 y 3.");
+}
 
 bool apModeActive = false;
 bool releActivo = false;
@@ -144,6 +158,8 @@ void handleCharCommand(char c) {
     broadcastCommand("TAG:0" + String(c) + "\n");
   } else if (c == '0' || c == 'e') {
     broadcastCommand("TAG:EJECT\n");
+  } else if (c == 'r' || c == 'R') {
+    resetStoredTags();
   }
 }
 
@@ -289,6 +305,7 @@ void setupWebServer() {
   <button onclick="send('1')">ALBUM 1</button>
   <button onclick="send('2')">ALBUM 2</button>
   <button onclick="send('3')">ALBUM 3</button>
+  <button onclick="send('r')" style="color:#ff4444;border-color:#ff4444">RESETEAR TAGS (r)</button>
   <button onclick="document.getElementById('log').textContent=''">LIMPIAR</button>
 </div>
 <script>
@@ -474,13 +491,27 @@ void setup() {
 }
 
 void checkNfcReader() {
-  if (millis() - lastNfcCheck < 150) return;
-  lastNfcCheck = millis();
+  unsigned long now = millis();
+  if (now - lastNfcScanTime < 120) return;
+  lastNfcScanTime = now;
 
-  if (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) {
+  // Si estamos dentro del período de debounce/cooldown (2 segundos), ignorar lecturas
+  if (nfcCooldownUntil > 0 && now < nfcCooldownUntil) {
     return;
   }
 
+  // 1. ¿Hay tarjeta nueva presente?
+  if (!rfid.PICC_IsNewCardPresent()) {
+    return;
+  }
+
+  // 2. ¿Se pudo leer el número de serie (UID)?
+  if (!rfid.PICC_ReadCardSerial()) {
+    rfid.PCD_Init(); // Limpieza rápida si la lectura física falló
+    return;
+  }
+
+  // 3. Extraer UID
   String uidStr = "";
   for (byte i = 0; i < rfid.uid.size; i++) {
     if (rfid.uid.uidByte[i] < 0x10) uidStr += "0";
@@ -488,24 +519,53 @@ void checkNfcReader() {
   }
   uidStr.toUpperCase();
 
+  // Poner la tarjeta en reposo y resetear el receptor RC522 para garantizar que la próxima tarjeta sea detectada siempre
   rfid.PICC_HaltA();
   rfid.PCD_StopCrypto1();
+  rfid.PCD_Init();
+
+  if (uidStr.length() == 0) return;
+
+  // Activar debounce de 2 segundos: solo se introduce una vez y no produce saltos repetidos
+  nfcCooldownUntil = now + 2000;
 
   logWireless("[NFC] Tag detectado UID: " + uidStr);
 
-  // Buscar si el UID coincide con algún álbum configurado
-  for (int i = 0; i < NFC_CATALOG_COUNT; i++) {
-    if (uidStr.equalsIgnoreCase(NFC_CATALOG[i].uid)) {
-      broadcastCommand(NFC_CATALOG[i].tagCmd);
-      lastNfcUid = uidStr;
-      return;
+  // 4. Buscar si este UID ya está asignado a alguno de los 3 álbumes
+  int albumAssigned = 0;
+  for (int i = 1; i <= 3; i++) {
+    String stored = getStoredTagUid(i);
+    if (stored.length() > 0 && stored.equalsIgnoreCase(uidStr)) {
+      albumAssigned = i;
+      break;
     }
   }
 
-  // Si es un tag nuevo aún no registrado, rota entre los álbumes 1..3 y muestra el UID en Serial
-  static int fallbackIdx = 0;
-  fallbackIdx = (fallbackIdx % 3) + 1;
-  broadcastCommand("TAG:0" + String(fallbackIdx) + "\n");
+  // 5. Si es una tarjeta nueva aún no memorizada, se asigna al primer álbum que esté libre
+  if (albumAssigned == 0) {
+    for (int i = 1; i <= 3; i++) {
+      String stored = getStoredTagUid(i);
+      if (stored.length() == 0) {
+        storeTagUid(i, uidStr);
+        albumAssigned = i;
+        logWireless("[NFC] >> NUEVO TAG ASIGNADO: UID " + uidStr + " -> ALBUM " + String(i));
+        break;
+      }
+    }
+  }
+
+  // 6. Si ya los 3 álbumes tienen tarjetas asignadas, rota limpiamente
+  if (albumAssigned == 0) {
+    static int fallbackIdx = 0;
+    fallbackIdx = (fallbackIdx % 3) + 1;
+    albumAssigned = fallbackIdx;
+    logWireless("[NFC] Tag no registrado -> Reproduciendo Album " + String(albumAssigned));
+  } else {
+    logWireless("[NFC] Reproduciendo ALBUM " + String(albumAssigned));
+  }
+
+  // Enviar comando a la pantalla de la rocola
+  broadcastCommand("TAG:0" + String(albumAssigned) + "\n");
 }
 
 void loop() {
