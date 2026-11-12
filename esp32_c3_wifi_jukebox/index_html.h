@@ -1516,7 +1516,12 @@ function getActiveMenuItems() {
         label: "INICIAR SESION YT",
         val: "ABRIR",
         run: () => {
-          window.location.href = "https://accounts.google.com/ServiceLogin?service=youtube&continue=" + encodeURIComponent(window.location.href);
+          closeSysMenu();
+          const ytLoginUrl = "https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2F";
+          const win = window.open(ytLoginUrl, "_blank", "width=500,height=680");
+          if (!win) {
+            window.location.href = ytLoginUrl;
+          }
         }
       },
       {
