@@ -1,0 +1,26 @@
+[
+  {
+    "titulo": "RANDOM ACCESS MEMORIES",
+    "artista": "DAFT PUNK",
+    "url": "https://www.youtube.com/playlist?list=PLSbDLF8wQ3oKcstd9ybCSv2lNm_8NTYkI",
+    "cover": "https://i.ytimg.com/vi/IluRBvnYMoY/hqdefault.jpg"
+  },
+  {
+    "titulo": "PLASTIC BEACH",
+    "artista": "GORILLAZ",
+    "url": "https://www.youtube.com/playlist?list=PLxzSZG7g8c8xYzHnxKrYxJ2FobX8rd2_C",
+    "cover": "https://i.ytimg.com/vi/PSffezqR_XA/hqdefault.jpg"
+  },
+  {
+    "titulo": "AFTER HOURS",
+    "artista": "THE WEEKND",
+    "url": "https://www.youtube.com/playlist?list=PLPRWtKgY2MOu8dPE7sMxQZ07PS1mLqid9",
+    "cover": "https://i.ytimg.com/vi/JH398xAYpZA/hqdefault.jpg"
+  },
+  {
+    "titulo": "CURRENTS",
+    "artista": "TAME IMPALA",
+    "url": "https://www.youtube.com/playlist?list=PL81_CtYCym28qkVe3nVMRG7hMR5_Ky3Hf",
+    "cover": "https://i.ytimg.com/vi/10DJMW3XAZQ/hqdefault.jpg"
+  }
+]

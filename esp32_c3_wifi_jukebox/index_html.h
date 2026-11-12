@@ -560,7 +560,7 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 10px;
+  padding: 7px 10px;
   border: 1px solid transparent;
   border-radius: 8px;
   font-size: 11px;
@@ -569,6 +569,7 @@ html, body {
   cursor: pointer;
   transition: all 0.2s var(--snap);
   gap: 10px;
+  overflow: hidden;
 }
 .sys-item.active {
   color: var(--fg);
@@ -579,15 +580,26 @@ html, body {
 .sys-item .alb-thumb {
   width: 34px;
   height: 34px;
+  min-width: 34px;
+  min-height: 34px;
+  max-width: 34px;
+  max-height: 34px;
   border-radius: 7px;
-  object-fit: cover;
-  border: 1px solid rgba(255,255,255,0.2);
-  background: #161616;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.22);
+  background: #141414;
   flex-shrink: 0;
   display: grid;
   place-items: center;
   font-size: 10px;
   color: var(--fg);
+  position: relative;
+}
+.sys-item .alb-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .sys-item .alb-meta {
   flex: 1;
@@ -649,6 +661,122 @@ html, body {
   color: rgba(255,255,255,0.35);
 }
 
+/* GESTOR DE ÁLBUMES DE YOUTUBE MUSIC (MODAL PARA PEGAR LINKS / EDITAR BIBLIOTECA) */
+.alb-mgr-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  padding: 16px;
+}
+.alb-mgr-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.alb-mgr-box {
+  width: min(92vw, 500px);
+  max-height: 88vh;
+  background: #050505;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+}
+.alb-mgr-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed var(--dim);
+  padding-bottom: 10px;
+  font-size: 11px;
+  color: var(--ac);
+  letter-spacing: 0.15em;
+}
+.alb-mgr-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.alb-mgr-row {
+  display: flex;
+  gap: 8px;
+}
+.alb-mgr-inp {
+  flex: 1;
+  background: #0d0d0d;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+  padding: 9px 10px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 10px;
+  outline: none;
+}
+.alb-mgr-inp:focus {
+  border-color: var(--ac);
+}
+.alb-mgr-btn {
+  background: var(--ac);
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: 10px;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.alb-mgr-btn.sec-btn {
+  background: transparent;
+  color: var(--fg);
+  border: 1px solid rgba(255,255,255,0.28);
+}
+.alb-mgr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  max-height: 220px;
+  padding-right: 4px;
+}
+.alb-mgr-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 8px;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 7px;
+  background: #0a0a0a;
+}
+.alb-mgr-item img {
+  width: 28px;
+  height: 28px;
+  border-radius: 5px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.alb-mgr-del {
+  background: transparent;
+  border: 1px solid rgba(255,80,80,0.4);
+  color: #ff6666;
+  border-radius: 5px;
+  padding: 4px 7px;
+  font-family: inherit;
+  font-size: 9px;
+  cursor: pointer;
+}
+
 /* PANTALLA APAGADA (MODO SLEEP SILENCIOSO) */
 .sleep-screen {
   position: fixed;
@@ -699,6 +827,33 @@ html, body {
     <div class="sys-menu-ftr">
       <span>AUTO-OCULTA</span>
       <span>HOLD: CERRAR</span>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Gestor de Álbumes de YouTube / YouTube Music -->
+<div class="alb-mgr-backdrop" id="albMgrModal">
+  <div class="alb-mgr-box">
+    <div class="alb-mgr-hdr">
+      <span>MIS ÁLBUMES DE YOUTUBE MUSIC</span>
+      <button class="alb-mgr-btn sec-btn" onclick="closeAlbumManager()">CERRAR [ESC]</button>
+    </div>
+    <div style="font-size:9px;color:var(--mid);line-height:1.5">
+      PEGA EL LINK DE CUALQUIER ÁLBUM O PLAYLIST DE YOUTUBE MUSIC (<span style="color:var(--fg)">music.youtube.com/playlist?list=...</span>). LA CARÁTULA Y EL TÍTULO SE DETECTAN AUTOMÁTICAMENTE:
+    </div>
+    <div class="alb-mgr-form">
+      <div class="alb-mgr-row">
+        <input class="alb-mgr-inp" id="albUrlInp" placeholder="https://music.youtube.com/playlist?list=OLAK5uy_... o PL..." />
+      </div>
+      <div class="alb-mgr-row">
+        <input class="alb-mgr-inp" id="albArtInp" placeholder="ARTISTA (OPCIONAL - SE DETECTA SOLO)" />
+        <button class="alb-mgr-btn" id="albAddBtn" onclick="addAlbumFromInput()">+ AÑADIR ÁLBUM</button>
+      </div>
+    </div>
+    <div class="alb-mgr-list" id="albMgrList"></div>
+    <div style="display:flex;justify-content:space-between;gap:8px;border-top:1px dashed var(--dim);padding-top:10px">
+      <button class="alb-mgr-btn sec-btn" onclick="clearAllAlbums()">VACIAR LISTA</button>
+      <button class="alb-mgr-btn sec-btn" id="copyJsonBtn" onclick="copyAlbumsJson()">COPIAR albumes.json</button>
     </div>
   </div>
 </div>
@@ -956,54 +1111,46 @@ window.addEventListener('offline', () => setInternetStatus(false));
 setInterval(checkInternetConnection, 10000);
 
 // =========================================================================
-// 4. CATÁLOGO DE DISCOS (SOPORTA PISTAS, ÁLBUMES Y PLAYLISTS DE YT MUSIC)
+// 4. CATÁLOGO DE ÁLBUMES Y PLAYLISTS DE YOUTUBE MUSIC (CON AUTO-CARÁTULA OEMBED)
 // =========================================================================
-// Puedes asignar a cada disco:
-// - Una lista de canciones: t: [ ["TITULO", segs, "VIDEO_ID"], ... ]
-// - O un Álbum / Playlist / Mix de YouTube Music: listId: "PL..." o "OLAK5uy_..."
 const DEFAULT_DISCS = [
   {
+    title: "RANDOM ACCESS MEMORIES",
     a: "DAFT PUNK",
-    t: [
-      ["INSTANT CRUSH",      337, "a5uQMwRMHcs"],
-      ["GET LUCKY",          248, "5NV6Rdv1a3I"],
-      ["VERIDIS QUO",        345, "TCd6PfxOy0Y"]
-    ]
+    listId: "PLSbDLF8wQ3oKcstd9ybCSv2lNm_8NTYkI",
+    cover: "https://i.ytimg.com/vi/IluRBvnYMoY/hqdefault.jpg",
+    t: [["RANDOM ACCESS MEMORIES", 240, "IluRBvnYMoY"]]
   },
   {
-    a: "SYNTHWAVE MIX",
-    t: [
-      ["NIGHTCALL",          258, "MV_3Dpw-BRY"],
-      ["RESONANCE",          212, "8GW6sLrK40k"]
-    ]
-  },
-  {
+    title: "PLASTIC BEACH",
     a: "GORILLAZ",
-    t: [
-      ["ON MELANCHOLY HILL", 233, "04mfKJWDSzI"],
-      ["FEEL GOOD INC.",     222, "HyHNuVaZJ-k"]
-    ]
+    listId: "PLxzSZG7g8c8xYzHnxKrYxJ2FobX8rd2_C",
+    cover: "https://i.ytimg.com/vi/PSffezqR_XA/hqdefault.jpg",
+    t: [["PLASTIC BEACH", 240, "PSffezqR_XA"]]
   },
   {
+    title: "AFTER HOURS",
     a: "THE WEEKND",
-    t: [
-      ["BLINDING LIGHTS",    200, "4NRXx6U8ABQ"],
-      ["STARBOY",            230, "34Na4j8AVgA"]
-    ]
+    listId: "PLPRWtKgY2MOu8dPE7sMxQZ07PS1mLqid9",
+    cover: "https://i.ytimg.com/vi/JH398xAYpZA/hqdefault.jpg",
+    t: [["AFTER HOURS", 240, "JH398xAYpZA"]]
   },
   {
-    a: "LOFI CHILL",
-    t: [
-      ["MIDNIGHT COFFEE",    196, "jfKfPfyJRdk"],
-      ["TOKYO RAIN",         168, "DWcJFNfaw9c"]
-    ]
+    title: "CURRENTS",
+    a: "TAME IMPALA",
+    listId: "PL81_CtYCym28qkVe3nVMRG7hMR5_Ky3Hf",
+    cover: "https://i.ytimg.com/vi/10DJMW3XAZQ/hqdefault.jpg",
+    t: [["CURRENTS", 240, "10DJMW3XAZQ"]]
   }
 ];
 
 function loadDiscsCatalog() {
   try {
-    const saved = localStorage.getItem('holo_custom_discs');
-    if (saved) return JSON.parse(saved);
+    const saved = localStorage.getItem('holo_user_albums_v2');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
   } catch (e) {}
   return DEFAULT_DISCS;
 }
@@ -1011,6 +1158,94 @@ function loadDiscsCatalog() {
 let DISCS = loadDiscsCatalog();
 let disc = -1, trk = 0, pos = 0, playing = false, vol = 70, shuf = false, rep = false, volT = 0;
 let lastDynamicVid = "";
+
+async function resolveYouTubeOembed(rawUrlOrId, customArtist) {
+  const parsed = parseYouTubeInput(rawUrlOrId);
+  if (!parsed) return null;
+
+  const targetUrl = parsed.type === 'list'
+    ? `https://www.youtube.com/playlist?list=${parsed.id}`
+    : `https://www.youtube.com/watch?v=${parsed.id}`;
+
+  let title = "ÁLBUM YOUTUBE";
+  let artist = (customArtist || "").trim().toUpperCase();
+  let cover = parsed.type === 'video' ? `https://i.ytimg.com/vi/${parsed.id}/hqdefault.jpg` : "";
+
+  try {
+    const res = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(targetUrl)}&format=json`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.title) {
+        title = data.title
+          .replace(/^Album\s*-\s*/i, '')
+          .replace(/\(Full Album.*?\)/gi, '')
+          .replace(/\[Full Album.*?\]/gi, '')
+          .replace(/Full Album/gi, '')
+          .trim()
+          .toUpperCase();
+      }
+      if (!artist && data.author_name) {
+        artist = cleanArtistName(data.author_name);
+      }
+      if (data.thumbnail_url) {
+        cover = data.thumbnail_url;
+      }
+    }
+  } catch (e) {}
+
+  if (!artist) artist = "YOUTUBE MUSIC";
+  if (parsed.type === 'list') {
+    return {
+      title,
+      a: artist,
+      listId: parsed.id,
+      cover,
+      t: [[title, 240, ""]]
+    };
+  }
+  return {
+    title,
+    a: artist,
+    cover,
+    t: [[title, 240, parsed.id]]
+  };
+}
+
+async function syncAlbumsFromRepoJson() {
+  // Si el usuario ya personalizó sus álbumes localmente en este navegador, respetamos su lista local
+  if (localStorage.getItem('holo_user_albums_v2')) return;
+  try {
+    const res = await fetch('albumes.json?t=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) return;
+    const arr = await res.json();
+    if (!Array.isArray(arr) || arr.length === 0) return;
+    const loaded = [];
+    for (const item of arr) {
+      const parsed = parseYouTubeInput(item.url || item.listId || "");
+      if (!parsed) continue;
+      if (item.titulo && item.cover) {
+        loaded.push({
+          title: item.titulo.toUpperCase(),
+          a: (item.artista || "YOUTUBE MUSIC").toUpperCase(),
+          listId: parsed.type === 'list' ? parsed.id : undefined,
+          cover: item.cover,
+          t: [[item.titulo.toUpperCase(), 240, parsed.type === 'video' ? parsed.id : ""]]
+        });
+      } else {
+        const resolved = await resolveYouTubeOembed(item.url || item.listId, item.artista);
+        if (resolved) {
+          if (item.titulo) resolved.title = item.titulo.toUpperCase();
+          loaded.push(resolved);
+        }
+      }
+    }
+    if (loaded.length > 0) {
+      DISCS = loaded;
+      if (isMenuOpen) renderSysMenu();
+    }
+  } catch (e) {}
+}
+setTimeout(syncAlbumsFromRepoJson, 300);
 
 // =========================================================================
 // 5. MOTOR DE LYRICS SINCRONIZADOS (LRCLIB API + CACHÉ LOCAL)
@@ -1414,19 +1649,27 @@ function paintMeta() {
   if (!dObj) return;
 
   if (dObj.listId) {
-    $('ttl').textContent = "CARGANDO ÁLBUM...";
+    $('ttl').textContent = dObj.title || dObj.a || "CARGANDO ÁLBUM...";
     $('art2').textContent = dObj.a || "YOUTUBE MUSIC";
-    $('albumImg').style.display = 'none';
-    $('albumFallback').style.display = 'grid';
-    setLyricLines("", "SINCRONIZANDO PISTA...", "");
+    const img = $('albumImg');
+    const fb  = $('albumFallback');
+    if (dObj.cover && isInternetOnline) {
+      img.style.display = 'block';
+      fb.style.display = 'none';
+      img.src = dObj.cover;
+    } else {
+      img.style.display = 'none';
+      fb.style.display = 'grid';
+    }
+    setLyricLines("", "CARGANDO ÁLBUM...", "");
     return;
   }
 
   const track = dObj.t[trk];
-  const title = track[0];
+  const title = dObj.title || track[0];
   const artist = dObj.a;
   const vid = track[2];
-  const customCover = track[3];
+  const customCover = dObj.cover || track[3];
 
   $('ttl').textContent = title;
   $('art2').textContent = artist;
@@ -1566,11 +1809,11 @@ applySavedVisualSettings();
 function getActiveMenuItems() {
   if (menuPage === 'root') {
     const albumItems = DISCS.map((d, idx) => {
-      const firstTrack = (d.t && d.t[0]) || ["ALBUM", 200, ""];
+      const firstTrack = (d.t && d.t[0]) || ["ÁLBUM", 200, ""];
       const vid = firstTrack[2] || "";
-      const thumbUrl = vid ? `https://i.ytimg.com/vi/${vid}/default.jpg` : "";
-      const albumTitle = d.listId ? d.a : (firstTrack[0] || d.a);
-      const artistSub  = d.listId ? "PLAYLIST YT" : d.a;
+      const thumbUrl = d.cover || (vid ? `https://i.ytimg.com/vi/${vid}/default.jpg` : "");
+      const albumTitle = d.title || (d.listId ? d.a : (firstTrack[0] || d.a));
+      const artistSub  = d.a || "YOUTUBE MUSIC";
       return {
         isAlbum: true,
         idx,
@@ -1587,6 +1830,7 @@ function getActiveMenuItems() {
 
     const sysItems = [
       { isSep: true },
+      { label: "+ MIS ÁLBUMES YT", val: "EDITAR", run: () => { closeSysMenu(); openAlbumManager(); } },
       { label: "⚙ OPCIONES", val: "→", run: () => { menuPage = 'options'; menuSel = 0; renderSysMenu(); } }
     ];
     if (disc >= 0) {
@@ -1601,6 +1845,11 @@ function getActiveMenuItems() {
     const ac = ACCENT_PALETTE[accentIdx];
     const items = getActiveMenuItemsForRootCount();
     return [
+      {
+        label: "MIS ÁLBUMES YT",
+        val: "EDITAR",
+        run: () => { closeSysMenu(); openAlbumManager(); }
+      },
       {
         label: "COLOR ACENTO",
         val: ac.name,
@@ -1663,7 +1912,7 @@ function getActiveMenuItems() {
       {
         label: "← ATRAS",
         val: "",
-        run: () => { menuPage = 'options'; menuSel = 1; renderSysMenu(); }
+        run: () => { menuPage = 'options'; menuSel = 2; renderSysMenu(); }
       }
     ];
   }
@@ -1682,6 +1931,11 @@ function getActiveMenuItems() {
         }
       },
       {
+        label: "MIS ÁLBUMES YT",
+        val: "EDITAR",
+        run: () => { closeSysMenu(); openAlbumManager(); }
+      },
+      {
         label: "SYNC ROCOLA",
         val: "RELOAD",
         run: () => { window.location.reload(); }
@@ -1689,7 +1943,7 @@ function getActiveMenuItems() {
       {
         label: "← ATRAS",
         val: "",
-        run: () => { menuPage = 'options'; menuSel = 2; renderSysMenu(); }
+        run: () => { menuPage = 'options'; menuSel = 3; renderSysMenu(); }
       }
     ];
   }
@@ -1697,7 +1951,94 @@ function getActiveMenuItems() {
 }
 
 function getActiveMenuItemsForRootCount() {
-  return DISCS.length + 1; // Índice de "⚙ OPCIONES" en root (después del separador)
+  return DISCS.length + 2; // Índice de "⚙ OPCIONES" en root (después de + MIS ÁLBUMES YT)
+}
+
+function saveUserAlbums() {
+  localStorage.setItem('holo_user_albums_v2', JSON.stringify(DISCS));
+}
+
+function openAlbumManager() {
+  renderAlbumManagerList();
+  $('albMgrModal').classList.add('open');
+  setTimeout(() => $('albUrlInp').focus(), 80);
+}
+
+function closeAlbumManager() {
+  $('albMgrModal').classList.remove('open');
+}
+
+function renderAlbumManagerList() {
+  if (!DISCS.length) {
+    $('albMgrList').innerHTML = `<div style="font-size:10px;color:var(--mid);text-align:center;padding:16px">SIN ÁLBUMES. PEGA UN LINK DE YOUTUBE MUSIC ARRIBA.</div>`;
+    return;
+  }
+  $('albMgrList').innerHTML = DISCS.map((d, idx) => {
+    const firstTrack = (d.t && d.t[0]) || ["ÁLBUM", 200, ""];
+    const vid = firstTrack[2] || "";
+    const thumb = d.cover || (vid ? `https://i.ytimg.com/vi/${vid}/default.jpg` : "");
+    const title = d.title || (firstTrack[0] || d.a);
+    return `
+      <div class="alb-mgr-item">
+        <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1">
+          ${thumb ? `<img src="${thumb}" alt="">` : `<div style="width:28px;height:28px;background:#181818;border-radius:5px"></div>`}
+          <div style="min-width:0;flex:1">
+            <div style="font-size:10px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${title}</div>
+            <div style="font-size:8px;color:var(--ac);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.a || 'YOUTUBE MUSIC'}</div>
+          </div>
+        </div>
+        <button class="alb-mgr-del" onclick="removeAlbumAt(${idx})">BORRAR</button>
+      </div>
+    `;
+  }).join('');
+}
+
+async function addAlbumFromInput() {
+  const rawUrl = $('albUrlInp').value.trim();
+  const rawArt = $('albArtInp').value.trim();
+  if (!rawUrl) return;
+  const btn = $('albAddBtn');
+  btn.textContent = "CARGANDO...";
+  const resolved = await resolveYouTubeOembed(rawUrl, rawArt);
+  btn.textContent = "+ AÑADIR ÁLBUM";
+  if (!resolved) {
+    btn.textContent = "LINK INVÁLIDO";
+    setTimeout(() => { btn.textContent = "+ AÑADIR ÁLBUM"; }, 1600);
+    return;
+  }
+  DISCS.push(resolved);
+  saveUserAlbums();
+  $('albUrlInp').value = "";
+  $('albArtInp').value = "";
+  renderAlbumManagerList();
+}
+
+function removeAlbumAt(idx) {
+  DISCS.splice(idx, 1);
+  saveUserAlbums();
+  renderAlbumManagerList();
+}
+
+function clearAllAlbums() {
+  DISCS = [];
+  saveUserAlbums();
+  renderAlbumManagerList();
+}
+
+function copyAlbumsJson() {
+  const exportArr = DISCS.map(d => ({
+    titulo: d.title || d.a,
+    artista: d.a || "YOUTUBE MUSIC",
+    url: d.listId
+      ? `https://www.youtube.com/playlist?list=${d.listId}`
+      : `https://www.youtube.com/watch?v=${(d.t && d.t[0] && d.t[0][2]) || ''}`,
+    cover: d.cover || ""
+  }));
+  navigator.clipboard.writeText(JSON.stringify(exportArr, null, 2)).then(() => {
+    const b = $('copyJsonBtn');
+    b.textContent = "¡COPIADO!";
+    setTimeout(() => { b.textContent = "COPIAR albumes.json"; }, 1800);
+  });
 }
 
 let menuAutoHideTimer = null;
@@ -1848,6 +2189,17 @@ let spaceHeldTriggered = false;
 
 addEventListener('keydown', e => {
   const k = e.key;
+  if ($('albMgrModal').classList.contains('open')) {
+    if (k === 'Escape') {
+      e.preventDefault();
+      closeAlbumManager();
+    } else if (k === 'Enter' && (document.activeElement === $('albUrlInp') || document.activeElement === $('albArtInp'))) {
+      e.preventDefault();
+      addAlbumFromInput();
+    }
+    return;
+  }
+
   if (isSleeping) {
     e.preventDefault();
     wakeFromSleep();
@@ -1895,6 +2247,7 @@ addEventListener('keydown', e => {
 });
 
 addEventListener('keyup', e => {
+  if ($('albMgrModal').classList.contains('open')) return;
   if (e.key === ' ') {
     clearTimeout(spaceHoldTimer);
     if (!isMenuOpen && !spaceHeldTriggered && !isSleeping) {
