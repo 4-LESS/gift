@@ -766,10 +766,12 @@ window.addEventListener('offline', () => setInternetStatus(false));
 setInterval(checkInternetConnection, 10000);
 
 // =========================================================================
-// 4. CATÁLOGO DE DISCOS (CON PORTADA AUTOMÁTICA Y LYRICS SINCRONIZADOS)
+// 4. CATÁLOGO DE DISCOS (SOPORTA PISTAS, ÁLBUMES Y PLAYLISTS DE YT MUSIC)
 // =========================================================================
-// Formato de pista: [ "TÍTULO", duracion_seg, "YOUTUBE_VIDEO_ID", "URL_PORTADA_OPCIONAL" ]
-const DISCS = [
+// Puedes asignar a cada disco:
+// - Una lista de canciones: t: [ ["TITULO", segs, "VIDEO_ID"], ... ]
+// - O un Álbum / Playlist / Mix de YouTube Music: listId: "PL..." o "OLAK5uy_..."
+const DEFAULT_DISCS = [
   {
     a: "DAFT PUNK",
     t: [
@@ -808,7 +810,17 @@ const DISCS = [
   }
 ];
 
+function loadDiscsCatalog() {
+  try {
+    const saved = localStorage.getItem('holo_custom_discs');
+    if (saved) return JSON.parse(saved);
+  } catch (e) {}
+  return DEFAULT_DISCS;
+}
+
+let DISCS = loadDiscsCatalog();
 let disc = -1, trk = 0, pos = 0, playing = false, vol = 70, shuf = false, rep = false, volT = 0;
+let lastDynamicVid = "";
 
 // =========================================================================
 // 5. MOTOR DE LYRICS SINCRONIZADOS (LRCLIB API + CACHÉ LOCAL)
@@ -921,12 +933,68 @@ function updateLyricsByTime(sec) {
 }
 
 // =========================================================================
-// 6. MOTOR YOUTUBE EMBED (NOCOOOKIE + GUARDIÁN ANTI-ANUNCIOS)
+// 6. MOTOR YOUTUBE PREMIUM EMBED (SOPORTA SESIÓN ACTIVA + PLAYLISTS/ÁLBUMES)
 // =========================================================================
 let ytPlayer = null;
 let ytReady = false;
 let ytApiLoaded = false;
 let expectedVideoId = null;
+
+function cleanArtistName(rawAuthor) {
+  if (!rawAuthor) return "YOUTUBE MUSIC";
+  return rawAuthor
+    .replace(/\s*-\s*Topic$/i, '')
+    .replace(/VEVO$/i, '')
+    .replace(/Official$/i, '')
+    .trim()
+    .toUpperCase();
+}
+
+function cleanTrackTitle(rawTitle, artist) {
+  if (!rawTitle) return "CARGANDO...";
+  let t = rawTitle
+    .replace(/\(Official.*?\)/gi, '')
+    .replace(/\[Official.*?\]/gi, '')
+    .replace(/\(Lyric.*?\)/gi, '')
+    .replace(/\(Audio.*?\)/gi, '')
+    .replace(/\[HQ\]/gi, '')
+    .trim();
+  // Si el título viene como "Artista - Canción", separar solo la canción
+  if (t.includes(' - ')) {
+    const parts = t.split(' - ');
+    if (parts[0].toUpperCase().includes(artist)) {
+      t = parts.slice(1).join(' - ').trim();
+    }
+  }
+  return t.toUpperCase();
+}
+
+function syncDynamicMetadataFromYouTube() {
+  if (!ytReady || !ytPlayer || typeof ytPlayer.getVideoData !== 'function') return;
+  const vData = ytPlayer.getVideoData();
+  if (!vData || !vData.video_id || !vData.title) return;
+  if (vData.video_id === lastDynamicVid) return;
+  lastDynamicVid = vData.video_id;
+
+  const artist = cleanArtistName(vData.author || DISCS[disc]?.a || "");
+  const title  = cleanTrackTitle(vData.title, artist);
+
+  $('ttl').textContent = title;
+  $('art2').textContent = artist;
+
+  const wrap = $('albumWrap');
+  wrap.classList.remove('track-pop');
+  void wrap.offsetWidth;
+  wrap.classList.add('track-pop');
+
+  const img = $('albumImg');
+  const fb  = $('albumFallback');
+  img.style.display = 'block';
+  fb.style.display = 'none';
+  img.src = `https://i.ytimg.com/vi/${vData.video_id}/hqdefault.jpg`;
+
+  fetchLyricsForTrack(artist, title);
+}
 
 function loadYouTubeApi() {
   if (ytApiLoaded) return;
@@ -940,7 +1008,8 @@ window.onYouTubeIframeAPIReady = function() {
   ytPlayer = new YT.Player('yt-player', {
     height: '1',
     width: '1',
-    host: 'https://www.youtube-nocookie.com',
+    // Usamos www.youtube.com para que herede la cookie de tu cuenta YouTube Premium
+    host: 'https://www.youtube.com',
     playerVars: {
       autoplay: 0,
       controls: 0,
@@ -959,7 +1028,15 @@ window.onYouTubeIframeAPIReady = function() {
         if (disc >= 0 && playing) playCurrentYouTubeTrack();
       },
       onStateChange: (e) => {
+        // YT.PlayerState.PLAYING === 1
+        if (e.data === 1 && disc >= 0) {
+          if (DISCS[disc] && DISCS[disc].listId) {
+            syncDynamicMetadataFromYouTube();
+          }
+        }
+        // YT.PlayerState.ENDED === 0
         if (e.data === 0 && disc >= 0) {
+          if (DISCS[disc] && DISCS[disc].listId) return; // La playlist avanza sola
           if (rep) {
             ytPlayer.seekTo(0);
             ytPlayer.playVideo();
@@ -974,10 +1051,30 @@ window.onYouTubeIframeAPIReady = function() {
 
 function playCurrentYouTubeTrack() {
   if (!isInternetOnline || !ytReady || !ytPlayer || disc < 0) return;
-  const trackData = DISCS[disc].t[trk];
+  const dObj = DISCS[disc];
+  if (!dObj) return;
+
+  // Si el disco está configurado como Álbum / Playlist / Mix de YouTube Music
+  if (dObj.listId) {
+    expectedVideoId = null;
+    lastDynamicVid = "";
+    ytPlayer.loadPlaylist({
+      list: dObj.listId,
+      listType: 'playlist',
+      index: trk,
+      startSeconds: 0
+    });
+    ytPlayer.setVolume(vol);
+    if (shuf && typeof ytPlayer.setShuffle === 'function') ytPlayer.setShuffle(true);
+    if (rep && typeof ytPlayer.setLoop === 'function') ytPlayer.setLoop(true);
+    return;
+  }
+
+  const trackData = dObj.t[trk];
   const vid = trackData[2];
   if (!vid) return;
   expectedVideoId = vid;
+  lastDynamicVid = vid;
   ytPlayer.loadVideoById({ videoId: vid, startSeconds: 0 });
   ytPlayer.setVolume(vol);
 }
@@ -988,7 +1085,10 @@ setInterval(() => {
   if (isInternetOnline && ytReady && ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
     try {
       const vData = ytPlayer.getVideoData ? ytPlayer.getVideoData() : null;
-      if (vData && vData.video_id && expectedVideoId && vData.video_id !== expectedVideoId) {
+      if (DISCS[disc] && DISCS[disc].listId) {
+        syncDynamicMetadataFromYouTube();
+      } else if (vData && vData.video_id && expectedVideoId && vData.video_id !== expectedVideoId) {
+        // Fallback anti-anuncios por si en algún momento no hay sesión Premium activa
         const adDur = ytPlayer.getDuration();
         if (adDur > 0) ytPlayer.seekTo(adDur, true);
         ytPlayer.loadVideoById(expectedVideoId);
@@ -1067,16 +1167,27 @@ function paintTime() {
 }
 
 function paintMeta() {
-  const track = DISCS[disc].t[trk];
+  const dObj = DISCS[disc];
+  if (!dObj) return;
+
+  if (dObj.listId) {
+    $('ttl').textContent = "CARGANDO ÁLBUM...";
+    $('art2').textContent = dObj.a || "YOUTUBE MUSIC";
+    $('albumImg').style.display = 'none';
+    $('albumFallback').style.display = 'grid';
+    setLyricLines("", "SINCRONIZANDO PISTA...", "");
+    return;
+  }
+
+  const track = dObj.t[trk];
   const title = track[0];
-  const artist = DISCS[disc].a;
+  const artist = dObj.a;
   const vid = track[2];
   const customCover = track[3];
 
   $('ttl').textContent = title;
   $('art2').textContent = artist;
 
-  // Animación snappy en la carátula flotante
   const wrap = $('albumWrap');
   wrap.classList.remove('track-pop');
   void wrap.offsetWidth;
@@ -1131,7 +1242,17 @@ function toggle() {
 function step(d) {
   if (disc < 0) return;
   pulseButton(d > 0 ? $('bNext') : $('bPrev'));
-  const n = DISCS[disc].t.length;
+  const dObj = DISCS[disc];
+
+  // Si es una Playlist o Álbum de YouTube Music, usa el salto nativo de lista
+  if (dObj && dObj.listId && ytReady && ytPlayer) {
+    pos = 0;
+    if (d > 0 && typeof ytPlayer.nextVideo === 'function') ytPlayer.nextVideo();
+    else if (d < 0 && typeof ytPlayer.previousVideo === 'function') ytPlayer.previousVideo();
+    return;
+  }
+
+  const n = dObj.t.length;
   if (shuf && n > 1) trk = (trk + 1 + Math.floor(Math.random() * (n - 1))) % n;
   else trk = (trk + d + n) % n;
   pos = 0;
@@ -1213,6 +1334,21 @@ function applyWifiInFullyKiosk(ssid, pass, newEspIp) {
   }
 }
 
+function parseYouTubeInput(raw) {
+  raw = (raw || "").trim();
+  if (!raw) return null;
+  // Si es URL con list=PL... o list=OLAK5uy_...
+  const listMatch = raw.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+  if (listMatch) return { type: 'list', id: listMatch[1] };
+  // Si empieza con PL, OLAK, RD, UU, FL (IDs directos de playlists/álbumes de YT Music)
+  if (/^(PL|OLAK|RD|UU|FL)[a-zA-Z0-9_-]+$/.test(raw)) return { type: 'list', id: raw };
+  // Si es URL de video youtu.be/ID o watch?v=ID
+  const vidMatch = raw.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  if (vidMatch) return { type: 'video', id: vidMatch[1] };
+  if (/^[a-zA-Z0-9_-]{11}$/.test(raw)) return { type: 'video', id: raw };
+  return null;
+}
+
 function handleCommand(cmd) {
   cmd = cmd.trim();
   if (cmd === "ENC:UP") {
@@ -1236,6 +1372,29 @@ function handleCommand(cmd) {
   } else if (cmd.startsWith("ESP_IP:")) {
     const newIp = cmd.substring(7).trim();
     if (newIp) localStorage.setItem('esp32_ip', newIp);
+  } else if (cmd === "YT:LOGIN") {
+    // Abre el login de Google/YouTube en Fully Kiosk para activar la sesión YouTube Premium
+    window.location.href = "https://accounts.google.com/ServiceLogin?service=youtube&continue=https%3A%2F%2Fwww.youtube.com";
+  } else if (cmd.startsWith("DISC_CFG:")) {
+    // Formato: DISC_CFG:1|NOMBRE ARTISTA O ALBUM|URL_O_ID_YT_MUSIC
+    const p = cmd.substring(9).split('|');
+    const dIdx = parseInt(p[0], 10) - 1;
+    const label = (p[1] || "YOUTUBE MUSIC").trim().toUpperCase();
+    const parsed = parseYouTubeInput(p[2] || "");
+    if (dIdx >= 0 && dIdx < 5 && parsed) {
+      if (parsed.type === 'list') {
+        DISCS[dIdx] = { a: label, listId: parsed.id, t: [[label, 240, ""]] };
+      } else {
+        DISCS[dIdx] = { a: label, t: [[label, 240, parsed.id]] };
+      }
+      localStorage.setItem('holo_custom_discs', JSON.stringify(DISCS));
+      if (disc === dIdx) load(dIdx);
+    }
+  } else if (cmd.startsWith("MSG_TODAY:")) {
+    const txt = cmd.substring(10).trim();
+    const msgObj = { fecha: getTodayIso(), texto: txt, forzarMostrar: false };
+    localStorage.setItem('holo_daily_msg_cache', JSON.stringify(msgObj));
+    applyDailyMessage(msgObj);
   }
 }
 
@@ -1281,6 +1440,7 @@ window.addEventListener('load', () => {
 </script>
 </body>
 </html>
+
 
 )rawliteral";
 

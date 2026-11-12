@@ -106,21 +106,23 @@ String buildPortalHtml() {
   String html = R"rawliteral(
 <!DOCTYPE html><html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>HoloDeck // Configuración Wi-Fi</title>
+<title>HoloDeck // Panel de Control</title>
 <style>
-  body{background:#000;color:#eae6df;font-family:monospace;padding:24px;margin:0}
-  .box{max-width:380px;margin:0 auto;border:1px solid #2e2d2a;padding:20px}
-  h2{color:#ff7a00;font-size:16px;letter-spacing:.15em;margin-top:0;border-bottom:1px solid #2e2d2a;padding-bottom:10px}
-  label{display:block;font-size:12px;color:#78756f;margin:14px 0 6px;letter-spacing:.1em}
-  select,input,button{width:100%;padding:10px;background:#111;border:1px solid #2e2d2a;color:#eae6df;font-family:monospace;box-sizing:border-box;font-size:14px}
-  button{background:#ff7a00;color:#000;font-weight:bold;border:none;margin-top:20px;cursor:pointer;letter-spacing:.12em}
-  .sub{font-size:11px;color:#78756f;margin-top:14px;line-height:1.4}
+  body{background:#000;color:#fff;font-family:monospace;padding:18px;margin:0}
+  .box{max-width:400px;margin:0 auto 18px;border:1px solid #333;padding:18px}
+  h2{color:#ff7722;font-size:14px;letter-spacing:.15em;margin:0 0 12px;border-bottom:1px solid #222;padding-bottom:8px}
+  label{display:block;font-size:11px;color:#888;margin:12px 0 5px;letter-spacing:.08em}
+  select,input,button{width:100%;padding:10px;background:#111;border:1px solid #333;color:#fff;font-family:monospace;box-sizing:border-box;font-size:13px}
+  button{background:#ff7722;color:#000;font-weight:bold;border:none;margin-top:14px;cursor:pointer;letter-spacing:.1em}
+  button.sec{background:#1a1a1a;color:#fff;border:1px solid #ff7722}
+  .sub{font-size:11px;color:#777;margin-top:10px;line-height:1.4}
 </style></head><body>
+
 <div class="box">
-  <h2>HOLODECK // WIFI SETUP</h2>
+  <h2>1. CONEXION WI-FI</h2>
   <form action="/save" method="POST">
-    <label>1. REDES DETECTADAS:</label>
-    <select id="sel" onchange="document.getElementById('ssid').value=this.value">
+    <label>REDES DETECTADAS:</label>
+    <select onchange="document.getElementById('ssid').value=this.value">
       <option value="">-- Seleccionar red --</option>
       )rawliteral" + options + R"rawliteral(
     </select>
@@ -128,10 +130,34 @@ String buildPortalHtml() {
     <input type="text" id="ssid" name="ssid" placeholder="Nombre de tu Wi-Fi" required>
     <label>CONTRASEÑA:</label>
     <input type="password" name="pass" placeholder="Contraseña Wi-Fi">
-    <button type="submit">CONECTAR ROCOLA</button>
+    <button type="submit">CONECTAR WIFI</button>
   </form>
-  <div class="sub">Al guardar, la ESP32 y el celular de la rocola se conectarán a esta red automáticamente y abrirán GitHub Pages.</div>
-</div></body></html>
+</div>
+
+<div class="box">
+  <h2>2. YOUTUBE MUSIC // DISCOS & CUENTA</h2>
+  <form action="/disc" method="POST">
+    <label>DISCO A CONFIGURAR (1 AL 5):</label>
+    <select name="dnum">
+      <option value="1">DISCO 1</option>
+      <option value="2">DISCO 2</option>
+      <option value="3">DISCO 3</option>
+      <option value="4">DISCO 4</option>
+      <option value="5">DISCO 5</option>
+    </select>
+    <label>NOMBRE DEL ARTISTA / ALBUM:</label>
+    <input type="text" name="label" placeholder="Ej: DAFT PUNK" required>
+    <label>LINK DE ALBUM / PLAYLIST DE YT MUSIC:</label>
+    <input type="text" name="url" placeholder="https://music.youtube.com/playlist?list=..." required>
+    <button type="submit">GUARDAR EN DISCO</button>
+  </form>
+  <form action="/ytlogin" method="POST">
+    <button type="submit" class="sec">CAMBIAR CUENTA YOUTUBE EN ROCOLA</button>
+  </form>
+  <div class="sub">Nota: Tu cuenta YouTube Premium queda guardada en Fully Kiosk como fallback sin anuncios.</div>
+</div>
+
+</body></html>
   )rawliteral";
   return html;
 }
@@ -165,6 +191,22 @@ void setupWebServer() {
 
   server.on("/setup", HTTP_GET, []() {
     server.send(200, "text/html", buildPortalHtml());
+  });
+
+  server.on("/disc", HTTP_POST, []() {
+    String dnum  = server.arg("dnum");
+    String label = server.arg("label");
+    String url   = server.arg("url");
+    String cmd = "DISC_CFG:" + dnum + "|" + label + "|" + url + "\n";
+    broadcastCommand(cmd);
+    server.sendHeader("Location", "/setup", true);
+    server.send(302, "text/plain", "Disco actualizado");
+  });
+
+  server.on("/ytlogin", HTTP_POST, []() {
+    broadcastCommand("YT:LOGIN\n");
+    server.sendHeader("Location", "/setup", true);
+    server.send(302, "text/plain", "Abriendo login YouTube en la rocola");
   });
 
   server.on("/jukebox", HTTP_GET, []() {
