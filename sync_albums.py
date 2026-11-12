@@ -15,6 +15,29 @@ def fetch_text(url: str) -> str:
         return resp.read().decode("utf-8", errors="ignore")
 
 
+def fetch_ytm_browse(browse_id: str) -> str:
+    url = "https://music.youtube.com/youtubei/v1/browse?prettyPrint=false"
+    payload = json.dumps({
+        "context": {
+            "client": {
+                "clientName": "WEB_REMIX",
+                "clientVersion": "1.20241101.01.00",
+                "hl": "es",
+                "gl": "CL",
+            }
+        },
+        "browseId": browse_id,
+    }).encode("utf-8")
+    req = urllib.request.Request(
+        url,
+        data=payload,
+        headers={**HEADERS, "Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=15) as resp:
+        return resp.read().decode("utf-8", errors="ignore")
+
+
 def clean_artist(raw: str) -> str:
     if not raw:
         return ""
@@ -35,7 +58,8 @@ def clean_title(raw: str) -> str:
 
 
 def resolve_playlist_oembed(playlist_id: str) -> dict | None:
-    pl_url = f"https://www.youtube.com/playlist?list={playlist_id}"
+    clean_id = playlist_id[2:] if playlist_id.startswith("VL") else playlist_id
+    pl_url = f"https://www.youtube.com/playlist?list={clean_id}"
     oembed_url = f"https://www.youtube.com/oembed?url={urllib.parse.quote(pl_url, safe='')}&format=json"
     try:
         raw = fetch_text(oembed_url)
@@ -51,25 +75,39 @@ def resolve_playlist_oembed(playlist_id: str) -> dict | None:
 
 
 def extract_playlists_from_channel(channel_line: str) -> list[str]:
-    url = channel_line.strip()
+    url = channel_line.strip().replace("music.youtube.com", "www.youtube.com")
     if url.startswith("@"):
-        url = f"https://www.youtube.com/{url}/playlists"
-    elif "youtube.com/" in url and "/playlists" not in url and "list=" not in url:
-        url = url.rstrip("/") + "/playlists"
+        url = f"https://www.youtube.com/{url}"
+    base_url = re.sub(r"/(playlists|releases|featured|videos)/?$", "", url.rstrip("/"))
+
+    seen = []
     try:
-        html = fetch_text(url)
-        found = re.findall(r'"playlistId":"((?:PL|OLAK5uy_)[a-zA-Z0-9_-]+)"', html)
-        seen = []
-        for pid in found:
+        main_html = fetch_text(base_url)
+        m_cid = re.search(r'"externalId":"(UC[a-zA-Z0-9_-]+)"', main_html)
+        cid = m_cid.group(1) if m_cid else None
+
+        # 1. Buscar en /playlists de YouTube estándar
+        pl_html = fetch_text(base_url + "/playlists")
+        for pid in re.findall(r'"playlistId":"((?:PL|OLAK5uy_)[a-zA-Z0-9_-]+)"', pl_html):
             if pid not in seen:
                 seen.append(pid)
-        return seen
+
+        # 2. Buscar en el perfil de YouTube Music (WEB_REMIX Innertube)
+        if cid:
+            ytm_json = fetch_ytm_browse(cid)
+            for pid in re.findall(r'"(?:playlistId|browseId)":"((?:VLPL|PL|OLAK5uy_)[a-zA-Z0-9_-]+)"', ytm_json):
+                clean_id = pid[2:] if pid.startswith("VL") else pid
+                if clean_id not in seen:
+                    seen.append(clean_id)
     except Exception:
-        return []
+        pass
+    return seen
 
 
 def main():
-    playlist_ids = []
+    channel_playlists = []
+    fallback_playlists = []
+
     with open("canal_youtube.txt", "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
@@ -78,18 +116,20 @@ def main():
             m = re.search(r"[?&]list=([a-zA-Z0-9_-]+)", line)
             if m:
                 pid = m.group(1)
-                if pid not in playlist_ids:
-                    playlist_ids.append(pid)
+                if pid not in fallback_playlists:
+                    fallback_playlists.append(pid)
             elif re.match(r"^(?:PL|OLAK5uy_)[a-zA-Z0-9_-]+$", line):
-                if line not in playlist_ids:
-                    playlist_ids.append(line)
+                if line not in fallback_playlists:
+                    fallback_playlists.append(line)
             else:
                 for pid in extract_playlists_from_channel(line):
-                    if pid not in playlist_ids:
-                        playlist_ids.append(pid)
+                    if pid not in channel_playlists:
+                        channel_playlists.append(pid)
+
+    target_ids = channel_playlists if len(channel_playlists) > 0 else fallback_playlists
 
     albums = []
-    for pid in playlist_ids:
+    for pid in target_ids:
         meta = resolve_playlist_oembed(pid)
         if meta:
             albums.append(meta)

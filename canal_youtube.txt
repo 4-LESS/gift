@@ -1,8 +1,7 @@
-# Pon aquí el @usuario o link del canal de YouTube de ella (ej: https://www.youtube.com/@su_usuario)
-# Todas las playlists públicas que ella cree o guarde desde su app de YouTube / YouTube Music en su celular
-# se sincronizarán solas a albumes.json automáticamente sin tener que pedirte nada ni pegar links en la rocola.
-# También puedes poner links directos de álbumes o playlists (uno por línea):
+# Canal de YouTube / YouTube Music vinculado:
+https://www.youtube.com/@aless_oreo
 
+# Respaldo de álbumes mientras no haya playlists públicas en el perfil:
 https://www.youtube.com/playlist?list=PLSbDLF8wQ3oKcstd9ybCSv2lNm_8NTYkI
 https://www.youtube.com/playlist?list=PLxzSZG7g8c8xYzHnxKrYxJ2FobX8rd2_C
 https://www.youtube.com/playlist?list=PLPRWtKgY2MOu8dPE7sMxQZ07PS1mLqid9
