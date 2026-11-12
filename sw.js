@@ -1,12 +1,12 @@
-const CACHE_NAME = 'holodeck-cache-v2.1';
+const CACHE_NAME = 'holodeck-cache-v2.4';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
+  './mensaje.json',
   './qr_setup.svg'
 ];
 
-// Dominios de anuncios y telemetría a bloquear a nivel de Service Worker
 const AD_DOMAINS = [
   'doubleclick.net',
   'googlesyndication.com',
@@ -38,22 +38,18 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const url = event.request.url;
 
-  // 1. Bloquear peticiones de anuncios conocidas
   if (AD_DOMAINS.some(domain => url.includes(domain))) {
     event.respondWith(new Response('', { status: 204, statusText: 'Blocked by HoloDeck AdFilter' }));
     return;
   }
 
-  // Solo cachear peticiones GET propias (HTML/CSS/SVG/Manifest)
   if (event.request.method !== 'GET' || !url.startsWith(self.location.origin)) {
     return;
   }
 
-  // 2. Estrategia Network-First:
-  // Si hay internet, descarga la última versión de GitHub Pages y actualiza el caché.
-  // Si NO hay internet, sirve instantáneamente la última versión guardada en el celular.
+  // Estrategia Network-First: siempre trae lo último de GitHub Pages y guarda respaldo para modo Offline
   event.respondWith(
-    fetch(event.request)
+    fetch(event.request, { cache: 'no-store' })
       .then(networkResponse => {
         if (networkResponse && networkResponse.status === 200) {
           const responseClone = networkResponse.clone();

@@ -1,9 +1,9 @@
 {
-  "name": "Holographic Jukebox - HoloDeck",
+  "name": "Holographic Jukebox - Gift",
   "short_name": "HoloDeck",
   "start_url": "./index.html",
   "display": "fullscreen",
   "background_color": "#000000",
   "theme_color": "#000000",
-  "orientation": "portrait"
+  "orientation": "any"
 }

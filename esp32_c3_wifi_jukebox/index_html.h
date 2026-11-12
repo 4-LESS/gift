@@ -8,28 +8,31 @@ const char INDEX_HTML[] PROGMEM = R"rawliteral(
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.json">
-<title>Holographic Jukebox - HoloDeck</title>
+<title>HoloDeck</title>
 <style>
+@font-face { font-family: 'Silkscreen'; src: url('data:font/woff2;base64,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') format('woff2'); font-weight: normal; font-style: normal; }
+
 :root {
   --bg: #000000;
-  --fg: #eae6df;
-  --mid: #78756f;
-  --dim: #2e2d2a;
-  --ac: #ff7a00;
-  --ok: #00ff66;
-  --err: #ff3333;
-  --mono: "JetBrains Mono", "IBM Plex Mono", "SF Mono", Consolas, "Liberation Mono", monospace;
+  --fg: #ffffff;
+  --mid: rgba(255, 255, 255, 0.48);
+  --dim: rgba(255, 255, 255, 0.16);
+  --ac: #ff7722;
+  --font: 'Silkscreen', monospace;
+  --snap: cubic-bezier(0.16, 1, 0.3, 1);
+  --pop: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
+  width: 100%;
   height: 100%;
   background: var(--bg);
   overflow: hidden;
   color: var(--fg);
-  font-family: var(--mono);
-  -webkit-font-smoothing: antialiased;
+  font-family: var(--font);
+  -webkit-font-smoothing: none;
   -webkit-user-select: none;
   user-select: none;
 }
@@ -39,367 +42,390 @@ html, body {
   inset: 0;
   display: grid;
   place-items: center;
-  padding: 4vh 5vw;
+  padding: 4vh 6vw;
+  transition: transform 0.35s var(--snap);
 }
 .stage.mirror { transform: scaleX(-1); }
 
-.box {
+/* CONTENEDOR DE VISTAS CON TRANSICIÓN SNAPPY */
+.view-wrap {
   position: relative;
-  container-type: inline-size;
+  width: min(92vw, 760px);
   display: grid;
-  width: clamp(200px, min(86vw, calc(88vh - 220px)), 360px);
+  place-items: center;
 }
 
 .sec {
-  grid-area: 1/1;
-  align-self: center;
+  grid-area: 1 / 1;
+  width: 100%;
   opacity: 0;
+  transform: scale(0.92) translateY(12px);
   pointer-events: none;
-  transition: opacity .35s ease;
+  transition: opacity 0.28s var(--snap), transform 0.32s var(--snap);
 }
 .sec.on {
   opacity: 1;
+  transform: scale(1) translateY(0);
   pointer-events: auto;
 }
 
-/* CABECERA TÉCNICA */
-.hdr {
+/* =========================================================================
+   1. VISTA RELOJ (MODO REPOSO LIMPIO + MENSAJE DEL DÍA OPCIONAL + OFFLINE QR)
+   ========================================================================= */
+.sb-layout {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  font-size: 2.8cqw;
-  letter-spacing: .16em;
-  color: var(--mid);
-  border-bottom: 1px solid var(--dim);
-  padding-bottom: 2.2cqw;
-  margin-bottom: 4.5cqw;
-  gap: 1.5cqw;
+  justify-content: center;
+  gap: 0;
+  transition: gap 0.35s var(--snap);
 }
-.hdr .dot {
-  display: inline-block;
-  width: 1.8cqw;
-  height: 1.8cqw;
-  background: var(--mid);
-  margin-right: 1.5cqw;
-  vertical-align: middle;
+.sb-layout.is-offline {
+  gap: clamp(24px, 5vw, 56px);
 }
-.pl.play .hdr .dot { background: var(--ac); }
 
-.pills-wrap {
+.clock-col {
   display: flex;
-  gap: 1.2cqw;
+  flex-direction: column;
   align-items: center;
+  text-align: center;
+  transition: transform 0.35s var(--snap);
 }
 
-/* PÍLDORAS DE ESTADO (WS + NET) */
-.ws-pill {
-  background: #111;
-  border: 1px solid var(--dim);
-  color: var(--mid);
-  padding: 1.1cqw 2cqw;
-  border-radius: 2px;
-  font-family: inherit;
-  font-size: 2.4cqw;
-  letter-spacing: .1em;
-  display: inline-flex;
+.clock-row {
+  font-size: clamp(54px, 11vw, 96px);
+  line-height: 1;
+  letter-spacing: 0.06em;
+  display: flex;
   align-items: center;
-  gap: 1.3cqw;
-  cursor: pointer;
-  transition: all .2s;
-}
-.ws-pill.online {
-  border-color: var(--ok);
-  color: var(--ok);
-}
-.ws-pill.warn {
-  border-color: var(--ac);
-  color: var(--ac);
-}
-.ws-pill .ws-dot {
-  width: 1.5cqw;
-  height: 1.5cqw;
-  border-radius: 50%;
-  background: var(--mid);
-}
-.ws-pill.online .ws-dot {
-  background: var(--ok);
-  box-shadow: 0 0 6px var(--ok);
-  animation: pulse-ws 1.5s infinite;
-}
-.ws-pill.warn .ws-dot {
-  background: var(--ac);
-  box-shadow: 0 0 6px var(--ac);
-}
-@keyframes pulse-ws { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
-
-/* STANDBY */
-.sb { text-align: left; }
-.clock {
-  font-size: 18.5cqw;
-  font-weight: 300;
-  line-height: .95;
-  letter-spacing: -.03em;
   color: var(--fg);
-  font-variant-numeric: tabular-nums;
-}
-.secbar {
-  height: 1px;
-  margin: 4.5cqw 0 3.5cqw;
-  background: var(--dim);
-  position: relative;
-}
-.secbar i {
-  position: absolute;
-  left: 0;
-  top: -1px;
-  height: 3px;
-  background: var(--ac);
-  width: 0;
-}
-.sb-meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: 3.1cqw;
-  letter-spacing: .18em;
-  color: var(--mid);
 }
 
-/* TARJETA OFFLINE + QR */
-.offline-card {
-  margin-top: 4.5cqw;
-  border: 1px solid var(--ac);
-  background: rgba(255, 122, 0, 0.04);
-  padding: 3.2cqw;
-  display: none;
-  grid-template-columns: 28cqw 1fr;
-  gap: 3.2cqw;
+.colon {
+  color: var(--ac);
+  margin: 0 0.06em;
+  animation: blinkColon 1s steps(2, jump-none) infinite;
+}
+@keyframes blinkColon {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.14; }
+}
+
+.digit-pop {
+  display: inline-block;
+  animation: digitBounce 0.26s var(--pop);
+}
+@keyframes digitBounce {
+  0% { transform: translateY(8px) scale(0.94); opacity: 0.5; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.date-txt {
+  margin-top: 14px;
+  font-size: clamp(12px, 1.8vw, 16px);
+  letter-spacing: 0.26em;
+  color: var(--mid);
+  text-transform: uppercase;
+}
+
+/* MENSAJE DEL DÍA (OCULTO POR DEFECTO SI NO HAY MENSAJE DE HOY) */
+.daily-msg {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 1px dashed transparent;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 12px;
+  max-width: 480px;
+  transform: translateY(8px);
+  transition: all 0.38s var(--snap);
 }
-.offline-card.show {
-  display: grid;
+.daily-msg.show {
+  max-height: 90px;
+  opacity: 1;
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top-color: var(--dim);
+  transform: translateY(0);
 }
-.qr-box {
-  width: 28cqw;
-  height: 28cqw;
-  background: #fff;
-  padding: 1.4cqw;
-  border-radius: 2px;
-  display: grid;
-  place-items: center;
+.daily-msg .heart {
+  color: var(--ac);
+  font-size: clamp(13px, 1.8vw, 17px);
+  display: inline-block;
+  animation: heartPulse 1.6s ease-in-out infinite;
+  flex-shrink: 0;
 }
-.qr-box svg {
+@keyframes heartPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.22); }
+}
+.daily-msg .msg-text {
+  font-size: clamp(11px, 1.5vw, 14px);
+  letter-spacing: 0.12em;
+  line-height: 1.5;
+  color: var(--fg);
+  text-transform: uppercase;
+}
+
+/* PANEL QR OFFLINE (SOLO SE DESPLIEGA CUANDO NO HAY INTERNET) */
+.offline-side {
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 3vw, 32px);
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateX(16px) scale(0.95);
+  transition: all 0.38s var(--snap);
+}
+.sb-layout.is-offline .offline-side {
+  max-width: 420px;
+  opacity: 1;
+  transform: translateX(0) scale(1);
+}
+.v-divider {
+  width: 1px;
+  height: 150px;
+  border-left: 1px dashed var(--dim);
+  flex-shrink: 0;
+}
+.qr-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.qr-frame {
+  width: clamp(96px, 14vw, 124px);
+  height: clamp(96px, 14vw, 124px);
+  background: #ffffff;
+  padding: 7px;
+  border: 2px solid var(--ac);
+  flex-shrink: 0;
+}
+.qr-frame svg {
   width: 100%;
   height: 100%;
   display: block;
 }
-.offline-info {
+.qr-meta {
   display: flex;
   flex-direction: column;
-  gap: 1.4cqw;
+  gap: 7px;
+  text-align: left;
+  min-width: 165px;
 }
-.offline-title {
-  font-size: 3cqw;
+.qr-title {
+  font-size: clamp(11px, 1.5vw, 14px);
   color: var(--ac);
-  letter-spacing: .14em;
-  font-weight: 600;
+  letter-spacing: 0.14em;
 }
-.offline-desc {
-  font-size: 2.5cqw;
+.qr-sub {
+  font-size: clamp(10px, 1.25vw, 12px);
   color: var(--fg);
-  line-height: 1.35;
-  letter-spacing: .06em;
+  line-height: 1.45;
+  letter-spacing: 0.08em;
 }
-.offline-ver {
-  font-size: 2.3cqw;
+.qr-ver {
+  font-size: clamp(9px, 1.1vw, 11px);
   color: var(--mid);
-  letter-spacing: .1em;
-  border-top: 1px solid var(--dim);
-  padding-top: 1.4cqw;
-  margin-top: 0.5cqw;
+  letter-spacing: 0.1em;
+  margin-top: 4px;
 }
 
-.sys {
-  margin-top: 6cqw;
-  padding: 2.8cqw 0;
-  border-top: 1px solid var(--dim);
-  border-bottom: 1px solid var(--dim);
+/* =========================================================================
+   2. VISTA REPRODUCTOR HORIZONTAL (ÁLBUM FLOTANDO | LYRICS + AVANCE + CONTROLES)
+   ========================================================================= */
+.pl-grid {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  font-size: 3cqw;
-  letter-spacing: .18em;
-  color: var(--fg);
-}
-.sys-ind {
-  color: var(--ac);
-  animation: pulse 2s steps(2, jump-none) infinite;
-}
-@keyframes pulse { 0% { opacity: 1; } 50% { opacity: .15; } }
-
-.ver-footer {
-  margin-top: 2.5cqw;
-  display: flex;
   justify-content: space-between;
-  font-size: 2.3cqw;
-  letter-spacing: .12em;
-  color: var(--mid);
+  gap: clamp(24px, 5vw, 48px);
+  width: 100%;
 }
 
-/* PLAYER */
-.pl {
+/* Columna Izquierda: Foto del Álbum Redondeada Flotando + Título/Artista */
+.pl-left {
+  width: clamp(150px, 26vw, 210px);
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-}
-.fade { transition: opacity .2s ease; }
-.swap .fade { opacity: 0; }
-
-.frame {
-  aspect-ratio: 1;
-  position: relative;
-  border: 1px solid var(--dim);
-  display: grid;
-  place-items: center;
-  margin-bottom: 4.5cqw;
-}
-.frame::before, .frame::after {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  pointer-events: none;
-  border: 1.5px solid var(--fg);
-  clip-path: polygon(
-    0 0, 4cqw 0, 4cqw 4cqw, 0 4cqw, 0 0,
-    calc(100% - 4cqw) 0, 100% 0, 100% 4cqw, calc(100% - 4cqw) 4cqw, calc(100% - 4cqw) 0,
-    0 calc(100% - 4cqw), 4cqw calc(100% - 4cqw), 4cqw 100%, 0 100%, 0 calc(100% - 4cqw),
-    calc(100% - 4cqw) calc(100% - 4cqw), 100% calc(100% - 4cqw), 100% 100%, calc(100% - 4cqw) 100%, calc(100% - 4cqw) calc(100% - 4cqw)
-  );
-}
-.frame-tag {
-  position: absolute;
-  top: 2.5cqw;
-  left: 3cqw;
-  font-size: 2.5cqw;
-  letter-spacing: .15em;
-  color: var(--mid);
-}
-.frame-rpm {
-  position: absolute;
-  bottom: 2.5cqw;
-  right: 3cqw;
-  font-size: 2.6cqw;
-  letter-spacing: .16em;
-  color: var(--mid);
+  align-items: center;
+  text-align: center;
 }
 
-.art {
-  width: 78%;
-  height: 78%;
-  border-radius: 50%;
+.album-float-wrap {
+  width: clamp(130px, 22vw, 176px);
+  height: clamp(130px, 22vw, 176px);
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  background: #0d0d0d;
   position: relative;
-  animation: spin 6s linear infinite;
+  margin-bottom: 16px;
+  box-shadow: 0 12px 30px rgba(255, 119, 34, 0.14);
+  animation: albumFloat 4.2s ease-in-out infinite;
+  transition: transform 0.28s var(--pop), border-color 0.25s ease;
+}
+.pl.paused .album-float-wrap {
   animation-play-state: paused;
+  border-color: rgba(255, 255, 255, 0.15);
 }
-.pl.play .art { animation-play-state: running; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.album-float-wrap.track-pop {
+  animation: trackSwapPop 0.34s var(--pop);
+}
+@keyframes albumFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes trackSwapPop {
+  0% { transform: scale(0.84) translateY(8px); opacity: 0.4; }
+  100% { transform: scale(1) translateY(0px); opacity: 1; }
+}
 
-.art svg {
+.album-img {
   width: 100%;
   height: 100%;
-  fill: none;
-  stroke: var(--fg);
-  stroke-width: 1;
-  stroke-linecap: butt;
+  object-fit: cover;
+  display: block;
 }
-.art .groove { stroke: var(--dim); stroke-width: .75; }
-.art .accent { stroke: var(--ac); stroke-width: 1.4; }
-.art .solid { fill: var(--fg); stroke: none; }
-.art .solid-ac { fill: var(--ac); stroke: none; }
+.album-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 30% 30%, #261710, #080808);
+}
 
-.meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 3cqw;
-  border-top: 1px solid var(--dim);
-  border-bottom: 1px solid var(--dim);
-  padding: 2.6cqw 0;
-  margin-bottom: 4cqw;
+.song-title {
+  font-size: clamp(12px, 1.8vw, 16px);
+  color: var(--fg);
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+  width: 100%;
   white-space: nowrap;
   overflow: hidden;
-}
-.meta b {
-  font-size: 4cqw;
-  font-weight: 500;
-  letter-spacing: .1em;
-  color: var(--fg);
-  overflow: hidden;
   text-overflow: ellipsis;
+  transition: transform 0.24s var(--snap), opacity 0.24s ease;
 }
-.meta span {
-  font-size: 3.2cqw;
-  letter-spacing: .16em;
+.song-artist {
+  font-size: clamp(10px, 1.4vw, 13px);
   color: var(--ac);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-top: 6px;
+  width: 100%;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.pl-divider {
+  width: 1px;
+  height: clamp(160px, 28vw, 220px);
+  border-left: 1px dashed var(--dim);
   flex-shrink: 0;
 }
 
-.vis {
-  height: 11cqw;
+/* Columna Derecha: Lyrics + Barra de Avance + Controles */
+.pl-right {
+  flex: 1;
+  min-width: 0;
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
   justify-content: space-between;
-  padding-bottom: 1px;
-  border-bottom: 1px solid var(--dim);
-  margin-bottom: 4cqw;
+  height: clamp(175px, 29vw, 225px);
 }
-.vis i {
-  display: block;
-  width: 1.2cqw;
-  min-height: 2px;
-  background: var(--fg);
-}
-.vis i.peak { background: var(--ac); }
 
-.tl { margin-bottom: 4.5cqw; }
-.line {
-  height: 1px;
-  background: var(--dim);
-  position: relative;
-  margin: 2cqw 0 3cqw;
+/* Visor de Lyrics Sincronizados */
+.lyrics-box {
+  height: 92px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--dim);
+  padding-bottom: 10px;
+  overflow: hidden;
 }
-.line .f {
+.lyr-line {
+  font-size: clamp(10px, 1.35vw, 13px);
+  color: rgba(255, 255, 255, 0.28);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: transform 0.26s var(--snap), opacity 0.26s ease, color 0.26s ease;
+}
+.lyr-line.curr {
+  font-size: clamp(12px, 1.65vw, 15px);
+  color: var(--fg);
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.35;
+}
+.lyr-line.curr .lyr-arrow {
+  color: var(--ac);
+  margin-right: 6px;
+}
+.lyr-step {
+  animation: lyricSlide 0.24s var(--snap);
+}
+@keyframes lyricSlide {
+  0% { transform: translateY(9px); opacity: 0.35; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Barra de Avance */
+.tl-wrap {
+  width: 100%;
+  margin: 8px 0;
+}
+.tl-bar {
+  height: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  position: relative;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.tl-fill {
   position: absolute;
   left: 0;
   top: 0;
-  height: 1px;
+  height: 2px;
   background: var(--fg);
-  width: 0;
+  width: 0%;
+  transition: width 0.2s linear;
 }
-.head {
+.tl-head {
   position: absolute;
   top: 50%;
-  left: 0;
-  width: 2px;
-  height: 3.6cqw;
+  left: 0%;
+  width: 4px;
+  height: 12px;
   background: var(--ac);
   transform: translate(-50%, -50%);
+  transition: left 0.2s linear;
 }
-.times {
+.tl-times {
   display: flex;
   justify-content: space-between;
-  font-size: 3.1cqw;
-  letter-spacing: .14em;
+  font-size: clamp(10px, 1.3vw, 12px);
+  letter-spacing: 0.14em;
   color: var(--mid);
-  font-variant-numeric: tabular-nums;
 }
-.times #tc { color: var(--fg); }
+.tl-times #tc { color: var(--fg); }
 
+/* Controles de Reproducción con respuesta Snappy */
 .ctl {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
 }
 .ctl button {
   background: none;
@@ -408,95 +434,65 @@ html, body {
   color: var(--mid);
   display: grid;
   place-items: center;
-  width: 9.5cqw;
-  height: 9.5cqw;
-  transition: color .2s, border-color .2s;
+  width: clamp(32px, 5vw, 40px);
+  height: clamp(32px, 5vw, 38px);
+  transition: transform 0.18s var(--pop), color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
 }
 .ctl button:hover { color: var(--fg); }
+.ctl button:active, .ctl button.btn-tap {
+  transform: scale(0.84);
+}
 .ctl svg {
-  width: 68%;
-  height: 68%;
+  width: 58%;
+  height: 58%;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.6;
+  stroke-width: 1.9;
   stroke-linecap: square;
-  stroke-linejoin: miter;
 }
-.ctl .tog { opacity: .5; }
 .ctl .tog.act {
-  opacity: 1;
   color: var(--ac);
   border-color: var(--dim);
 }
 .ctl .pp {
-  width: 14cqw;
-  height: 14cqw;
-  color: var(--fg);
-  border: 1px solid var(--fg);
-}
-.pl.play .ctl .pp {
+  width: clamp(44px, 6.5vw, 52px);
+  height: clamp(36px, 5.5vw, 42px);
   color: var(--ac);
-  border-color: var(--ac);
+  border: 1.5px solid var(--ac);
 }
-.pp svg { width: 55%; height: 55%; }
-.pp .ic-pause { display: none; }
-.play .pp .ic-pause { display: block; }
-.play .pp .ic-play { display: none; }
-
-.vol {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: -8.5cqw;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 3.2cqw;
-  letter-spacing: .16em;
+.pl.paused .ctl .pp {
   color: var(--fg);
-  background: #000;
-  border: 1px solid var(--dim);
-  padding: 1.4cqw 2.5cqw;
-  opacity: 0;
-  transition: opacity .3s;
-  pointer-events: none;
-  z-index: 10;
+  border-color: var(--fg);
 }
-.vol.show {
-  opacity: 1;
-  transition: opacity .05s;
-}
-.vol-bars { letter-spacing: .06em; color: var(--ac); }
-.vol-bars u { text-decoration: none; color: var(--dim); }
+.pp .ic-play { display: none; }
+.pl.paused .pp .ic-play { display: block; }
+.pl.paused .pp .ic-pause { display: none; }
 
-/* BARRA SUPERIOR DE MONITOREO TÉCNICO */
-.status-log {
+/* OVERLAY DE VOLUMEN FLOTANTE (SOLO APARECE AL MOVER EL ENCODER) */
+.vol-toast {
   position: fixed;
-  top: 10px;
-  right: 12px;
-  font-size: 10px;
-  letter-spacing: .08em;
-  color: var(--mid);
-  background: rgba(0,0,0,0.88);
-  border: 1px solid var(--dim);
-  padding: 5px 10px;
-  border-radius: 2px;
-  z-index: 99;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-16px) scale(0.92);
+  background: #000000;
+  border: 1px solid var(--ac);
+  padding: 8px 18px;
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 14px;
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s var(--snap), transform 0.25s var(--pop);
+  z-index: 50;
 }
-.status-log .ip-input {
-  background: #111;
-  border: 1px solid var(--dim);
-  color: var(--fg);
-  font-family: inherit;
-  font-size: 10px;
-  padding: 2px 6px;
-  width: 105px;
-  border-radius: 2px;
+.vol-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) scale(1);
 }
-.status-log .last-cmd { color: var(--ac); font-weight: bold; }
+.vol-bars { color: var(--ac); letter-spacing: 0.08em; }
+.vol-bars u { text-decoration: none; color: rgba(255,255,255,0.2); }
 
 /* REPRODUCTOR YOUTUBE OCULTO */
 #yt-wrap {
@@ -509,171 +505,227 @@ html, body {
   pointer-events: none;
   overflow: hidden;
 }
-
-.hint {
-  position: fixed;
-  bottom: 8px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: 10px;
-  color: #333;
-  letter-spacing: .12em;
-}
 </style>
 </head>
 <body>
 
-<div class="status-log">
-  <span>ESP32:</span>
-  <input class="ip-input" id="ipInput" type="text" placeholder="192.168.1.XX">
-  <span id="wsStatusTxt" style="color:var(--mid)">INICIANDO</span> |
-  <span>NET:</span> <span id="netStatusTxt" style="color:var(--mid)">...</span> |
-  <span>CMD:</span> <span class="last-cmd" id="lastCmdTxt">---</span>
+<!-- Notificación flotante de volumen (solo al girar la perilla) -->
+<div class="vol-toast" id="vol">
+  <span>VOL</span>
+  <span class="vol-bars" id="vbars"></span>
+  <span id="vnum">70%</span>
 </div>
 
 <!-- Contenedor invisible para YouTube IFrame API (Audio Stream) -->
 <div id="yt-wrap"><div id="yt-player"></div></div>
 
 <div class="stage" id="stage">
- <div class="box">
-  <div class="vol" id="vol">
-   <span>GAIN</span>
-   <span class="vol-bars" id="vbars"></span>
-   <span id="vnum">70%</span>
-  </div>
+  <div class="view-wrap">
 
-  <!-- STANDBY -->
-  <section class="sec sb on" id="sb">
-   <div class="hdr">
-    <span>UNIT // HG-01</span>
-    <div class="pills-wrap">
-      <button class="ws-pill" id="netPillSb" title="Alternar QR Wi-Fi">
-        <i class="ws-dot"></i><span class="net-lbl">ONLINE</span>
-      </button>
-      <button class="ws-pill" id="wsPillSb">
-        <i class="ws-dot"></i><span class="ws-lbl">WS</span>
-      </button>
-    </div>
-   </div>
+    <!-- ===================================================================
+         SECCIÓN 1: RELOJ + FECHA + MENSAJE DEL DÍA + QR OFFLINE AUTOMÁTICO
+         =================================================================== -->
+    <section class="sec on" id="sb">
+      <div class="sb-layout" id="sbLayout">
+        
+        <!-- Columna del Reloj -->
+        <div class="clock-col">
+          <div class="clock-row">
+            <span id="clkH">00</span>
+            <span class="colon">:</span>
+            <span id="clkM">00</span>
+          </div>
+          <div class="date-txt" id="date">--- -- ---</div>
 
-   <div class="clock" id="clock">00:00:00</div>
-   <div class="secbar"><i id="sbar"></i></div>
-   <div class="sb-meta">
-    <span id="date">--- -- ---</span>
-    <span id="modeLabel">YT MUSIC // READY</span>
-   </div>
+          <!-- Espacio para Mensaje Bonito del Día (Se oculta limpio si no hay mensaje de hoy) -->
+          <div class="daily-msg" id="dailyMsgBox">
+            <span class="heart">♥</span>
+            <span class="msg-text" id="dailyMsgTxt"></span>
+            <span class="heart">♥</span>
+          </div>
+        </div>
 
-   <!-- TARJETA OFFLINE CON QR INTEGRADO (NO REQUIERE INTERNET) -->
-   <div class="offline-card" id="offlineCard">
-    <div class="qr-box" id="qrContainer">
-      <!-- SVG embebido de WIFI:T:WPA;S:HoloJukebox-Setup;P:12345678;; -->
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 174 174">
-        <rect fill="#ffffff" x="0" y="0" width="174" height="174"/>
-        <path fill="#000000" d="M 0,0 l 6,0 0,6 -6,0 z M 6,0 l 6,0 0,6 -6,0 z M 12,0 l 6,0 0,6 -6,0 z M 18,0 l 6,0 0,6 -6,0 z M 24,0 l 6,0 0,6 -6,0 z M 30,0 l 6,0 0,6 -6,0 z M 36,0 l 6,0 0,6 -6,0 z M 60,0 l 6,0 0,6 -6,0 z M 72,0 l 6,0 0,6 -6,0 z M 108,0 l 6,0 0,6 -6,0 z M 132,0 l 6,0 0,6 -6,0 z M 138,0 l 6,0 0,6 -6,0 z M 144,0 l 6,0 0,6 -6,0 z M 150,0 l 6,0 0,6 -6,0 z M 156,0 l 6,0 0,6 -6,0 z M 162,0 l 6,0 0,6 -6,0 z M 168,0 l 6,0 0,6 -6,0 z M 0,6 l 6,0 0,6 -6,0 z M 36,6 l 6,0 0,6 -6,0 z M 48,6 l 6,0 0,6 -6,0 z M 60,6 l 6,0 0,6 -6,0 z M 78,6 l 6,0 0,6 -6,0 z M 90,6 l 6,0 0,6 -6,0 z M 96,6 l 6,0 0,6 -6,0 z M 102,6 l 6,0 0,6 -6,0 z M 108,6 l 6,0 0,6 -6,0 z M 114,6 l 6,0 0,6 -6,0 z M 120,6 l 6,0 0,6 -6,0 z M 132,6 l 6,0 0,6 -6,0 z M 168,6 l 6,0 0,6 -6,0 z M 0,12 l 6,0 0,6 -6,0 z M 12,12 l 6,0 0,6 -6,0 z M 18,12 l 6,0 0,6 -6,0 z M 24,12 l 6,0 0,6 -6,0 z M 36,12 l 6,0 0,6 -6,0 z M 72,12 l 6,0 0,6 -6,0 z M 96,12 l 6,0 0,6 -6,0 z M 102,12 l 6,0 0,6 -6,0 z M 108,12 l 6,0 0,6 -6,0 z M 114,12 l 6,0 0,6 -6,0 z M 120,12 l 6,0 0,6 -6,0 z M 132,12 l 6,0 0,6 -6,0 z M 144,12 l 6,0 0,6 -6,0 z M 150,12 l 6,0 0,6 -6,0 z M 156,12 l 6,0 0,6 -6,0 z M 168,12 l 6,0 0,6 -6,0 z M 0,18 l 6,0 0,6 -6,0 z M 12,18 l 6,0 0,6 -6,0 z M 18,18 l 6,0 0,6 -6,0 z M 24,18 l 6,0 0,6 -6,0 z M 36,18 l 6,0 0,6 -6,0 z M 48,18 l 6,0 0,6 -6,0 z M 54,18 l 6,0 0,6 -6,0 z M 60,18 l 6,0 0,6 -6,0 z M 72,18 l 6,0 0,6 -6,0 z M 78,18 l 6,0 0,6 -6,0 z M 84,18 l 6,0 0,6 -6,0 z M 90,18 l 6,0 0,6 -6,0 z M 96,18 l 6,0 0,6 -6,0 z M 120,18 l 6,0 0,6 -6,0 z M 132,18 l 6,0 0,6 -6,0 z M 144,18 l 6,0 0,6 -6,0 z M 150,18 l 6,0 0,6 -6,0 z M 156,18 l 6,0 0,6 -6,0 z M 168,18 l 6,0 0,6 -6,0 z M 0,24 l 6,0 0,6 -6,0 z M 12,24 l 6,0 0,6 -6,0 z M 18,24 l 6,0 0,6 -6,0 z M 24,24 l 6,0 0,6 -6,0 z M 36,24 l 6,0 0,6 -6,0 z M 54,24 l 6,0 0,6 -6,0 z M 84,24 l 6,0 0,6 -6,0 z M 114,24 l 6,0 0,6 -6,0 z M 120,24 l 6,0 0,6 -6,0 z M 132,24 l 6,0 0,6 -6,0 z M 144,24 l 6,0 0,6 -6,0 z M 150,24 l 6,0 0,6 -6,0 z M 156,24 l 6,0 0,6 -6,0 z M 168,24 l 6,0 0,6 -6,0 z M 0,30 l 6,0 0,6 -6,0 z M 36,30 l 6,0 0,6 -6,0 z M 48,30 l 6,0 0,6 -6,0 z M 54,30 l 6,0 0,6 -6,0 z M 66,30 l 6,0 0,6 -6,0 z M 72,30 l 6,0 0,6 -6,0 z M 78,30 l 6,0 0,6 -6,0 z M 96,30 l 6,0 0,6 -6,0 z M 114,30 l 6,0 0,6 -6,0 z M 132,30 l 6,0 0,6 -6,0 z M 168,30 l 6,0 0,6 -6,0 z M 0,36 l 6,0 0,6 -6,0 z M 6,36 l 6,0 0,6 -6,0 z M 12,36 l 6,0 0,6 -6,0 z M 18,36 l 6,0 0,6 -6,0 z M 24,36 l 6,0 0,6 -6,0 z M 30,36 l 6,0 0,6 -6,0 z M 36,36 l 6,0 0,6 -6,0 z M 48,36 l 6,0 0,6 -6,0 z M 60,36 l 6,0 0,6 -6,0 z M 72,36 l 6,0 0,6 -6,0 z M 84,36 l 6,0 0,6 -6,0 z M 96,36 l 6,0 0,6 -6,0 z M 108,36 l 6,0 0,6 -6,0 z M 120,36 l 6,0 0,6 -6,0 z M 132,36 l 6,0 0,6 -6,0 z M 138,36 l 6,0 0,6 -6,0 z M 144,36 l 6,0 0,6 -6,0 z M 150,36 l 6,0 0,6 -6,0 z M 156,36 l 6,0 0,6 -6,0 z M 162,36 l 6,0 0,6 -6,0 z M 168,36 l 6,0 0,6 -6,0 z M 54,42 l 6,0 0,6 -6,0 z M 60,42 l 6,0 0,6 -6,0 z M 66,42 l 6,0 0,6 -6,0 z M 96,42 l 6,0 0,6 -6,0 z M 114,42 l 6,0 0,6 -6,0 z M 120,42 l 6,0 0,6 -6,0 z M 0,48 l 6,0 0,6 -6,0 z M 6,48 l 6,0 0,6 -6,0 z M 12,48 l 6,0 0,6 -6,0 z M 18,48 l 6,0 0,6 -6,0 z M 24,48 l 6,0 0,6 -6,0 z M 36,48 l 6,0 0,6 -6,0 z M 42,48 l 6,0 0,6 -6,0 z M 48,48 l 6,0 0,6 -6,0 z M 54,48 l 6,0 0,6 -6,0 z M 66,48 l 6,0 0,6 -6,0 z M 90,48 l 6,0 0,6 -6,0 z M 102,48 l 6,0 0,6 -6,0 z M 108,48 l 6,0 0,6 -6,0 z M 126,48 l 6,0 0,6 -6,0 z M 138,48 l 6,0 0,6 -6,0 z M 150,48 l 6,0 0,6 -6,0 z M 162,48 l 6,0 0,6 -6,0 z M 48,54 l 6,0 0,6 -6,0 z M 60,54 l 6,0 0,6 -6,0 z M 72,54 l 6,0 0,6 -6,0 z M 90,54 l 6,0 0,6 -6,0 z M 114,54 l 6,0 0,6 -6,0 z M 126,54 l 6,0 0,6 -6,0 z M 150,54 l 6,0 0,6 -6,0 z M 168,54 l 6,0 0,6 -6,0 z M 24,60 l 6,0 0,6 -6,0 z M 36,60 l 6,0 0,6 -6,0 z M 42,60 l 6,0 0,6 -6,0 z M 60,60 l 6,0 0,6 -6,0 z M 90,60 l 6,0 0,6 -6,0 z M 102,60 l 6,0 0,6 -6,0 z M 144,60 l 6,0 0,6 -6,0 z M 156,60 l 6,0 0,6 -6,0 z M 168,60 l 6,0 0,6 -6,0 z M 0,66 l 6,0 0,6 -6,0 z M 12,66 l 6,0 0,6 -6,0 z M 18,66 l 6,0 0,6 -6,0 z M 24,66 l 6,0 0,6 -6,0 z M 30,66 l 6,0 0,6 -6,0 z M 48,66 l 6,0 0,6 -6,0 z M 72,66 l 6,0 0,6 -6,0 z M 84,66 l 6,0 0,6 -6,0 z M 108,66 l 6,0 0,6 -6,0 z M 114,66 l 6,0 0,6 -6,0 z M 120,66 l 6,0 0,6 -6,0 z M 126,66 l 6,0 0,6 -6,0 z M 132,66 l 6,0 0,6 -6,0 z M 138,66 l 6,0 0,6 -6,0 z M 144,66 l 6,0 0,6 -6,0 z M 150,66 l 6,0 0,6 -6,0 z M 168,66 l 6,0 0,6 -6,0 z M 12,72 l 6,0 0,6 -6,0 z M 24,72 l 6,0 0,6 -6,0 z M 36,72 l 6,0 0,6 -6,0 z M 54,72 l 6,0 0,6 -6,0 z M 60,72 l 6,0 0,6 -6,0 z M 72,72 l 6,0 0,6 -6,0 z M 90,72 l 6,0 0,6 -6,0 z M 120,72 l 6,0 0,6 -6,0 z M 132,72 l 6,0 0,6 -6,0 z M 150,72 l 6,0 0,6 -6,0 z M 156,72 l 6,0 0,6 -6,0 z M 162,72 l 6,0 0,6 -6,0 z M 168,72 l 6,0 0,6 -6,0 z M 12,78 l 6,0 0,6 -6,0 z M 42,78 l 6,0 0,6 -6,0 z M 48,78 l 6,0 0,6 -6,0 z M 54,78 l 6,0 0,6 -6,0 z M 78,78 l 6,0 0,6 -6,0 z M 84,78 l 6,0 0,6 -6,0 z M 90,78 l 6,0 0,6 -6,0 z M 120,78 l 6,0 0,6 -6,0 z M 132,78 l 6,0 0,6 -6,0 z M 150,78 l 6,0 0,6 -6,0 z M 156,78 l 6,0 0,6 -6,0 z M 162,78 l 6,0 0,6 -6,0 z M 168,78 l 6,0 0,6 -6,0 z M 12,84 l 6,0 0,6 -6,0 z M 18,84 l 6,0 0,6 -6,0 z M 30,84 l 6,0 0,6 -6,0 z M 36,84 l 6,0 0,6 -6,0 z M 54,84 l 6,0 0,6 -6,0 z M 66,84 l 6,0 0,6 -6,0 z M 72,84 l 6,0 0,6 -6,0 z M 84,84 l 6,0 0,6 -6,0 z M 90,84 l 6,0 0,6 -6,0 z M 96,84 l 6,0 0,6 -6,0 z M 102,84 l 6,0 0,6 -6,0 z M 138,84 l 6,0 0,6 -6,0 z M 156,84 l 6,0 0,6 -6,0 z M 0,90 l 6,0 0,6 -6,0 z M 18,90 l 6,0 0,6 -6,0 z M 48,90 l 6,0 0,6 -6,0 z M 54,90 l 6,0 0,6 -6,0 z M 66,90 l 6,0 0,6 -6,0 z M 78,90 l 6,0 0,6 -6,0 z M 84,90 l 6,0 0,6 -6,0 z M 90,90 l 6,0 0,6 -6,0 z M 114,90 l 6,0 0,6 -6,0 z M 120,90 l 6,0 0,6 -6,0 z M 126,90 l 6,0 0,6 -6,0 z M 132,90 l 6,0 0,6 -6,0 z M 144,90 l 6,0 0,6 -6,0 z M 150,90 l 6,0 0,6 -6,0 z M 156,90 l 6,0 0,6 -6,0 z M 6,96 l 6,0 0,6 -6,0 z M 30,96 l 6,0 0,6 -6,0 z M 36,96 l 6,0 0,6 -6,0 z M 42,96 l 6,0 0,6 -6,0 z M 48,96 l 6,0 0,6 -6,0 z M 54,96 l 6,0 0,6 -6,0 z M 66,96 l 6,0 0,6 -6,0 z M 90,96 l 6,0 0,6 -6,0 z M 96,96 l 6,0 0,6 -6,0 z M 120,96 l 6,0 0,6 -6,0 z M 132,96 l 6,0 0,6 -6,0 z M 138,96 l 6,0 0,6 -6,0 z M 156,96 l 6,0 0,6 -6,0 z M 0,102 l 6,0 0,6 -6,0 z M 6,102 l 6,0 0,6 -6,0 z M 12,102 l 6,0 0,6 -6,0 z M 18,102 l 6,0 0,6 -6,0 z M 24,102 l 6,0 0,6 -6,0 z M 42,102 l 6,0 0,6 -6,0 z M 54,102 l 6,0 0,6 -6,0 z M 72,102 l 6,0 0,6 -6,0 z M 78,102 l 6,0 0,6 -6,0 z M 84,102 l 6,0 0,6 -6,0 z M 90,102 l 6,0 0,6 -6,0 z M 108,102 l 6,0 0,6 -6,0 z M 114,102 l 6,0 0,6 -6,0 z M 126,102 l 6,0 0,6 -6,0 z M 144,102 l 6,0 0,6 -6,0 z M 150,102 l 6,0 0,6 -6,0 z M 162,102 l 6,0 0,6 -6,0 z M 168,102 l 6,0 0,6 -6,0 z M 0,108 l 6,0 0,6 -6,0 z M 12,108 l 6,0 0,6 -6,0 z M 18,108 l 6,0 0,6 -6,0 z M 24,108 l 6,0 0,6 -6,0 z M 30,108 l 6,0 0,6 -6,0 z M 36,108 l 6,0 0,6 -6,0 z M 48,108 l 6,0 0,6 -6,0 z M 54,108 l 6,0 0,6 -6,0 z M 60,108 l 6,0 0,6 -6,0 z M 84,108 l 6,0 0,6 -6,0 z M 90,108 l 6,0 0,6 -6,0 z M 96,108 l 6,0 0,6 -6,0 z M 102,108 l 6,0 0,6 -6,0 z M 114,108 l 6,0 0,6 -6,0 z M 138,108 l 6,0 0,6 -6,0 z M 144,108 l 6,0 0,6 -6,0 z M 162,108 l 6,0 0,6 -6,0 z M 0,114 l 6,0 0,6 -6,0 z M 12,114 l 6,0 0,6 -6,0 z M 42,114 l 6,0 0,6 -6,0 z M 48,114 l 6,0 0,6 -6,0 z M 72,114 l 6,0 0,6 -6,0 z M 78,114 l 6,0 0,6 -6,0 z M 84,114 l 6,0 0,6 -6,0 z M 90,114 l 6,0 0,6 -6,0 z M 114,114 l 6,0 0,6 -6,0 z M 120,114 l 6,0 0,6 -6,0 z M 126,114 l 6,0 0,6 -6,0 z M 132,114 l 6,0 0,6 -6,0 z M 138,114 l 6,0 0,6 -6,0 z M 144,114 l 6,0 0,6 -6,0 z M 150,114 l 6,0 0,6 -6,0 z M 168,114 l 6,0 0,6 -6,0 z M 0,120 l 6,0 0,6 -6,0 z M 18,120 l 6,0 0,6 -6,0 z M 36,120 l 6,0 0,6 -6,0 z M 42,120 l 6,0 0,6 -6,0 z M 54,120 l 6,0 0,6 -6,0 z M 60,120 l 6,0 0,6 -6,0 z M 72,120 l 6,0 0,6 -6,0 z M 120,120 l 6,0 0,6 -6,0 z M 126,120 l 6,0 0,6 -6,0 z M 132,120 l 6,0 0,6 -6,0 z M 138,120 l 6,0 0,6 -6,0 z M 144,120 l 6,0 0,6 -6,0 z M 156,120 l 6,0 0,6 -6,0 z M 162,120 l 6,0 0,6 -6,0 z M 168,120 l 6,0 0,6 -6,0 z M 48,126 l 6,0 0,6 -6,0 z M 54,126 l 6,0 0,6 -6,0 z M 90,126 l 6,0 0,6 -6,0 z M 96,126 l 6,0 0,6 -6,0 z M 114,126 l 6,0 0,6 -6,0 z M 120,126 l 6,0 0,6 -6,0 z M 144,126 l 6,0 0,6 -6,0 z M 150,126 l 6,0 0,6 -6,0 z M 156,126 l 6,0 0,6 -6,0 z M 0,132 l 6,0 0,6 -6,0 z M 6,132 l 6,0 0,6 -6,0 z M 12,132 l 6,0 0,6 -6,0 z M 18,132 l 6,0 0,6 -6,0 z M 24,132 l 6,0 0,6 -6,0 z M 30,132 l 6,0 0,6 -6,0 z M 36,132 l 6,0 0,6 -6,0 z M 48,132 l 6,0 0,6 -6,0 z M 54,132 l 6,0 0,6 -6,0 z M 66,132 l 6,0 0,6 -6,0 z M 72,132 l 6,0 0,6 -6,0 z M 90,132 l 6,0 0,6 -6,0 z M 96,132 l 6,0 0,6 -6,0 z M 102,132 l 6,0 0,6 -6,0 z M 120,132 l 6,0 0,6 -6,0 z M 132,132 l 6,0 0,6 -6,0 z M 144,132 l 6,0 0,6 -6,0 z M 150,132 l 6,0 0,6 -6,0 z M 156,132 l 6,0 0,6 -6,0 z M 0,138 l 6,0 0,6 -6,0 z M 36,138 l 6,0 0,6 -6,0 z M 60,138 l 6,0 0,6 -6,0 z M 66,138 l 6,0 0,6 -6,0 z M 90,138 l 6,0 0,6 -6,0 z M 114,138 l 6,0 0,6 -6,0 z M 120,138 l 6,0 0,6 -6,0 z M 144,138 l 6,0 0,6 -6,0 z M 150,138 l 6,0 0,6 -6,0 z M 0,144 l 6,0 0,6 -6,0 z M 12,144 l 6,0 0,6 -6,0 z M 18,144 l 6,0 0,6 -6,0 z M 24,144 l 6,0 0,6 -6,0 z M 36,144 l 6,0 0,6 -6,0 z M 48,144 l 6,0 0,6 -6,0 z M 66,144 l 6,0 0,6 -6,0 z M 90,144 l 6,0 0,6 -6,0 z M 108,144 l 6,0 0,6 -6,0 z M 120,144 l 6,0 0,6 -6,0 z M 126,144 l 6,0 0,6 -6,0 z M 132,144 l 6,0 0,6 -6,0 z M 138,144 l 6,0 0,6 -6,0 z M 144,144 l 6,0 0,6 -6,0 z M 0,150 l 6,0 0,6 -6,0 z M 12,150 l 6,0 0,6 -6,0 z M 18,150 l 6,0 0,6 -6,0 z M 24,150 l 6,0 0,6 -6,0 z M 36,150 l 6,0 0,6 -6,0 z M 48,150 l 6,0 0,6 -6,0 z M 60,150 l 6,0 0,6 -6,0 z M 72,150 l 6,0 0,6 -6,0 z M 78,150 l 6,0 0,6 -6,0 z M 90,150 l 6,0 0,6 -6,0 z M 108,150 l 6,0 0,6 -6,0 z M 114,150 l 6,0 0,6 -6,0 z M 120,150 l 6,0 0,6 -6,0 z M 132,150 l 6,0 0,6 -6,0 z M 138,150 l 6,0 0,6 -6,0 z M 162,150 l 6,0 0,6 -6,0 z M 0,156 l 6,0 0,6 -6,0 z M 12,156 l 6,0 0,6 -6,0 z M 18,156 l 6,0 0,6 -6,0 z M 24,156 l 6,0 0,6 -6,0 z M 36,156 l 6,0 0,6 -6,0 z M 48,156 l 6,0 0,6 -6,0 z M 54,156 l 6,0 0,6 -6,0 z M 78,156 l 6,0 0,6 -6,0 z M 84,156 l 6,0 0,6 -6,0 z M 90,156 l 6,0 0,6 -6,0 z M 102,156 l 6,0 0,6 -6,0 z M 108,156 l 6,0 0,6 -6,0 z M 114,156 l 6,0 0,6 -6,0 z M 132,156 l 6,0 0,6 -6,0 z M 150,156 l 6,0 0,6 -6,0 z M 162,156 l 6,0 0,6 -6,0 z M 0,162 l 6,0 0,6 -6,0 z M 36,162 l 6,0 0,6 -6,0 z M 48,162 l 6,0 0,6 -6,0 z M 60,162 l 6,0 0,6 -6,0 z M 72,162 l 6,0 0,6 -6,0 z M 78,162 l 6,0 0,6 -6,0 z M 102,162 l 6,0 0,6 -6,0 z M 120,162 l 6,0 0,6 -6,0 z M 138,162 l 6,0 0,6 -6,0 z M 150,162 l 6,0 0,6 -6,0 z M 162,162 l 6,0 0,6 -6,0 z M 168,162 l 6,0 0,6 -6,0 z M 0,168 l 6,0 0,6 -6,0 z M 6,168 l 6,0 0,6 -6,0 z M 12,168 l 6,0 0,6 -6,0 z M 18,168 l 6,0 0,6 -6,0 z M 24,168 l 6,0 0,6 -6,0 z M 30,168 l 6,0 0,6 -6,0 z M 36,168 l 6,0 0,6 -6,0 z M 48,168 l 6,0 0,6 -6,0 z M 54,168 l 6,0 0,6 -6,0 z M 60,168 l 6,0 0,6 -6,0 z M 72,168 l 6,0 0,6 -6,0 z M 84,168 l 6,0 0,6 -6,0 z M 90,168 l 6,0 0,6 -6,0 z M 96,168 l 6,0 0,6 -6,0 z M 102,168 l 6,0 0,6 -6,0 z M 108,168 l 6,0 0,6 -6,0 z M 120,168 l 6,0 0,6 -6,0 z M 126,168 l 6,0 0,6 -6,0 z M 144,168 l 6,0 0,6 -6,0 z M 150,168 l 6,0 0,6 -6,0 z M 162,168 l 6,0 0,6 -6,0 z"/>
-      </svg>
-    </div>
-    <div class="offline-info">
-      <div class="offline-title">SIN INTERNET // WIFI SETUP</div>
-      <div class="offline-desc">
-        1. Escanea el QR (<b>HoloJukebox-Setup</b>)<br>
-        2. Abre <b>192.168.4.1</b> y elige tu Wi-Fi
+        <!-- Panel Derecho Offline (Solo aparece cuando NO hay conexión a Internet) -->
+        <div class="offline-side" id="offlineSide">
+          <div class="v-divider"></div>
+          <div class="qr-card">
+            <div class="qr-frame">
+              <!-- QR SVG embebido de WIFI:T:WPA;S:HoloJukebox-Setup;P:12345678;; -->
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 174 174">
+                <rect fill="#ffffff" x="0" y="0" width="174" height="174"/>
+                <path fill="#000000" d="M 0,0 l 6,0 0,6 -6,0 z M 6,0 l 6,0 0,6 -6,0 z M 12,0 l 6,0 0,6 -6,0 z M 18,0 l 6,0 0,6 -6,0 z M 24,0 l 6,0 0,6 -6,0 z M 30,0 l 6,0 0,6 -6,0 z M 36,0 l 6,0 0,6 -6,0 z M 60,0 l 6,0 0,6 -6,0 z M 72,0 l 6,0 0,6 -6,0 z M 108,0 l 6,0 0,6 -6,0 z M 132,0 l 6,0 0,6 -6,0 z M 138,0 l 6,0 0,6 -6,0 z M 144,0 l 6,0 0,6 -6,0 z M 150,0 l 6,0 0,6 -6,0 z M 156,0 l 6,0 0,6 -6,0 z M 162,0 l 6,0 0,6 -6,0 z M 168,0 l 6,0 0,6 -6,0 z M 0,6 l 6,0 0,6 -6,0 z M 36,6 l 6,0 0,6 -6,0 z M 48,6 l 6,0 0,6 -6,0 z M 60,6 l 6,0 0,6 -6,0 z M 78,6 l 6,0 0,6 -6,0 z M 90,6 l 6,0 0,6 -6,0 z M 96,6 l 6,0 0,6 -6,0 z M 102,6 l 6,0 0,6 -6,0 z M 108,6 l 6,0 0,6 -6,0 z M 114,6 l 6,0 0,6 -6,0 z M 120,6 l 6,0 0,6 -6,0 z M 132,6 l 6,0 0,6 -6,0 z M 168,6 l 6,0 0,6 -6,0 z M 0,12 l 6,0 0,6 -6,0 z M 12,12 l 6,0 0,6 -6,0 z M 18,12 l 6,0 0,6 -6,0 z M 24,12 l 6,0 0,6 -6,0 z M 36,12 l 6,0 0,6 -6,0 z M 72,12 l 6,0 0,6 -6,0 z M 96,12 l 6,0 0,6 -6,0 z M 102,12 l 6,0 0,6 -6,0 z M 108,12 l 6,0 0,6 -6,0 z M 114,12 l 6,0 0,6 -6,0 z M 120,12 l 6,0 0,6 -6,0 z M 132,12 l 6,0 0,6 -6,0 z M 144,12 l 6,0 0,6 -6,0 z M 150,12 l 6,0 0,6 -6,0 z M 156,12 l 6,0 0,6 -6,0 z M 168,12 l 6,0 0,6 -6,0 z M 0,18 l 6,0 0,6 -6,0 z M 12,18 l 6,0 0,6 -6,0 z M 18,18 l 6,0 0,6 -6,0 z M 24,18 l 6,0 0,6 -6,0 z M 36,18 l 6,0 0,6 -6,0 z M 48,18 l 6,0 0,6 -6,0 z M 54,18 l 6,0 0,6 -6,0 z M 60,18 l 6,0 0,6 -6,0 z M 72,18 l 6,0 0,6 -6,0 z M 78,18 l 6,0 0,6 -6,0 z M 84,18 l 6,0 0,6 -6,0 z M 90,18 l 6,0 0,6 -6,0 z M 96,18 l 6,0 0,6 -6,0 z M 120,18 l 6,0 0,6 -6,0 z M 132,18 l 6,0 0,6 -6,0 z M 144,18 l 6,0 0,6 -6,0 z M 150,18 l 6,0 0,6 -6,0 z M 156,18 l 6,0 0,6 -6,0 z M 168,18 l 6,0 0,6 -6,0 z M 0,24 l 6,0 0,6 -6,0 z M 12,24 l 6,0 0,6 -6,0 z M 18,24 l 6,0 0,6 -6,0 z M 24,24 l 6,0 0,6 -6,0 z M 36,24 l 6,0 0,6 -6,0 z M 54,24 l 6,0 0,6 -6,0 z M 84,24 l 6,0 0,6 -6,0 z M 114,24 l 6,0 0,6 -6,0 z M 120,24 l 6,0 0,6 -6,0 z M 132,24 l 6,0 0,6 -6,0 z M 144,24 l 6,0 0,6 -6,0 z M 150,24 l 6,0 0,6 -6,0 z M 156,24 l 6,0 0,6 -6,0 z M 168,24 l 6,0 0,6 -6,0 z M 0,30 l 6,0 0,6 -6,0 z M 36,30 l 6,0 0,6 -6,0 z M 48,30 l 6,0 0,6 -6,0 z M 54,30 l 6,0 0,6 -6,0 z M 66,30 l 6,0 0,6 -6,0 z M 72,30 l 6,0 0,6 -6,0 z M 78,30 l 6,0 0,6 -6,0 z M 96,30 l 6,0 0,6 -6,0 z M 114,30 l 6,0 0,6 -6,0 z M 132,30 l 6,0 0,6 -6,0 z M 168,30 l 6,0 0,6 -6,0 z M 0,36 l 6,0 0,6 -6,0 z M 6,36 l 6,0 0,6 -6,0 z M 12,36 l 6,0 0,6 -6,0 z M 18,36 l 6,0 0,6 -6,0 z M 24,36 l 6,0 0,6 -6,0 z M 30,36 l 6,0 0,6 -6,0 z M 36,36 l 6,0 0,6 -6,0 z M 48,36 l 6,0 0,6 -6,0 z M 60,36 l 6,0 0,6 -6,0 z M 72,36 l 6,0 0,6 -6,0 z M 84,36 l 6,0 0,6 -6,0 z M 96,36 l 6,0 0,6 -6,0 z M 108,36 l 6,0 0,6 -6,0 z M 120,36 l 6,0 0,6 -6,0 z M 132,36 l 6,0 0,6 -6,0 z M 138,36 l 6,0 0,6 -6,0 z M 144,36 l 6,0 0,6 -6,0 z M 150,36 l 6,0 0,6 -6,0 z M 156,36 l 6,0 0,6 -6,0 z M 162,36 l 6,0 0,6 -6,0 z M 168,36 l 6,0 0,6 -6,0 z M 54,42 l 6,0 0,6 -6,0 z M 60,42 l 6,0 0,6 -6,0 z M 66,42 l 6,0 0,6 -6,0 z M 96,42 l 6,0 0,6 -6,0 z M 114,42 l 6,0 0,6 -6,0 z M 120,42 l 6,0 0,6 -6,0 z M 0,48 l 6,0 0,6 -6,0 z M 6,48 l 6,0 0,6 -6,0 z M 12,48 l 6,0 0,6 -6,0 z M 18,48 l 6,0 0,6 -6,0 z M 24,48 l 6,0 0,6 -6,0 z M 36,48 l 6,0 0,6 -6,0 z M 42,48 l 6,0 0,6 -6,0 z M 48,48 l 6,0 0,6 -6,0 z M 54,48 l 6,0 0,6 -6,0 z M 66,48 l 6,0 0,6 -6,0 z M 90,48 l 6,0 0,6 -6,0 z M 102,48 l 6,0 0,6 -6,0 z M 108,48 l 6,0 0,6 -6,0 z M 126,48 l 6,0 0,6 -6,0 z M 138,48 l 6,0 0,6 -6,0 z M 150,48 l 6,0 0,6 -6,0 z M 162,48 l 6,0 0,6 -6,0 z M 48,54 l 6,0 0,6 -6,0 z M 60,54 l 6,0 0,6 -6,0 z M 72,54 l 6,0 0,6 -6,0 z M 90,54 l 6,0 0,6 -6,0 z M 114,54 l 6,0 0,6 -6,0 z M 126,54 l 6,0 0,6 -6,0 z M 150,54 l 6,0 0,6 -6,0 z M 168,54 l 6,0 0,6 -6,0 z M 24,60 l 6,0 0,6 -6,0 z M 36,60 l 6,0 0,6 -6,0 z M 42,60 l 6,0 0,6 -6,0 z M 60,60 l 6,0 0,6 -6,0 z M 90,60 l 6,0 0,6 -6,0 z M 102,60 l 6,0 0,6 -6,0 z M 144,60 l 6,0 0,6 -6,0 z M 156,60 l 6,0 0,6 -6,0 z M 168,60 l 6,0 0,6 -6,0 z M 0,66 l 6,0 0,6 -6,0 z M 12,66 l 6,0 0,6 -6,0 z M 18,66 l 6,0 0,6 -6,0 z M 24,66 l 6,0 0,6 -6,0 z M 30,66 l 6,0 0,6 -6,0 z M 48,66 l 6,0 0,6 -6,0 z M 72,66 l 6,0 0,6 -6,0 z M 84,66 l 6,0 0,6 -6,0 z M 108,66 l 6,0 0,6 -6,0 z M 114,66 l 6,0 0,6 -6,0 z M 120,66 l 6,0 0,6 -6,0 z M 126,66 l 6,0 0,6 -6,0 z M 132,66 l 6,0 0,6 -6,0 z M 138,66 l 6,0 0,6 -6,0 z M 144,66 l 6,0 0,6 -6,0 z M 150,66 l 6,0 0,6 -6,0 z M 168,66 l 6,0 0,6 -6,0 z M 12,72 l 6,0 0,6 -6,0 z M 24,72 l 6,0 0,6 -6,0 z M 36,72 l 6,0 0,6 -6,0 z M 54,72 l 6,0 0,6 -6,0 z M 60,72 l 6,0 0,6 -6,0 z M 72,72 l 6,0 0,6 -6,0 z M 90,72 l 6,0 0,6 -6,0 z M 120,72 l 6,0 0,6 -6,0 z M 132,72 l 6,0 0,6 -6,0 z M 150,72 l 6,0 0,6 -6,0 z M 156,72 l 6,0 0,6 -6,0 z M 162,72 l 6,0 0,6 -6,0 z M 168,72 l 6,0 0,6 -6,0 z M 12,78 l 6,0 0,6 -6,0 z M 42,78 l 6,0 0,6 -6,0 z M 48,78 l 6,0 0,6 -6,0 z M 54,78 l 6,0 0,6 -6,0 z M 78,78 l 6,0 0,6 -6,0 z M 84,78 l 6,0 0,6 -6,0 z M 90,78 l 6,0 0,6 -6,0 z M 120,78 l 6,0 0,6 -6,0 z M 132,78 l 6,0 0,6 -6,0 z M 150,78 l 6,0 0,6 -6,0 z M 156,78 l 6,0 0,6 -6,0 z M 162,78 l 6,0 0,6 -6,0 z M 168,78 l 6,0 0,6 -6,0 z M 12,84 l 6,0 0,6 -6,0 z M 18,84 l 6,0 0,6 -6,0 z M 30,84 l 6,0 0,6 -6,0 z M 36,84 l 6,0 0,6 -6,0 z M 54,84 l 6,0 0,6 -6,0 z M 66,84 l 6,0 0,6 -6,0 z M 72,84 l 6,0 0,6 -6,0 z M 84,84 l 6,0 0,6 -6,0 z M 90,84 l 6,0 0,6 -6,0 z M 96,84 l 6,0 0,6 -6,0 z M 102,84 l 6,0 0,6 -6,0 z M 138,84 l 6,0 0,6 -6,0 z M 156,84 l 6,0 0,6 -6,0 z M 0,90 l 6,0 0,6 -6,0 z M 18,90 l 6,0 0,6 -6,0 z M 48,90 l 6,0 0,6 -6,0 z M 54,90 l 6,0 0,6 -6,0 z M 66,90 l 6,0 0,6 -6,0 z M 78,90 l 6,0 0,6 -6,0 z M 84,90 l 6,0 0,6 -6,0 z M 90,90 l 6,0 0,6 -6,0 z M 114,90 l 6,0 0,6 -6,0 z M 120,90 l 6,0 0,6 -6,0 z M 126,90 l 6,0 0,6 -6,0 z M 132,90 l 6,0 0,6 -6,0 z M 144,90 l 6,0 0,6 -6,0 z M 150,90 l 6,0 0,6 -6,0 z M 156,90 l 6,0 0,6 -6,0 z M 6,96 l 6,0 0,6 -6,0 z M 30,96 l 6,0 0,6 -6,0 z M 36,96 l 6,0 0,6 -6,0 z M 42,96 l 6,0 0,6 -6,0 z M 48,96 l 6,0 0,6 -6,0 z M 54,96 l 6,0 0,6 -6,0 z M 66,96 l 6,0 0,6 -6,0 z M 90,96 l 6,0 0,6 -6,0 z M 96,96 l 6,0 0,6 -6,0 z M 120,96 l 6,0 0,6 -6,0 z M 132,96 l 6,0 0,6 -6,0 z M 138,96 l 6,0 0,6 -6,0 z M 156,96 l 6,0 0,6 -6,0 z M 0,102 l 6,0 0,6 -6,0 z M 6,102 l 6,0 0,6 -6,0 z M 12,102 l 6,0 0,6 -6,0 z M 18,102 l 6,0 0,6 -6,0 z M 24,102 l 6,0 0,6 -6,0 z M 42,102 l 6,0 0,6 -6,0 z M 54,102 l 6,0 0,6 -6,0 z M 72,102 l 6,0 0,6 -6,0 z M 78,102 l 6,0 0,6 -6,0 z M 84,102 l 6,0 0,6 -6,0 z M 90,102 l 6,0 0,6 -6,0 z M 108,102 l 6,0 0,6 -6,0 z M 114,102 l 6,0 0,6 -6,0 z M 126,102 l 6,0 0,6 -6,0 z M 144,102 l 6,0 0,6 -6,0 z M 150,102 l 6,0 0,6 -6,0 z M 162,102 l 6,0 0,6 -6,0 z M 168,102 l 6,0 0,6 -6,0 z M 0,108 l 6,0 0,6 -6,0 z M 12,108 l 6,0 0,6 -6,0 z M 18,108 l 6,0 0,6 -6,0 z M 24,108 l 6,0 0,6 -6,0 z M 30,108 l 6,0 0,6 -6,0 z M 36,108 l 6,0 0,6 -6,0 z M 48,108 l 6,0 0,6 -6,0 z M 54,108 l 6,0 0,6 -6,0 z M 60,108 l 6,0 0,6 -6,0 z M 84,108 l 6,0 0,6 -6,0 z M 90,108 l 6,0 0,6 -6,0 z M 96,108 l 6,0 0,6 -6,0 z M 102,108 l 6,0 0,6 -6,0 z M 114,108 l 6,0 0,6 -6,0 z M 138,108 l 6,0 0,6 -6,0 z M 144,108 l 6,0 0,6 -6,0 z M 162,108 l 6,0 0,6 -6,0 z M 0,114 l 6,0 0,6 -6,0 z M 12,114 l 6,0 0,6 -6,0 z M 42,114 l 6,0 0,6 -6,0 z M 48,114 l 6,0 0,6 -6,0 z M 72,114 l 6,0 0,6 -6,0 z M 78,114 l 6,0 0,6 -6,0 z M 84,114 l 6,0 0,6 -6,0 z M 90,114 l 6,0 0,6 -6,0 z M 114,114 l 6,0 0,6 -6,0 z M 120,114 l 6,0 0,6 -6,0 z M 126,114 l 6,0 0,6 -6,0 z M 132,114 l 6,0 0,6 -6,0 z M 138,114 l 6,0 0,6 -6,0 z M 144,114 l 6,0 0,6 -6,0 z M 150,114 l 6,0 0,6 -6,0 z M 168,114 l 6,0 0,6 -6,0 z M 0,120 l 6,0 0,6 -6,0 z M 18,120 l 6,0 0,6 -6,0 z M 36,120 l 6,0 0,6 -6,0 z M 42,120 l 6,0 0,6 -6,0 z M 54,120 l 6,0 0,6 -6,0 z M 60,120 l 6,0 0,6 -6,0 z M 72,120 l 6,0 0,6 -6,0 z M 120,120 l 6,0 0,6 -6,0 z M 126,120 l 6,0 0,6 -6,0 z M 132,120 l 6,0 0,6 -6,0 z M 138,120 l 6,0 0,6 -6,0 z M 144,120 l 6,0 0,6 -6,0 z M 156,120 l 6,0 0,6 -6,0 z M 162,120 l 6,0 0,6 -6,0 z M 168,120 l 6,0 0,6 -6,0 z M 48,126 l 6,0 0,6 -6,0 z M 54,126 l 6,0 0,6 -6,0 z M 90,126 l 6,0 0,6 -6,0 z M 96,126 l 6,0 0,6 -6,0 z M 114,126 l 6,0 0,6 -6,0 z M 120,126 l 6,0 0,6 -6,0 z M 144,126 l 6,0 0,6 -6,0 z M 150,126 l 6,0 0,6 -6,0 z M 156,126 l 6,0 0,6 -6,0 z M 0,132 l 6,0 0,6 -6,0 z M 6,132 l 6,0 0,6 -6,0 z M 12,132 l 6,0 0,6 -6,0 z M 18,132 l 6,0 0,6 -6,0 z M 24,132 l 6,0 0,6 -6,0 z M 30,132 l 6,0 0,6 -6,0 z M 36,132 l 6,0 0,6 -6,0 z M 48,132 l 6,0 0,6 -6,0 z M 54,132 l 6,0 0,6 -6,0 z M 66,132 l 6,0 0,6 -6,0 z M 72,132 l 6,0 0,6 -6,0 z M 90,132 l 6,0 0,6 -6,0 z M 96,132 l 6,0 0,6 -6,0 z M 102,132 l 6,0 0,6 -6,0 z M 120,132 l 6,0 0,6 -6,0 z M 132,132 l 6,0 0,6 -6,0 z M 144,132 l 6,0 0,6 -6,0 z M 150,132 l 6,0 0,6 -6,0 z M 156,132 l 6,0 0,6 -6,0 z M 0,138 l 6,0 0,6 -6,0 z M 36,138 l 6,0 0,6 -6,0 z M 60,138 l 6,0 0,6 -6,0 z M 66,138 l 6,0 0,6 -6,0 z M 90,138 l 6,0 0,6 -6,0 z M 114,138 l 6,0 0,6 -6,0 z M 120,138 l 6,0 0,6 -6,0 z M 144,138 l 6,0 0,6 -6,0 z M 150,138 l 6,0 0,6 -6,0 z M 0,144 l 6,0 0,6 -6,0 z M 12,144 l 6,0 0,6 -6,0 z M 18,144 l 6,0 0,6 -6,0 z M 24,144 l 6,0 0,6 -6,0 z M 36,144 l 6,0 0,6 -6,0 z M 48,144 l 6,0 0,6 -6,0 z M 66,144 l 6,0 0,6 -6,0 z M 90,144 l 6,0 0,6 -6,0 z M 108,144 l 6,0 0,6 -6,0 z M 120,144 l 6,0 0,6 -6,0 z M 126,144 l 6,0 0,6 -6,0 z M 132,144 l 6,0 0,6 -6,0 z M 138,144 l 6,0 0,6 -6,0 z M 144,144 l 6,0 0,6 -6,0 z M 0,150 l 6,0 0,6 -6,0 z M 12,150 l 6,0 0,6 -6,0 z M 18,150 l 6,0 0,6 -6,0 z M 24,150 l 6,0 0,6 -6,0 z M 36,150 l 6,0 0,6 -6,0 z M 48,150 l 6,0 0,6 -6,0 z M 60,150 l 6,0 0,6 -6,0 z M 72,150 l 6,0 0,6 -6,0 z M 78,150 l 6,0 0,6 -6,0 z M 90,150 l 6,0 0,6 -6,0 z M 108,150 l 6,0 0,6 -6,0 z M 114,150 l 6,0 0,6 -6,0 z M 120,150 l 6,0 0,6 -6,0 z M 132,150 l 6,0 0,6 -6,0 z M 138,150 l 6,0 0,6 -6,0 z M 162,150 l 6,0 0,6 -6,0 z M 0,156 l 6,0 0,6 -6,0 z M 12,156 l 6,0 0,6 -6,0 z M 18,156 l 6,0 0,6 -6,0 z M 24,156 l 6,0 0,6 -6,0 z M 36,156 l 6,0 0,6 -6,0 z M 48,156 l 6,0 0,6 -6,0 z M 54,156 l 6,0 0,6 -6,0 z M 78,156 l 6,0 0,6 -6,0 z M 84,156 l 6,0 0,6 -6,0 z M 90,156 l 6,0 0,6 -6,0 z M 102,156 l 6,0 0,6 -6,0 z M 108,156 l 6,0 0,6 -6,0 z M 114,156 l 6,0 0,6 -6,0 z M 132,156 l 6,0 0,6 -6,0 z M 150,156 l 6,0 0,6 -6,0 z M 162,156 l 6,0 0,6 -6,0 z M 0,162 l 6,0 0,6 -6,0 z M 36,162 l 6,0 0,6 -6,0 z M 48,162 l 6,0 0,6 -6,0 z M 60,162 l 6,0 0,6 -6,0 z M 72,162 l 6,0 0,6 -6,0 z M 78,162 l 6,0 0,6 -6,0 z M 102,162 l 6,0 0,6 -6,0 z M 120,162 l 6,0 0,6 -6,0 z M 138,162 l 6,0 0,6 -6,0 z M 150,162 l 6,0 0,6 -6,0 z M 162,162 l 6,0 0,6 -6,0 z M 168,162 l 6,0 0,6 -6,0 z M 0,168 l 6,0 0,6 -6,0 z M 6,168 l 6,0 0,6 -6,0 z M 12,168 l 6,0 0,6 -6,0 z M 18,168 l 6,0 0,6 -6,0 z M 24,168 l 6,0 0,6 -6,0 z M 30,168 l 6,0 0,6 -6,0 z M 36,168 l 6,0 0,6 -6,0 z M 48,168 l 6,0 0,6 -6,0 z M 54,168 l 6,0 0,6 -6,0 z M 60,168 l 6,0 0,6 -6,0 z M 72,168 l 6,0 0,6 -6,0 z M 84,168 l 6,0 0,6 -6,0 z M 90,168 l 6,0 0,6 -6,0 z M 96,168 l 6,0 0,6 -6,0 z M 102,168 l 6,0 0,6 -6,0 z M 108,168 l 6,0 0,6 -6,0 z M 120,168 l 6,0 0,6 -6,0 z M 126,168 l 6,0 0,6 -6,0 z M 144,168 l 6,0 0,6 -6,0 z M 150,168 l 6,0 0,6 -6,0 z M 162,168 l 6,0 0,6 -6,0 z"/>
+              </svg>
+            </div>
+            <div class="qr-meta">
+              <div class="qr-title">SIN INTERNET</div>
+              <div class="qr-sub">1. ESCANEA EL QR<br>2. ENTRA A 192.168.4.1</div>
+              <div class="qr-ver" id="offlineVerTxt">VER 2.4 // LOCAL</div>
+            </div>
+          </div>
+        </div>
+
       </div>
-      <div class="offline-ver" id="offlineVerTxt">CACHE: v2.1.0 // SYNC: ---</div>
-    </div>
-   </div>
+    </section>
 
-   <div class="sys">
-    <span>NO DISC LOADED</span>
-    <span class="sys-ind">[ INSERT ]</span>
-   </div>
-   <div class="ver-footer">
-    <span id="buildVerTxt">BUILD // v2.1.0</span>
-    <span id="lastSyncFooter">SYNC // --</span>
-   </div>
-  </section>
+    <!-- ===================================================================
+         SECCIÓN 2: REPRODUCTOR HORIZONTAL (ÁLBUM FLOTANDO | LYRICS + CONTROLES)
+         =================================================================== -->
+    <section class="sec pl" id="pl">
+      <div class="pl-grid">
 
-  <!-- PLAYER -->
-  <section class="sec pl" id="pl">
-   <div class="hdr">
-    <span><i class="dot"></i>DECK A // <b id="dnum" style="font-weight:400;color:var(--fg)">DISC 01</b></span>
-    <div class="pills-wrap">
-      <button class="ws-pill" id="netPillPl">
-        <i class="ws-dot"></i><span class="net-lbl">ONLINE</span>
-      </button>
-      <button class="ws-pill" id="wsPillPl">
-        <i class="ws-dot"></i><span class="ws-lbl">WS</span>
-      </button>
-    </div>
-   </div>
-   <div class="frame fade">
-    <span class="frame-tag" id="sourceTag">YT STREAM // NO-ADS</span>
-    <div class="art" id="art"></div>
-    <span class="frame-rpm">33 ⅓</span>
-   </div>
-   <div class="meta fade">
-    <b id="ttl">—</b>
-    <span id="art2">—</span>
-   </div>
-   <div class="vis" id="vis"></div>
-   <div class="tl">
-    <div class="line"><div class="f" id="fill"></div><div class="head" id="head"></div></div>
-    <div class="times"><span id="tc">00:00</span><span id="td">00:00</span></div>
-   </div>
-   <div class="ctl">
-    <button class="tog" id="bShuf" aria-label="Aleatorio"><svg viewBox="0 0 24 24"><path d="M3 7h4l10 10h4M3 17h4l3-3M14 10l3-3h4M18 4l3 3-3 3M18 14l3 3-3 3"/></svg></button>
-    <button id="bPrev" aria-label="Anterior"><svg viewBox="0 0 24 24"><path d="M6 6v12M18 6l-9 6 9 6z"/></svg></button>
-    <button class="pp" id="bPP" aria-label="Reproducir o pausar">
-     <svg viewBox="0 0 24 24">
-      <path class="ic-play" d="M7 5v14l12-7z"/>
-      <path class="ic-pause" d="M8 5v14M16 5v14"/>
-     </svg>
-    </button>
-    <button id="bNext" aria-label="Siguiente"><svg viewBox="0 0 24 24"><path d="M18 6v12M6 6l9 6-9 6z"/></svg></button>
-    <button class="tog" id="bRep" aria-label="Repetir"><svg viewBox="0 0 24 24"><path d="M17 3l3 3-3 3M4 11V6h16M7 21l-3-3 3-3M20 13v5H4"/></svg></button>
-   </div>
-  </section>
- </div>
+        <!-- IZQUIERDA: Carátula de Álbum Redondeada Flotando + Título y Artista -->
+        <div class="pl-left">
+          <div class="album-float-wrap" id="albumWrap">
+            <img class="album-img" id="albumImg" alt="" onerror="this.style.display='none'; document.getElementById('albumFallback').style.display='grid';">
+            <div class="album-fallback" id="albumFallback" style="display:none">
+              <svg width="65%" height="65%" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="44" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="4 4"/>
+                <circle cx="50" cy="50" r="28" fill="none" stroke="#ffffff" stroke-opacity="0.4" stroke-width="1.5" stroke-dasharray="3 4"/>
+                <circle cx="50" cy="50" r="12" fill="none" stroke="#ff7722" stroke-width="2.5"/>
+                <circle cx="50" cy="50" r="3" fill="#ffffff"/>
+              </svg>
+            </div>
+          </div>
+          <div class="song-title" id="ttl">—</div>
+          <div class="song-artist" id="art2">—</div>
+        </div>
+
+        <div class="pl-divider"></div>
+
+        <!-- DERECHA: Lyrics Sincronizados + Barra de Avance + Controles -->
+        <div class="pl-right">
+          
+          <!-- Visor de Lyrics -->
+          <div class="lyrics-box" id="lyricsBox">
+            <div class="lyr-line" id="lyrPrev"></div>
+            <div class="lyr-line curr" id="lyrCurr">
+              <span class="lyr-arrow">▸</span><span id="lyrCurrTxt">...</span>
+            </div>
+            <div class="lyr-line" id="lyrNext"></div>
+          </div>
+
+          <!-- Barra de Avance y Tiempos -->
+          <div class="tl-wrap">
+            <div class="tl-bar" id="tlBar">
+              <div class="tl-fill" id="fill"></div>
+              <div class="tl-head" id="head"></div>
+            </div>
+            <div class="tl-times">
+              <span id="tc">00:00</span>
+              <span id="td">00:00</span>
+            </div>
+          </div>
+
+          <!-- Controles de Reproducción -->
+          <div class="ctl">
+            <button class="tog" id="bShuf" aria-label="Aleatorio">
+              <svg viewBox="0 0 24 24"><path d="M3 7h4l10 10h4M3 17h4l3-3M14 10l3-3h4M18 4l3 3-3 3M18 14l3 3-3 3"/></svg>
+            </button>
+            <button id="bPrev" aria-label="Anterior">
+              <svg viewBox="0 0 24 24"><path d="M6 6v12M18 6l-9 6 9 6z"/></svg>
+            </button>
+            <button class="pp" id="bPP" aria-label="Reproducir o pausar">
+              <svg viewBox="0 0 24 24">
+                <path class="ic-play" d="M7 5v14l12-7z"/>
+                <path class="ic-pause" d="M8 5v14M16 5v14"/>
+              </svg>
+            </button>
+            <button id="bNext" aria-label="Siguiente">
+              <svg viewBox="0 0 24 24"><path d="M18 6v12M6 6l9 6-9 6z"/></svg>
+            </button>
+            <button class="tog" id="bRep" aria-label="Repetir">
+              <svg viewBox="0 0 24 24"><path d="M17 3l3 3-3 3M4 11V6h16M7 21l-3-3 3-3M20 13v5H4"/></svg>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </div>
 </div>
-<div class="hint">[1-5] DISCO · [ESPACIO] PLAY · [↑↓] VOL · [←→] PISTA · [M] ESPEJO · [Q] QR WIFI · [0/ESC] EXPULSAR</div>
 
 <script>
-const APP_VERSION = "v2.1.0";
+const APP_VERSION = "v2.4";
 const $ = id => document.getElementById(id);
 const pad = n => String(n).padStart(2, '0');
 const mmss = s => pad(Math.floor(s / 60)) + ':' + pad(Math.floor(s % 60));
 
 // =========================================================================
-// 1. REGISTRO DE SERVICE WORKER Y CONTROL DE VERSIÓN / CACHÉ OFFLINE
+// 1. SERVICE WORKER Y CONTROL DE SINCRONIZACIÓN OFFLINE
 // =========================================================================
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').then(reg => {
-      console.log('[PWA] Service Worker activo:', reg.scope);
-    }).catch(err => console.warn('[PWA] Error SW:', err));
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
   });
 }
 
 function recordOnlineSync() {
   const now = new Date();
   const MES = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
-  const stamp = `${pad(now.getDate())} ${MES[now.getMonth()]} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const stamp = `${pad(now.getDate())} ${MES[now.getMonth()]}`;
   localStorage.setItem('holo_last_sync', stamp);
   localStorage.setItem('holo_last_ver', APP_VERSION);
-  updateVersionLabels();
+  updateOfflineBadge();
 }
 
-function updateVersionLabels() {
-  const sync = localStorage.getItem('holo_last_sync') || 'LOCAL INIT';
+function updateOfflineBadge() {
+  const sync = localStorage.getItem('holo_last_sync') || 'LOCAL';
   const ver  = localStorage.getItem('holo_last_ver') || APP_VERSION;
-  $('buildVerTxt').textContent  = `BUILD // ${ver}`;
-  $('lastSyncFooter').textContent = `SYNC // ${sync}`;
-  $('offlineVerTxt').textContent  = `ULT. VERSION: ${ver} (${sync})`;
+  $('offlineVerTxt').textContent = `ULT. VER: ${ver} (${sync})`;
 }
-updateVersionLabels();
+updateOfflineBadge();
 
 // =========================================================================
-// 2. DETECCIÓN DE CONEXIÓN A INTERNET (ONLINE / OFFLINE + QR)
+// 2. MENSAJE BONITO DEL DÍA (CON FALLBACK A RELOJ LIMPIO SI NO ES DE HOY)
+// =========================================================================
+function getTodayIso() {
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+async function checkDailyMessage() {
+  try {
+    const res = await fetch('./mensaje.json?t=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) throw new Error('No msg file');
+    const data = await res.json();
+    localStorage.setItem('holo_daily_msg_cache', JSON.stringify(data));
+    applyDailyMessage(data);
+  } catch (e) {
+    // Si estamos offline, revisa el último cacheado pero respeta que sea del día de hoy
+    const cached = localStorage.getItem('holo_daily_msg_cache');
+    if (cached) {
+      try { applyDailyMessage(JSON.parse(cached)); } catch(err) { applyDailyMessage(null); }
+    } else {
+      applyDailyMessage(null);
+    }
+  }
+}
+
+function applyDailyMessage(data) {
+  const box = $('dailyMsgBox');
+  const txtEl = $('dailyMsgTxt');
+  if (!data || !data.texto || !data.texto.trim()) {
+    box.classList.remove('show');
+    return;
+  }
+  const today = getTodayIso();
+  const isToday = (data.fecha === today) || (data.forzarMostrar === true);
+  if (isToday) {
+    txtEl.textContent = data.texto.trim();
+    box.classList.add('show');
+  } else {
+    // Fallback: si el mensaje es de días pasados, deja únicamente el reloj limpio
+    box.classList.remove('show');
+  }
+}
+
+checkDailyMessage();
+setInterval(checkDailyMessage, 60000);
+
+// =========================================================================
+// 3. DETECCIÓN ONLINE / OFFLINE AUTOMÁTICA
 // =========================================================================
 let isInternetOnline = navigator.onLine;
 let forceQrToggle = false;
@@ -699,24 +751,9 @@ async function checkInternetConnection() {
 }
 
 function setInternetStatus(online) {
-  const changed = (online !== isInternetOnline);
   isInternetOnline = online;
-
-  const netPills = [$('netPillSb'), $('netPillPl')];
-  netPills.forEach(p => {
-    p.classList.toggle('online', online);
-    p.classList.toggle('warn', !online);
-    p.querySelector('.net-lbl').textContent = online ? 'ONLINE' : 'OFFLINE';
-  });
-
-  $('netStatusTxt').textContent = online ? 'ONLINE' : 'OFFLINE';
-  $('netStatusTxt').style.color = online ? 'var(--ok)' : 'var(--ac)';
-  $('modeLabel').textContent = online ? 'YT MUSIC // ONLINE' : 'LOCAL // SIN RED';
-  $('sourceTag').textContent = online ? 'YT STREAM // NO-ADS' : 'LOCAL SYNTH // OFFLINE';
-
-  // Mostrar QR automáticamente cuando no hay internet (o si el usuario lo abrió con click/'Q')
   const showQr = !online || forceQrToggle;
-  $('offlineCard').classList.toggle('show', showQr);
+  $('sbLayout').classList.toggle('is-offline', showQr);
 
   if (online) {
     recordOnlineSync();
@@ -728,75 +765,45 @@ window.addEventListener('online',  () => checkInternetConnection());
 window.addEventListener('offline', () => setInternetStatus(false));
 setInterval(checkInternetConnection, 10000);
 
-$('netPillSb').onclick = () => {
-  forceQrToggle = !forceQrToggle;
-  $('offlineCard').classList.toggle('show', !isInternetOnline || forceQrToggle);
-};
-$('netPillPl').onclick = () => {
-  eject();
-  forceQrToggle = true;
-  $('offlineCard').classList.add('show');
-};
-
 // =========================================================================
-// 3. CATÁLOGO DE DISCOS (CON IDs DE YOUTUBE MUSIC / YOUTUBE)
+// 4. CATÁLOGO DE DISCOS (CON PORTADA AUTOMÁTICA Y LYRICS SINCRONIZADOS)
 // =========================================================================
-const vinylWrap = inner => `
-<svg viewBox="0 0 100 100">
-  <circle cx="50" cy="50" r="48"/>
-  <circle class="groove" cx="50" cy="50" r="42"/>
-  <circle class="groove" cx="50" cy="50" r="36"/>
-  <circle class="groove" cx="50" cy="50" r="30"/>
-  <circle cx="50" cy="50" r="22"/>
-  ${inner}
-  <circle class="solid" cx="50" cy="50" r="2.2"/>
-</svg>`;
-
-const ART = [
-  vinylWrap(`<line x1="50" y1="28" x2="50" y2="72"/><line x1="28" y1="50" x2="72" y2="50"/><circle class="accent" cx="50" cy="50" r="12"/><circle class="solid-ac" cx="50" cy="5" r="1.8"/>`),
-  vinylWrap(`<path class="solid" d="M50 28 A22 22 0 0 1 50 72 Z"/><circle class="solid-ac" cx="42" cy="50" r="3.5"/><line class="accent" x1="50" y1="2" x2="50" y2="14"/>`),
-  vinylWrap(`<polygon points="50,30 67,60 33,60"/><line class="accent" x1="50" y1="30" x2="50" y2="50"/><circle class="solid-ac" cx="50" cy="11" r="1.8"/>`),
-  vinylWrap(`<line x1="37" y1="36" x2="63" y2="36"/><line class="accent" x1="34" y1="45" x2="66" y2="45"/><line x1="34" y1="55" x2="66" y2="55"/><line x1="37" y1="64" x2="63" y2="64"/><circle class="solid" cx="50" cy="8" r="1.5"/>`),
-  vinylWrap(`<rect x="36" y="36" width="28" height="28" transform="rotate(45 50 50)"/><circle class="accent" cx="50" cy="50" r="8"/><line class="accent" x1="50" y1="2" x2="50" y2="12"/>`)
-];
-
-// Formato de cada pista: [ "TÍTULO", duración_fallback_seg, "YOUTUBE_VIDEO_ID" ]
-// Puedes cambiar los IDs de YouTube por cualquier canción de YouTube / YouTube Music
+// Formato de pista: [ "TÍTULO", duracion_seg, "YOUTUBE_VIDEO_ID", "URL_PORTADA_OPCIONAL" ]
 const DISCS = [
   {
     a: "DAFT PUNK",
     t: [
-      ["VERIDIS QUO",       345, "TCd6PfxOy0Y"],
-      ["INSTANT CRUSH",     337, "a5uQMwRMHcs"],
-      ["GET LUCKY",         248, "5NV6Rdv1a3I"]
+      ["INSTANT CRUSH",      337, "a5uQMwRMHcs"],
+      ["GET LUCKY",          248, "5NV6Rdv1a3I"],
+      ["VERIDIS QUO",        345, "TCd6PfxOy0Y"]
     ]
   },
   {
     a: "SYNTHWAVE MIX",
     t: [
-      ["NIGHTCALL",         258, "MV_3Dpw-BRY"],
-      ["RESONANCE",         212, "8GW6sLrK40k"]
+      ["NIGHTCALL",          258, "MV_3Dpw-BRY"],
+      ["RESONANCE",          212, "8GW6sLrK40k"]
     ]
   },
   {
     a: "GORILLAZ",
     t: [
-      ["FEEL GOOD INC.",    222, "HyHNuVaZJ-k"],
-      ["ON MELANCHOLY HILL",233, "04mfKJWDSzI"]
+      ["ON MELANCHOLY HILL", 233, "04mfKJWDSzI"],
+      ["FEEL GOOD INC.",     222, "HyHNuVaZJ-k"]
     ]
   },
   {
     a: "THE WEEKND",
     t: [
-      ["BLINDING LIGHTS",   200, "4NRXx6U8ABQ"],
-      ["STARBOY",           230, "34Na4j8AVgA"]
+      ["BLINDING LIGHTS",    200, "4NRXx6U8ABQ"],
+      ["STARBOY",            230, "34Na4j8AVgA"]
     ]
   },
   {
     a: "LOFI CHILL",
     t: [
-      ["MIDNIGHT COFFEE",   196, "jfKfPfyJRdk"],
-      ["TOKYO RAIN",        168, "DWcJFNfaw9c"]
+      ["MIDNIGHT COFFEE",    196, "jfKfPfyJRdk"],
+      ["TOKYO RAIN",         168, "DWcJFNfaw9c"]
     ]
   }
 ];
@@ -804,7 +811,117 @@ const DISCS = [
 let disc = -1, trk = 0, pos = 0, playing = false, vol = 70, shuf = false, rep = false, volT = 0;
 
 // =========================================================================
-// 4. MOTOR YOUTUBE EMBED (NOCOOOKIE + ANTI-ADS GUARD)
+// 5. MOTOR DE LYRICS SINCRONIZADOS (LRCLIB API + CACHÉ LOCAL)
+// =========================================================================
+let currentLyrics = []; // Array de { time: segundos, text: "..." }
+let lastLyricIdx = -1;
+
+function parseLrc(lrcText) {
+  const lines = lrcText.split('\n');
+  const out = [];
+  const rx = /\[(\d{2}):(\d{2})(?:\.(\d{2,3}))?\](.*)/;
+  for (const line of lines) {
+    const m = line.match(rx);
+    if (m) {
+      const mins = parseInt(m[1], 10);
+      const secs = parseInt(m[2], 10);
+      const ms   = m[3] ? parseInt(m[3].padEnd(3, '0'), 10) / 1000 : 0;
+      const txt  = m[4].trim();
+      if (txt) out.push({ time: mins * 60 + secs + ms, text: txt.toUpperCase() });
+    }
+  }
+  return out;
+}
+
+async function fetchLyricsForTrack(artist, title) {
+  currentLyrics = [];
+  lastLyricIdx = -1;
+  setLyricLines("", "BUSCANDO LETRA...", "");
+
+  const cacheKey = `lyr_${artist}_${title}`.toLowerCase();
+  const cached = localStorage.getItem(cacheKey);
+  if (cached) {
+    try {
+      const parsed = JSON.parse(cached);
+      if (parsed.instrumental) {
+        setLyricLines("", "[ INSTRUMENTAL ]", "");
+        return;
+      }
+      if (parsed.lines && parsed.lines.length > 0) {
+        currentLyrics = parsed.lines;
+        updateLyricsByTime(pos);
+        return;
+      }
+    } catch (e) {}
+  }
+
+  if (!isInternetOnline) {
+    setLyricLines("", `♪ ${title} ♪`, artist);
+    return;
+  }
+
+  try {
+    const url = `https://lrclib.net/api/search?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}`;
+    const res = await fetch(url);
+    const list = await res.json();
+    if (!Array.isArray(list) || list.length === 0) {
+      setLyricLines("", `♪ ${title} ♪`, artist);
+      return;
+    }
+
+    const best = list.find(item => item.syncedLyrics) || list[0];
+    if (best.instrumental) {
+      localStorage.setItem(cacheKey, JSON.stringify({ instrumental: true }));
+      setLyricLines("", "[ INSTRUMENTAL ]", "");
+      return;
+    }
+
+    if (best.syncedLyrics) {
+      currentLyrics = parseLrc(best.syncedLyrics);
+      localStorage.setItem(cacheKey, JSON.stringify({ lines: currentLyrics }));
+      updateLyricsByTime(pos);
+    } else if (best.plainLyrics) {
+      const plain = best.plainLyrics.split('\n').map(s => s.trim().toUpperCase()).filter(Boolean);
+      currentLyrics = plain.map((text, idx) => ({ time: idx * 5, text }));
+      updateLyricsByTime(pos);
+    } else {
+      setLyricLines("", `♪ ${title} ♪`, artist);
+    }
+  } catch (e) {
+    setLyricLines("", `♪ ${title} ♪`, artist);
+  }
+}
+
+function setLyricLines(prevTxt, currTxt, nextTxt, animate = false) {
+  $('lyrPrev').textContent = prevTxt || '';
+  $('lyrCurrTxt').textContent = currTxt || '';
+  $('lyrNext').textContent = nextTxt || '';
+  if (animate) {
+    const c = $('lyrCurr');
+    c.classList.remove('lyr-step');
+    void c.offsetWidth;
+    c.classList.add('lyr-step');
+  }
+}
+
+function updateLyricsByTime(sec) {
+  if (!currentLyrics || currentLyrics.length === 0) return;
+  let idx = 0;
+  for (let i = 0; i < currentLyrics.length; i++) {
+    if (sec >= currentLyrics[i].time) idx = i;
+    else break;
+  }
+  if (idx !== lastLyricIdx) {
+    lastLyricIdx = idx;
+    const prev = idx > 0 ? currentLyrics[idx - 1].text : '';
+    const curr = currentLyrics[idx].text;
+    const next = idx + 1 < currentLyrics.length ? currentLyrics[idx + 1].text : '';
+    setLyricLines(prev, curr, next, true);
+  }
+}
+
+// =========================================================================
+// 6. MOTOR YOUTUBE EMBED (NOCOOOKIE + GUARDIÁN ANTI-ANUNCIOS)
 // =========================================================================
 let ytPlayer = null;
 let ytReady = false;
@@ -829,7 +946,7 @@ window.onYouTubeIframeAPIReady = function() {
       controls: 0,
       disablekb: 1,
       fs: 0,
-      iv_load_policy: 3, // Desactiva anotaciones
+      iv_load_policy: 3,
       modestbranding: 1,
       rel: 0,
       playsinline: 1,
@@ -839,13 +956,9 @@ window.onYouTubeIframeAPIReady = function() {
       onReady: () => {
         ytReady = true;
         ytPlayer.setVolume(vol);
-        console.log('[YT] Motor YouTube NoCookie listo.');
-        if (disc >= 0 && playing) {
-          playCurrentYouTubeTrack();
-        }
+        if (disc >= 0 && playing) playCurrentYouTubeTrack();
       },
       onStateChange: (e) => {
-        // YT.PlayerState.ENDED === 0
         if (e.data === 0 && disc >= 0) {
           if (rep) {
             ytPlayer.seekTo(0);
@@ -854,9 +967,6 @@ window.onYouTubeIframeAPIReady = function() {
             step(1);
           }
         }
-      },
-      onError: (e) => {
-        console.warn('[YT] Error en pista, pasando a modo simulado/siguiente:', e.data);
       }
     }
   });
@@ -872,27 +982,22 @@ function playCurrentYouTubeTrack() {
   ytPlayer.setVolume(vol);
 }
 
-// Guardián Anti-Anuncios y Sincronizador de Tiempo Real (cada 250ms)
 setInterval(() => {
   if (disc < 0 || !playing) return;
 
   if (isInternetOnline && ytReady && ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
     try {
       const vData = ytPlayer.getVideoData ? ytPlayer.getVideoData() : null;
-      // Si YouTube inyecta un video de anuncio distinto al ID solicitado, lo saltamos de inmediato
       if (vData && vData.video_id && expectedVideoId && vData.video_id !== expectedVideoId) {
-        console.log('[AdGuard] Saltando anuncio detectado:', vData.video_id);
         const adDur = ytPlayer.getDuration();
         if (adDur > 0) ytPlayer.seekTo(adDur, true);
         ytPlayer.loadVideoById(expectedVideoId);
         return;
       }
-
       const cur = ytPlayer.getCurrentTime();
       if (cur > 0) pos = cur;
     } catch (err) {}
   } else {
-    // Fallback Offline: avance por reloj interno
     pos += 0.25;
     if (pos >= dur()) {
       pos = 0;
@@ -900,6 +1005,7 @@ setInterval(() => {
     }
   }
   paintTime();
+  updateLyricsByTime(pos);
 }, 250);
 
 const dur = () => {
@@ -911,50 +1017,47 @@ const dur = () => {
 };
 
 // =========================================================================
-// 5. INTERFAZ HOLOGRÁFICA Y CONTROLES
+// 7. RELOJ, REPRODUCTOR Y ANIMACIONES SNAPPY
 // =========================================================================
 const DIAS = ['DOM','LUN','MAR','MIE','JUE','VIE','SAB'];
 const MES  = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+let lastMinStr = '';
+
 function tick() {
   const d = new Date();
-  $('clock').textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
-  $('sbar').style.width = ((d.getSeconds() + d.getMilliseconds() / 1000) / 60 * 100) + '%';
-  $('date').textContent = DIAS[d.getDay()] + ' ' + pad(d.getDate()) + ' ' + MES[d.getMonth()];
+  const hStr = pad(d.getHours());
+  const mStr = pad(d.getMinutes());
+  $('clkH').textContent = hStr;
+  if (mStr !== lastMinStr) {
+    lastMinStr = mStr;
+    const mEl = $('clkM');
+    mEl.textContent = mStr;
+    mEl.classList.remove('digit-pop');
+    void mEl.offsetWidth;
+    mEl.classList.add('digit-pop');
+  }
+  $('date').textContent = `${DIAS[d.getDay()]} ${pad(d.getDate())} ${MES[d.getMonth()]}`;
 }
-setInterval(tick, 250);
+setInterval(tick, 1000);
 tick();
 
-/* Vúmetro reactivo */
-const N = 28, vis = $('vis'), bars = [], lv = new Array(N).fill(0);
-for (let i = 0; i < N; i++) {
-  const b = document.createElement('i');
-  vis.appendChild(b);
-  bars.push(b);
+function pulseButton(btn) {
+  if (!btn) return;
+  btn.classList.remove('btn-tap');
+  void btn.offsetWidth;
+  btn.classList.add('btn-tap');
+  setTimeout(() => btn.classList.remove('btn-tap'), 180);
 }
-let lastF = 0;
-function frame(t) {
-  requestAnimationFrame(frame);
-  if (t - lastF < 36 || disc < 0) return;
-  lastF = t;
-  const beat = .55 + .45 * Math.abs(Math.sin(t / 1000 * Math.PI * 1.9)), H = vis.clientHeight;
-  for (let i = 0; i < N; i++) {
-    const env = 1 - Math.abs(i - N / 2) / (N * .75);
-    const tgt = playing ? (.18 + .82 * Math.random()) * env * beat : 0;
-    lv[i] += (tgt - lv[i]) * (tgt > lv[i] ? .55 : .18);
-    bars[i].style.height = Math.max(2, Math.round(lv[i] * H)) + 'px';
-    bars[i].classList.toggle('peak', lv[i] > 0.68);
-  }
-}
-requestAnimationFrame(frame);
 
 function setPlay(p) {
   playing = p;
-  $('pl').classList.toggle('play', p);
+  $('pl').classList.toggle('paused', !p);
   if (ytReady && ytPlayer && typeof ytPlayer.playVideo === 'function') {
     if (p) ytPlayer.playVideo();
     else ytPlayer.pauseVideo();
   }
 }
+
 function paintTime() {
   const d = dur(), p = Math.min(pos / d, 1) * 100;
   $('tc').textContent = mmss(pos);
@@ -962,34 +1065,49 @@ function paintTime() {
   $('fill').style.width = p + '%';
   $('head').style.left = p + '%';
 }
+
 function paintMeta() {
-  const t = DISCS[disc].t[trk];
-  $('dnum').textContent = 'DISC 0' + (disc + 1);
-  $('ttl').textContent = t[0];
-  $('art2').textContent = DISCS[disc].a;
-  $('art').innerHTML = ART[disc];
+  const track = DISCS[disc].t[trk];
+  const title = track[0];
+  const artist = DISCS[disc].a;
+  const vid = track[2];
+  const customCover = track[3];
+
+  $('ttl').textContent = title;
+  $('art2').textContent = artist;
+
+  // Animación snappy en la carátula flotante
+  const wrap = $('albumWrap');
+  wrap.classList.remove('track-pop');
+  void wrap.offsetWidth;
+  wrap.classList.add('track-pop');
+
+  const img = $('albumImg');
+  const fb  = $('albumFallback');
+  const coverUrl = customCover || (vid ? `https://i.ytimg.com/vi/${vid}/hqdefault.jpg` : '');
+  if (coverUrl && isInternetOnline) {
+    img.style.display = 'block';
+    fb.style.display = 'none';
+    img.src = coverUrl;
+  } else {
+    img.style.display = 'none';
+    fb.style.display = 'grid';
+  }
+
   paintTime();
+  fetchLyricsForTrack(artist, title);
 }
-function swap(fn) {
-  const pl = $('pl');
-  pl.classList.add('swap');
-  setTimeout(() => { fn(); pl.classList.remove('swap'); }, 200);
-}
+
 function load(i) {
   if (i < 0 || i >= DISCS.length) return;
-  if (i === disc) return;
-  const first = disc < 0;
   disc = i; trk = 0; pos = 0;
-  if (first) {
-    paintMeta();
-    $('sb').classList.remove('on');
-    $('pl').classList.add('on');
-  } else {
-    swap(paintMeta);
-  }
+  paintMeta();
+  $('sb').classList.remove('on');
+  $('pl').classList.add('on');
   setPlay(true);
   playCurrentYouTubeTrack();
 }
+
 function eject() {
   if (disc < 0) return;
   setPlay(false);
@@ -1000,35 +1118,38 @@ function eject() {
   $('pl').classList.remove('on');
   $('sb').classList.add('on');
 }
-function toggle() { 
+
+function toggle() {
+  pulseButton($('bPP'));
   if (disc >= 0) {
     setPlay(!playing);
   } else {
     load(0);
   }
 }
+
 function step(d) {
   if (disc < 0) return;
+  pulseButton(d > 0 ? $('bNext') : $('bPrev'));
   const n = DISCS[disc].t.length;
   if (shuf && n > 1) trk = (trk + 1 + Math.floor(Math.random() * (n - 1))) % n;
   else trk = (trk + d + n) % n;
   pos = 0;
-  swap(() => {
-    paintMeta();
-    playCurrentYouTubeTrack();
-  });
+  paintMeta();
+  playCurrentYouTubeTrack();
 }
+
 function changeVol(delta) {
   vol = Math.max(0, Math.min(100, vol + delta));
   if (ytReady && ytPlayer && typeof ytPlayer.setVolume === 'function') {
     ytPlayer.setVolume(vol);
   }
-  // Si corre dentro de Fully Kiosk, también ajusta el volumen multimedia de Android
   if (window.fully && typeof window.fully.setAudioVolume === 'function') {
     try { window.fully.setAudioVolume(vol, 3); } catch(e) {}
   }
   showVol();
 }
+
 function showVol() {
   const on = Math.round(vol / 5);
   let s = '';
@@ -1037,14 +1158,14 @@ function showVol() {
   $('vnum').textContent = pad(vol) + '%';
   $('vol').classList.add('show');
   clearTimeout(volT);
-  volT = setTimeout(() => $('vol').classList.remove('show'), 2000);
+  volT = setTimeout(() => $('vol').classList.remove('show'), 1800);
 }
 
 $('bPP').onclick = toggle;
 $('bPrev').onclick = () => step(-1);
 $('bNext').onclick = () => step(1);
-$('bShuf').onclick = () => { shuf = !shuf; $('bShuf').classList.toggle('act', shuf); };
-$('bRep').onclick  = () => { rep = !rep; $('bRep').classList.toggle('act', rep); };
+$('bShuf').onclick = () => { pulseButton($('bShuf')); shuf = !shuf; $('bShuf').classList.toggle('act', shuf); };
+$('bRep').onclick  = () => { pulseButton($('bRep')); rep = !rep; $('bRep').classList.toggle('act', rep); };
 
 addEventListener('keydown', e => {
   const k = e.key;
@@ -1056,11 +1177,14 @@ addEventListener('keydown', e => {
   else if (k === 'ArrowLeft') step(-1);
   else if (k === '0' || k === 'Escape') eject();
   else if (k === 'm' || k === 'M') $('stage').classList.toggle('mirror');
-  else if (k === 'q' || k === 'Q') $('netPillSb').click();
+  else if (k === 'q' || k === 'Q') {
+    forceQrToggle = !forceQrToggle;
+    $('sbLayout').classList.toggle('is-offline', !isInternetOnline || forceQrToggle);
+  }
 });
 
 // =========================================================================
-// 6. MOTOR WEBSOCKET + AUTO-CONFIGURACIÓN WIFI CON FULLY KIOSK
+// 8. MOTOR WEBSOCKET SILENCIOSO (ESP32-C3 + FULLY KIOSK WIFI SYNC)
 // =========================================================================
 let ws = null;
 let reconnectTimer = null;
@@ -1071,49 +1195,26 @@ function buildHostCandidates() {
   const stored = localStorage.getItem('esp32_ip');
   const list = [];
   if (stored) list.push(stored);
-  if (!list.includes('192.168.4.1')) list.push('192.168.4.1'); // IP fija del AP HoloJukebox-Setup
+  if (!list.includes('192.168.4.1')) list.push('192.168.4.1');
   if (!list.includes('holojukebox.local')) list.push('holojukebox.local');
   hostCandidates = list;
 }
 
-function updateWsUi(status, isOnline) {
-  const pills = [$('wsPillSb'), $('wsPillPl')];
-  pills.forEach(p => {
-    p.classList.toggle('online', isOnline);
-    p.querySelector('.ws-lbl').textContent = isOnline ? 'ESP OK' : status;
-  });
-  $('wsStatusTxt').textContent = status;
-  $('wsStatusTxt').style.color = isOnline ? "var(--ok)" : (status === "BUSCANDO" ? "var(--ac)" : "var(--err)");
-}
-
-// Aplica nuevas credenciales Wi-Fi en el celular mediante Fully Kiosk Browser JS Interface
 function applyWifiInFullyKiosk(ssid, pass, newEspIp) {
-  console.log(`[WIFI_CFG] Recibido nuevo Wi-Fi: SSID=${ssid}, ESP_IP=${newEspIp}`);
   if (newEspIp && newEspIp !== '0.0.0.0') {
     localStorage.setItem('esp32_ip', newEspIp);
-    $('ipInput').value = newEspIp;
   }
-
   if (window.fully) {
     try {
-      // Configura la red en Fully Kiosk Browser y fuerza reconexión Wi-Fi
       window.fully.setStringSetting("wifiSSID", ssid);
       window.fully.setStringSetting("wifiKey", pass);
       if (typeof window.fully.enableWifi === 'function') window.fully.enableWifi();
-      if (typeof window.fully.showToast === 'function') {
-        window.fully.showToast("Conectando a Wi-Fi: " + ssid);
-      }
-    } catch (e) {
-      console.warn("Error aplicando Wi-Fi en Fully Kiosk:", e);
-    }
+    } catch (e) {}
   }
 }
 
 function handleCommand(cmd) {
   cmd = cmd.trim();
-  $('lastCmdTxt').textContent = cmd;
-  console.log("[WS RX]:", cmd);
-
   if (cmd === "ENC:UP") {
     changeVol(+5);
   } else if (cmd === "ENC:DOWN") {
@@ -1126,35 +1227,22 @@ function handleCommand(cmd) {
       eject();
     } else {
       const idx = parseInt(val, 10);
-      if (!isNaN(idx) && idx >= 1 && idx <= 5) {
-        load(idx - 1);
-      } else {
-        load(0);
-      }
+      if (!isNaN(idx) && idx >= 1 && idx <= 5) load(idx - 1);
+      else load(0);
     }
   } else if (cmd.startsWith("WIFI_CFG:")) {
-    // Formato enviado por la ESP32 al guardar Wi-Fi en el portal: WIFI_CFG:SSID|PASS|NEW_IP
     const parts = cmd.substring(9).split('|');
-    if (parts.length >= 2) {
-      applyWifiInFullyKiosk(parts[0], parts[1], parts[2] || '');
-    }
+    if (parts.length >= 2) applyWifiInFullyKiosk(parts[0], parts[1], parts[2] || '');
   } else if (cmd.startsWith("ESP_IP:")) {
     const newIp = cmd.substring(7).trim();
-    if (newIp) {
-      localStorage.setItem('esp32_ip', newIp);
-      $('ipInput').value = newIp;
-    }
+    if (newIp) localStorage.setItem('esp32_ip', newIp);
   }
 }
 
-function initWebSocket(manualHost) {
+function initWebSocket() {
   buildHostCandidates();
-  const ip = manualHost || hostCandidates[candidateIdx % hostCandidates.length] || "192.168.4.1";
-  $('ipInput').value = ip;
-
+  const ip = hostCandidates[candidateIdx % hostCandidates.length] || "192.168.4.1";
   const wsUrl = `ws://${ip}:81/`;
-  console.log("Intentando WebSocket a:", wsUrl);
-  updateWsUi("BUSCANDO", false);
 
   if (ws) {
     try { ws.onclose = null; ws.close(); } catch(e) {}
@@ -1162,45 +1250,28 @@ function initWebSocket(manualHost) {
 
   try {
     ws = new WebSocket(wsUrl);
-
     ws.onopen = () => {
-      console.log("¡WebSocket CONECTADO a", wsUrl);
       localStorage.setItem('esp32_ip', ip);
-      updateWsUi("ONLINE", true);
       clearTimeout(reconnectTimer);
     };
-
     ws.onmessage = (event) => {
       const lines = event.data.split('\n');
       for (const line of lines) {
         if (line.trim().length > 0) handleCommand(line);
       }
     };
-
     ws.onerror = () => {};
-
     ws.onclose = () => {
-      updateWsUi("REINTENTANDO", false);
       candidateIdx++;
       clearTimeout(reconnectTimer);
-      reconnectTimer = setTimeout(() => initWebSocket(), 2200);
+      reconnectTimer = setTimeout(initWebSocket, 2200);
     };
   } catch (err) {
     candidateIdx++;
     clearTimeout(reconnectTimer);
-    reconnectTimer = setTimeout(() => initWebSocket(), 2500);
+    reconnectTimer = setTimeout(initWebSocket, 2500);
   }
 }
-
-$('ipInput').addEventListener('change', () => {
-  const customIp = $('ipInput').value.trim();
-  if (customIp) {
-    localStorage.setItem('esp32_ip', customIp);
-    initWebSocket(customIp);
-  }
-});
-$('wsPillSb').onclick = () => initWebSocket($('ipInput').value.trim());
-$('wsPillPl').onclick = () => initWebSocket($('ipInput').value.trim());
 
 window.addEventListener('load', () => {
   checkInternetConnection();
