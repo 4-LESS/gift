@@ -1954,6 +1954,17 @@ let spaceHeldTriggered = false;
 
 addEventListener('keydown', e => {
   const k = e.key;
+
+  // Atajos directos desde el daemon USB Serial (holodeck_serial.sh -> F1..F8)
+  if (k === 'F1') { e.preventDefault(); handleCommand("ENC:UP", "usb"); return; }
+  if (k === 'F2') { e.preventDefault(); handleCommand("ENC:DOWN", "usb"); return; }
+  if (k === 'F3') { e.preventDefault(); handleCommand("BTN:CLICK", "usb"); return; }
+  if (k === 'F4') { e.preventDefault(); handleCommand("BTN:HOLD", "usb"); return; }
+  if (k === 'F5') { e.preventDefault(); handleCommand("TAG:01", "usb"); return; }
+  if (k === 'F6') { e.preventDefault(); handleCommand("TAG:02", "usb"); return; }
+  if (k === 'F7') { e.preventDefault(); handleCommand("TAG:03", "usb"); return; }
+  if (k === 'F8') { e.preventDefault(); handleCommand("TAG:EJECT", "usb"); return; }
+
   if (isSleeping) {
     e.preventDefault();
     wakeFromSleep();
@@ -1984,7 +1995,7 @@ addEventListener('keydown', e => {
     return;
   }
 
-  if (k >= '1' && k <= '5') load(+k - 1);
+  if (k >= '1' && k <= '5') handleNfcTag(+k - 1);
   else if (k === 'ArrowUp') { e.preventDefault(); changeVol(+5); }
   else if (k === 'ArrowDown') { e.preventDefault(); changeVol(-5); }
   else if (k === 'ArrowRight') step(1);
@@ -2055,8 +2066,29 @@ function parseYouTubeInput(raw) {
   return null;
 }
 
-function handleCommand(cmd) {
+let usbActiveUntil = 0;
+let lastWsHwTime = 0;
+
+function handleCommand(cmd, src = "ws") {
   cmd = cmd.trim();
+  const isHwCmd = (cmd === "ENC:UP" || cmd === "ENC:DOWN" || cmd === "BTN:CLICK" || cmd === "BTN:HOLD" || cmd.startsWith("TAG:"));
+  const now = Date.now();
+
+  if (isHwCmd) {
+    if (src === "usb") {
+      const firstSwitch = (now >= usbActiveUntil);
+      usbActiveUntil = now + 3600000; // Prioriza USB por 1 hora (se renueva con cada evento USB)
+      if (firstSwitch && (now - lastWsHwTime < 350)) {
+        lastWsHwTime = 0;
+        return; // Evita duplicar el primer pulso si el WebSocket llegó unos ms antes
+      }
+    } else if (src === "ws") {
+      if (now < usbActiveUntil) {
+        return; // Mientras el cable USB esté activo, ignora los duplicados por Wi-Fi
+      }
+      lastWsHwTime = now;
+    }
+  }
 
   // Si la pantalla está en modo Apagar (Sleep), cualquier interacción con el encoder la despierta
   if (isSleeping && (cmd === "ENC:UP" || cmd === "ENC:DOWN" || cmd === "BTN:CLICK" || cmd === "BTN:HOLD" || cmd.startsWith("TAG:"))) {
@@ -2181,10 +2213,10 @@ window.onHoloBroadcast = function(action, extras) {
   if (!extras) return;
   try {
     const p = JSON.parse(extras);
-    if (p.cmd) handleCommand(p.cmd);
-    else if (p.extra_cmd) handleCommand(p.extra_cmd);
+    if (p.cmd) handleCommand(p.cmd, "usb");
+    else if (p.extra_cmd) handleCommand(p.extra_cmd, "usb");
   } catch (e) {
-    handleCommand(extras);
+    handleCommand(extras, "usb");
   }
 };
 
@@ -2221,7 +2253,7 @@ async function connectToSerialPort(port) {
         buffer = lines.pop();
         for (const line of lines) {
           const trimmed = line.trim();
-          if (trimmed) handleCommand(trimmed);
+          if (trimmed) handleCommand(trimmed, "usb");
         }
       }
     }

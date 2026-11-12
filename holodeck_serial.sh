@@ -1,55 +1,52 @@
 #!/system/bin/sh
 # HoloDeck - Daemon Lector Serial USB para Android (Magisk Root)
-# Lee la ESP32 conectada por cable USB OTG y reenvía comandos a Fully Kiosk
+# Lee la ESP32 conectada por cable USB OTG y reenvía comandos a la interfaz web
 sleep 3
 
 while true; do
   PORT=""
-  if [ -c /dev/ttyACM0 ]; then
-    PORT="/dev/ttyACM0"
-  elif [ -c /dev/ttyUSB0 ]; then
-    PORT="/dev/ttyUSB0"
-  fi
+  for dev in /dev/ttyACM* /dev/ttyUSB*; do
+    if [ -c "$dev" ]; then
+      PORT="$dev"
+      break
+    fi
+  done
 
   if [ -n "$PORT" ]; then
     chmod 666 "$PORT" 2>/dev/null
     stty -F "$PORT" 115200 raw -echo 2>/dev/null
 
     while IFS= read -r line || [ -n "$line" ]; do
-      cmd=$(echo "$line" | tr -d '\r\n')
+      cmd=$(echo "$line" | tr -d '\r\n ')
       [ -z "$cmd" ] && continue
 
-      # 1. Enviar broadcast a Fully Kiosk (llega a onHoloBroadcast en index.html)
-      am broadcast -a com.holodeck.COMMAND --es cmd "$cmd" >/dev/null 2>&1
-
-      # 2. Inyección de tecla como respaldo nativo de Android
       case "$cmd" in
         "ENC:UP")
-          input keyevent 19
+          input keyevent 131
           ;;
         "ENC:DOWN")
-          input keyevent 20
+          input keyevent 132
           ;;
         "BTN:CLICK")
-          input keyevent 62
+          input keyevent 133
           ;;
         "BTN:HOLD")
-          input keyevent 43
+          input keyevent 134
           ;;
         "TAG:01")
-          input keyevent 8
+          input keyevent 135
           ;;
         "TAG:02")
-          input keyevent 9
+          input keyevent 136
           ;;
         "TAG:03")
-          input keyevent 10
+          input keyevent 137
           ;;
         "TAG:EJECT")
-          input keyevent 7
+          input keyevent 138
           ;;
       esac
     done < "$PORT"
   fi
-  sleep 2
+  sleep 1
 done
