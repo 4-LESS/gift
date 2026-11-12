@@ -1171,7 +1171,7 @@ function playCurrentYouTubeTrack() {
       list: dObj.listId,
       listType: 'playlist',
       index: trk,
-      startSeconds: 0
+      startSeconds: 1
     });
     ytPlayer.setVolume(vol);
     if (shuf && typeof ytPlayer.setShuffle === 'function') ytPlayer.setShuffle(true);
@@ -1184,9 +1184,11 @@ function playCurrentYouTubeTrack() {
   if (!vid) return;
   expectedVideoId = vid;
   lastDynamicVid = vid;
-  ytPlayer.loadVideoById({ videoId: vid, startSeconds: 0 });
+  ytPlayer.loadVideoById({ videoId: vid, startSeconds: 1 });
   ytPlayer.setVolume(vol);
 }
+
+let adRecoveryCooldown = 0;
 
 setInterval(() => {
   if (disc < 0 || !playing) return;
@@ -1194,15 +1196,40 @@ setInterval(() => {
   if (isInternetOnline && ytReady && ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
     try {
       const vData = ytPlayer.getVideoData ? ytPlayer.getVideoData() : null;
+      const liveDur = ytPlayer.getDuration ? ytPlayer.getDuration() : 0;
+      const trackCfgDur = (DISCS[disc] && DISCS[disc].t && DISCS[disc].t[trk]) ? DISCS[disc].t[trk][1] : 180;
+
+      // Detector de anuncios por duración:
+      // Durante un anuncio de 15s o 30s getDuration() devuelve <= 65s mientras la canción dura > 100s
+      const isAdByDuration = (liveDur > 0 && liveDur <= 65 && trackCfgDur > 90);
+      const isAdById = (!DISCS[disc]?.listId && vData && vData.video_id && expectedVideoId && vData.video_id !== expectedVideoId);
+
+      if (isAdByDuration || isAdById) {
+        if (typeof ytPlayer.mute === 'function') ytPlayer.mute();
+        const nowMs = Date.now();
+        if (nowMs - adRecoveryCooldown > 1200) {
+          adRecoveryCooldown = nowMs;
+          if (liveDur > 0 && typeof ytPlayer.seekTo === 'function') {
+            ytPlayer.seekTo(liveDur, true);
+          }
+          if (expectedVideoId) {
+            ytPlayer.loadVideoById({ videoId: expectedVideoId, startSeconds: 1 });
+          } else if (typeof ytPlayer.nextVideo === 'function') {
+            ytPlayer.nextVideo();
+          }
+        }
+        return;
+      } else {
+        if (typeof ytPlayer.isMuted === 'function' && ytPlayer.isMuted() && vol > 0) {
+          ytPlayer.unMute();
+          ytPlayer.setVolume(vol);
+        }
+      }
+
       if (DISCS[disc] && DISCS[disc].listId) {
         syncDynamicMetadataFromYouTube();
-      } else if (vData && vData.video_id && expectedVideoId && vData.video_id !== expectedVideoId) {
-        // Fallback anti-anuncios por si en algún momento no hay sesión Premium activa
-        const adDur = ytPlayer.getDuration();
-        if (adDur > 0) ytPlayer.seekTo(adDur, true);
-        ytPlayer.loadVideoById(expectedVideoId);
-        return;
       }
+
       const cur = ytPlayer.getCurrentTime();
       if (cur > 0) pos = cur;
     } catch (err) {}
