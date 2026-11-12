@@ -2048,9 +2048,14 @@ let candidateIdx = 0;
 function buildHostCandidates() {
   const stored = localStorage.getItem('esp32_ip');
   const list = [];
-  if (stored) list.push(stored);
-  if (!list.includes('192.168.4.1')) list.push('192.168.4.1');
+  if (location.hostname && location.hostname !== '4-less.github.io' && location.hostname !== 'localhost') {
+    list.push(location.hostname);
+  }
+  // IP fija por defecto de la ESP32 en la red actual:
+  list.push('192.168.1.49');
+  if (stored && !list.includes(stored)) list.push(stored);
   if (!list.includes('holojukebox.local')) list.push('holojukebox.local');
+  if (!list.includes('192.168.4.1')) list.push('192.168.4.1');
   hostCandidates = list;
 }
 
@@ -2062,6 +2067,7 @@ function applyWifiInFullyKiosk(ssid, pass, newEspIp) {
     try {
       window.fully.setStringSetting("wifiSSID", ssid);
       window.fully.setStringSetting("wifiKey", pass);
+      window.fully.setStringSetting("mixedContentMode", "0");
       if (typeof window.fully.enableWifi === 'function') window.fully.enableWifi();
     } catch (e) {}
   }
@@ -2207,6 +2213,8 @@ function handleCommand(cmd, src = "ws") {
   } else if (cmd === "YT:LOGIN") {
     // Abre el login de Google/YouTube en Fully Kiosk para activar la sesión YouTube Premium
     window.location.href = "https://accounts.google.com/ServiceLogin?service=youtube&continue=https%3A%2F%2Fwww.youtube.com";
+  } else if (cmd === "RELOAD") {
+    window.location.reload(true);
   } else if (cmd.startsWith("DISC_CFG:")) {
     // Formato: DISC_CFG:1|NOMBRE ARTISTA O ALBUM|URL_O_ID_YT_MUSIC
     const p = cmd.substring(9).split('|');
@@ -2233,11 +2241,19 @@ function handleCommand(cmd, src = "ws") {
 
 function initWebSocket() {
   buildHostCandidates();
-  const ip = hostCandidates[candidateIdx % hostCandidates.length] || "192.168.4.1";
+  const ip = hostCandidates[candidateIdx % hostCandidates.length] || "192.168.1.49";
   const wsUrl = `ws://${ip}:81/`;
 
   if (ws) {
     try { ws.onclose = null; ws.close(); } catch(e) {}
+  }
+
+  pushDebugLog(`WS: Conectando a ${ip}:81...`);
+
+  if (window.fully) {
+    try {
+      window.fully.setStringSetting("mixedContentMode", "0");
+    } catch (e) {}
   }
 
   try {
@@ -2245,6 +2261,7 @@ function initWebSocket() {
     ws.onopen = () => {
       localStorage.setItem('esp32_ip', ip);
       clearTimeout(reconnectTimer);
+      pushDebugLog(`WS: ¡CONECTADO A ${ip}:81!`);
     };
     ws.onmessage = (event) => {
       const lines = event.data.split('\n');
@@ -2252,13 +2269,16 @@ function initWebSocket() {
         if (line.trim().length > 0) handleCommand(line);
       }
     };
-    ws.onerror = () => {};
+    ws.onerror = (e) => {
+      pushDebugLog(`WS: Error en ${ip}:81`);
+    };
     ws.onclose = () => {
       candidateIdx++;
       clearTimeout(reconnectTimer);
       reconnectTimer = setTimeout(initWebSocket, 2200);
     };
   } catch (err) {
+    pushDebugLog(`WS: Bloqueado (${err.message || 'MixedContent'})`);
     candidateIdx++;
     clearTimeout(reconnectTimer);
     reconnectTimer = setTimeout(initWebSocket, 2500);
