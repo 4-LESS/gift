@@ -1,10 +1,11 @@
-const CACHE_NAME = 'holodeck-cache-v3.4';
+const CACHE_NAME = 'holodeck-cache-v3.5';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './mensaje.json',
   './albumes.json',
+  './foto.jpg',
   './qr_setup.svg'
 ];
 
