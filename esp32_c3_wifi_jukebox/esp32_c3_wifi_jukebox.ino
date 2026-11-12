@@ -1,17 +1,20 @@
 /*
- * Holographic Jukebox (HoloDeck) - Firmware Completo ESP32-C3
- * -----------------------------------------------------------
- * Hardware:
- * - Relé de encendido celular (HW-307): GPIO 4 (10s al arrancar, corte por alta impedancia)
+ * Holographic Jukebox (HoloDeck) - Firmware Completo ESP32-C3 + OTA
+ * -----------------------------------------------------------------
+ * Hardware (Respetando pines prohibidos GPIO 2, 8, 9, 18, 19):
+ * - Relé de encendido celular (HW-307): IN = GPIO 4 (10s al arrancar, corte por alta impedancia)
  * - Encoder KY-040: CLK = GPIO 0, DT = GPIO 1, SW = GPIO 3
+ * - Lector NFC RC522 (SPI): SDA(SS) = GPIO 5, SCK = GPIO 6, MOSI = GPIO 7, MISO = GPIO 10, RST = GPIO 20
  *
- * Funciones de Red:
- * - Si hay Wi-Fi guardado: Conecta a la red local + mDNS (holojukebox.local) + WebSocket (:81)
- * - Si NO hay Wi-Fi (o falla): Levanta AP "HoloJukebox-Setup" (clave: 12345678, IP: 192.168.4.1)
- *   con Portal Cautivo para elegir red Wi-Fi y sincronizar automáticamente con Fully Kiosk.
+ * OTA (Subida de código por Wi-Fi):
+ * - Hostname en Arduino IDE: "holojukebox"
+ * - Red por defecto: "miinternet.cl-2.4G-1057d8" (Clave Wi-Fi y OTA: "orion2104")
+ * - Al cambiar de Wi-Fi mediante el QR, la red y el código/clave OTA se actualizan
+ *   automáticamente a los mismos datos ingresados en el portal del QR.
  *
- * Librería requerida en Arduino IDE:
+ * Librerías requeridas en Arduino IDE:
  * - "WebSockets" by Markus Sattler (Links2004)
+ * - "MFRC522" by GithubCommunity
  */
 
 #include <WiFi.h>
@@ -20,15 +23,29 @@
 #include <ESPmDNS.h>
 #include <Preferences.h>
 #include <WebSocketsServer.h>
+#include <ArduinoOTA.h>
+#include <SPI.h>
+#include <MFRC522.h>
 #include "index_html.h"
 
-// ================= PINES HARDWARE =================
-const int PIN_RELE = 4; // GPIO 4 -> IN del Relé HW-307
-const int PIN_CLK  = 0; // GPIO 0 -> Encoder CLK
-const int PIN_DT   = 1; // GPIO 1 -> Encoder DT
-const int PIN_SW   = 3; // GPIO 3 -> Encoder Pulsador SW
+// ================= PINES HARDWARE (100% SEGUROS EN ESP32-C3) =================
+// Prohibidos NO usados: GPIO 2, GPIO 8, GPIO 9 (Strapping) y GPIO 18, GPIO 19 (USB D-/D+)
+const int PIN_RELE     = 4;  // GPIO 4  -> IN del Relé HW-307
 
-// ================= CONFIGURACIÓN AP / PORTAL =================
+const int PIN_CLK      = 0;  // GPIO 0  -> Encoder CLK
+const int PIN_DT       = 1;  // GPIO 1  -> Encoder DT
+const int PIN_SW       = 3;  // GPIO 3  -> Encoder Pulsador SW
+
+const int PIN_NFC_SDA  = 5;  // GPIO 5  -> RC522 SDA (SS / CS)
+const int PIN_NFC_SCK  = 6;  // GPIO 6  -> RC522 SCK
+const int PIN_NFC_MOSI = 7;  // GPIO 7  -> RC522 MOSI
+const int PIN_NFC_MISO = 10; // GPIO 10 -> RC522 MISO
+const int PIN_NFC_RST  = 20; // GPIO 20 -> RC522 RST (o MFRC522::UNUSED_PIN si unes RST a 3.3V)
+
+// ================= RED LOCAL POR DEFECTO Y PORTAL QR =================
+const char* DEFAULT_WIFI_SSID = "miinternet.cl-2.4G-1057d8";
+const char* DEFAULT_WIFI_PASS = "orion2104";
+
 const char* AP_SSID = "HoloJukebox-Setup";
 const char* AP_PASS = "12345678";
 const byte  DNS_PORT = 53;
@@ -38,6 +55,23 @@ Preferences prefs;
 WebServer server(80);
 WebSocketsServer webSocket(81);
 DNSServer dnsServer;
+MFRC522 rfid(PIN_NFC_SDA, PIN_NFC_RST);
+
+// ================= TARJETAS / TAGS NFC (UIDs EN HEX) =================
+// Reemplaza estos UIDs por los que aparezcan en el Monitor Serial al acercar cada tag
+struct NfcAlbumMap {
+  const char* uid;
+  const char* tagCmd;
+};
+
+const NfcAlbumMap NFC_CATALOG[] = {
+  { "04A1B2C3", "TAG:01\n" }, // Álbum 1: THE LIFE OF A SHOWGIRL
+  { "04D4E5F6", "TAG:02\n" }, // Álbum 2: 1989 (DELUXE)
+  { "04112233", "TAG:03\n" }  // Álbum 3: LOVER
+};
+const int NFC_CATALOG_COUNT = sizeof(NFC_CATALOG) / sizeof(NFC_CATALOG[0]);
+String lastNfcUid = "";
+unsigned long lastNfcCheck = 0;
 
 bool apModeActive = false;
 bool releActivo = false;
@@ -235,6 +269,13 @@ void setupWebServer() {
       WiFi.mode(WIFI_STA);
       apModeActive = false;
       MDNS.begin("holojukebox");
+      // Actualizar el código/contraseña OTA a la misma clave del nuevo Wi-Fi del QR
+      ArduinoOTA.end();
+      if (pass.length() > 0) {
+        ArduinoOTA.setPassword(pass.c_str());
+      }
+      ArduinoOTA.begin();
+      Serial.printf("[OTA] Reiniciado en nueva red con clave OTA sincronizada al Wi-Fi del QR.\n");
     }
   });
 
@@ -251,19 +292,32 @@ void setupWebServer() {
   server.begin();
 }
 
-void connectSavedWifiOrStartAP() {
-  prefs.begin("wifi", true);
-  String ssid = prefs.getString("ssid", "");
-  String pass = prefs.getString("pass", "");
-  prefs.end();
-
-  if (ssid.length() == 0) {
-    Serial.println("[WIFI] Sin red guardada. Iniciando AP HoloJukebox-Setup...");
-    startCaptivePortal();
-    return;
+void setupOTA(const String& otaPassword) {
+  ArduinoOTA.setHostname("holojukebox");
+  if (otaPassword.length() > 0) {
+    ArduinoOTA.setPassword(otaPassword.c_str());
   }
 
-  Serial.printf("[WIFI] Conectando a red guardada: %s\n", ssid.c_str());
+  ArduinoOTA.onStart([]() {
+    Serial.println("\n[OTA] Iniciando actualizacion de firmware...");
+  });
+  ArduinoOTA.onEnd([]() {
+    Serial.println("\n[OTA] ¡Actualizacion completada! Reiniciando...");
+  });
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+    Serial.printf("[OTA] Progreso: %u%%\r", (progress / (total / 100)));
+  });
+  ArduinoOTA.onError([](ota_error_t error) {
+    Serial.printf("\n[OTA] Error [%u]\n", error);
+  });
+
+  ArduinoOTA.begin();
+  Serial.println("[OTA] Listo en 'holojukebox.local' (misma clave que el Wi-Fi activo).");
+}
+
+bool tryConnectWifi(const String& ssid, const String& pass) {
+  if (ssid.length() == 0) return false;
+  Serial.printf("[WIFI] Conectando a: %s\n", ssid.c_str());
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid.c_str(), pass.c_str());
 
@@ -277,6 +331,25 @@ void connectSavedWifiOrStartAP() {
     delay(200);
     Serial.print(".");
   }
+  return (WiFi.status() == WL_CONNECTED);
+}
+
+void connectSavedWifiOrStartAP() {
+  prefs.begin("wifi", true);
+  String savedSsid = prefs.getString("ssid", "");
+  String savedPass = prefs.getString("pass", "");
+  prefs.end();
+
+  String activePass = DEFAULT_WIFI_PASS;
+
+  // 1. Si hay un Wi-Fi guardado por el QR, intentar conectarse primero a ese
+  if (savedSsid.length() > 0 && tryConnectWifi(savedSsid, savedPass)) {
+    activePass = savedPass;
+  }
+  // 2. Si no hay Wi-Fi del QR (o falló), intentar con la red local por defecto del PC
+  else if (tryConnectWifi(DEFAULT_WIFI_SSID, DEFAULT_WIFI_PASS)) {
+    activePass = DEFAULT_WIFI_PASS;
+  }
 
   if (WiFi.status() == WL_CONNECTED) {
     Serial.println("\n[WIFI] ¡Conectado con exito!");
@@ -285,9 +358,11 @@ void connectSavedWifiOrStartAP() {
     if (MDNS.begin("holojukebox")) {
       Serial.println("[mDNS] Activo en ws://holojukebox.local:81");
     }
+    setupOTA(activePass);
   } else {
     Serial.println("\n[WIFI] No se pudo conectar. Activando AP HoloJukebox-Setup...");
     startCaptivePortal();
+    setupOTA(AP_PASS);
   }
 }
 
@@ -305,14 +380,55 @@ void setup() {
   pinMode(PIN_SW,  INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(PIN_CLK), isrEncoder, FALLING);
 
-  // 3. INICIAR WIFI O PORTAL CAUTIVO
+  // 3. INICIALIZAR LECTOR NFC RC522 POR SPI
+  SPI.begin(PIN_NFC_SCK, PIN_NFC_MISO, PIN_NFC_MOSI, PIN_NFC_SDA);
+  rfid.PCD_Init();
+  Serial.println("[NFC] Lector RC522 inicializado en SPI (SDA=5, SCK=6, MOSI=7, MISO=10, RST=20).");
+
+  // 4. INICIAR WIFI (QR GUARDADO -> DEFAULT LOCAL -> AP) Y OTA
   connectSavedWifiOrStartAP();
 
-  // 4. INICIAR SERVIDOR WEB Y WEBSOCKET (:81)
+  // 5. INICIAR SERVIDOR WEB Y WEBSOCKET (:81)
   setupWebServer();
   webSocket.begin();
   webSocket.onEvent(onWebSocketEvent);
   Serial.println("[WS] Servidor WebSocket listo en puerto 81.");
+}
+
+void checkNfcReader() {
+  if (millis() - lastNfcCheck < 150) return;
+  lastNfcCheck = millis();
+
+  if (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) {
+    return;
+  }
+
+  String uidStr = "";
+  for (byte i = 0; i < rfid.uid.size; i++) {
+    if (rfid.uid.uidByte[i] < 0x10) uidStr += "0";
+    uidStr += String(rfid.uid.uidByte[i], HEX);
+  }
+  uidStr.toUpperCase();
+
+  rfid.PICC_HaltA();
+  rfid.PCD_StopCrypto1();
+
+  Serial.print("[NFC] Tag detectado UID: ");
+  Serial.println(uidStr);
+
+  // Buscar si el UID coincide con algún álbum configurado
+  for (int i = 0; i < NFC_CATALOG_COUNT; i++) {
+    if (uidStr.equalsIgnoreCase(NFC_CATALOG[i].uid)) {
+      broadcastCommand(NFC_CATALOG[i].tagCmd);
+      lastNfcUid = uidStr;
+      return;
+    }
+  }
+
+  // Si es un tag nuevo aún no registrado, rota entre los álbumes 1..3 y muestra el UID en Serial
+  static int fallbackIdx = 0;
+  fallbackIdx = (fallbackIdx % 3) + 1;
+  broadcastCommand("TAG:0" + String(fallbackIdx) + "\n");
 }
 
 void loop() {
@@ -322,14 +438,18 @@ void loop() {
     Serial.println("[RELE] 10 segundos completados -> Relé APAGADO.");
   }
 
-  // 2. Atender DNS (si está en modo Portal), HTTP y WebSocket
+  // 2. Atender OTA, DNS (si está en modo Portal), HTTP y WebSocket
+  ArduinoOTA.handle();
   if (apModeActive) {
     dnsServer.processNextRequest();
   }
   server.handleClient();
   webSocket.loop();
 
-  // 3. Procesar giros del Encoder físico
+  // 3. Revisar lector NFC RC522
+  checkNfcReader();
+
+  // 4. Procesar giros del Encoder físico
   if (encoderDelta != 0) {
     int delta = encoderDelta;
     encoderDelta = 0;
