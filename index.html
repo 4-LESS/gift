@@ -720,10 +720,10 @@ html, body {
           </div>
         </div>
 
-        <!-- Foto Flotando en el Holograma -->
+        <!-- Foto Flotando en el Holograma (Toca para rotar, o Long Press para Menú) -->
         <div class="photo-col" id="photoCol" style="display:flex;align-items:center;justify-content:center;">
-          <div style="position:relative;border-radius:14px;overflow:hidden;box-shadow:0 0 30px rgba(0,0,0,0.9), 0 0 16px rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.22);animation:digitBounce 0.6s var(--pop);">
-            <img src="./foto.jpg" alt="Nosotros" style="height:clamp(190px, 64vh, 275px);width:auto;display:block;object-fit:cover;border-radius:13px;">
+          <div id="photoWrap" onclick="rotatePhoto(event)" title="Toca para rotar" style="position:relative;border-radius:14px;overflow:hidden;box-shadow:0 0 30px rgba(0,0,0,0.9), 0 0 16px rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.22);animation:digitBounce 0.6s var(--pop);cursor:pointer;transition:transform 0.4s var(--snap);">
+            <img id="holoPhoto" src="./foto.jpg" alt="Nosotros" style="height:clamp(190px, 64vh, 275px);width:auto;display:block;object-fit:cover;border-radius:13px;pointer-events:none;">
           </div>
         </div>
 
@@ -1639,17 +1639,47 @@ const ACCENT_PALETTE = [
 let accentIdx = parseInt(localStorage.getItem('holo_accent_idx') || '0', 10) % ACCENT_PALETTE.length;
 let mirrorMode = localStorage.getItem('holo_mirror') === '1';
 let brightnessPct = parseInt(localStorage.getItem('holo_bright') || '100', 10);
+let photoRotation = parseInt(localStorage.getItem('holo_photo_rot') || '0', 10);
+let stageRotation = parseInt(localStorage.getItem('holo_stage_rot') || '0', 10);
 
 let isMenuOpen = false;
 let isSleeping = false;
 let menuPage = 'root'; // 'root' | 'options' | 'screen' | 'account'
 let menuSel = 0;
 
+function rotatePhoto(e) {
+  if (e) e.stopPropagation();
+  photoRotation = (photoRotation + 90) % 360;
+  localStorage.setItem('holo_photo_rot', String(photoRotation));
+  applySavedVisualSettings();
+  if (isMenuOpen) renderSysMenu();
+}
+
+function rotateStage() {
+  stageRotation = (stageRotation + 180) % 360;
+  localStorage.setItem('holo_stage_rot', String(stageRotation));
+  applySavedVisualSettings();
+  if (isMenuOpen) renderSysMenu();
+}
+
 function applySavedVisualSettings() {
   const ac = ACCENT_PALETTE[accentIdx] || ACCENT_PALETTE[0];
   document.documentElement.style.setProperty('--ac', ac.hex);
   $('stage').classList.toggle('mirror', mirrorMode);
   $('stage').style.opacity = (brightnessPct / 100);
+
+  // Transform combinado para el escenario completo (espejo + giro 180° si está invertido)
+  let stageTransform = '';
+  if (mirrorMode) stageTransform += 'scaleX(-1) ';
+  if (stageRotation) stageTransform += `rotate(${stageRotation}deg) `;
+  $('stage').style.transform = stageTransform.trim();
+
+  // Rotación suave de la foto flotante
+  const pw = $('photoWrap');
+  if (pw) {
+    pw.style.transform = `rotate(${photoRotation}deg)`;
+  }
+
   if (window.fully && typeof window.fully.setScreenBrightness === 'function') {
     try { window.fully.setScreenBrightness(Math.round((brightnessPct / 100) * 255)); } catch(e) {}
   }
@@ -1707,6 +1737,7 @@ function getActiveMenuItems() {
       sysItems.push({ label: "+ GUARDAR", val: "", run: () => saveCurrentPlayingTrackFromEncoder() });
     }
     sysItems.push(
+      { label: "ROTAR FOTO", val: photoRotation + "°", run: () => rotatePhoto() },
       { label: "OPCIONES", val: "", run: () => { menuPage = 'options'; menuSel = 0; renderSysMenu(); } }
     );
     if (disc >= 0) {
@@ -1751,6 +1782,16 @@ function getActiveMenuItems() {
   }
   if (menuPage === 'screen') {
     return [
+      {
+        label: "ROTAR FOTO",
+        val: photoRotation + "°",
+        run: () => rotatePhoto()
+      },
+      {
+        label: "ROTAR TODO",
+        val: stageRotation + "°",
+        run: () => rotateStage()
+      },
       {
         label: "ESPEJO",
         val: mirrorMode ? "ON" : "OFF",
@@ -2008,6 +2049,8 @@ addEventListener('keydown', e => {
   else if (k === 'ArrowRight') step(1);
   else if (k === 'ArrowLeft') step(-1);
   else if (k === '0' || k === 'Escape') eject();
+  else if (k === 'r' || k === 'R') rotatePhoto();
+  else if (k === 't' || k === 'T') toggleSysMenu();
   else if (k === 'm' || k === 'M') {
     mirrorMode = !mirrorMode;
     localStorage.setItem('holo_mirror', mirrorMode ? '1' : '0');
@@ -2027,6 +2070,65 @@ addEventListener('keyup', e => {
     spaceHeldTriggered = false;
   }
 });
+
+// Cierre al pulsar fondo oscuro del menú
+$('sysMenu').addEventListener('click', e => {
+  if (e.target === $('sysMenu')) closeSysMenu();
+});
+
+// GESTOS TÁCTILES: LONG PRESS (450ms) Y SWIPE HORIZONTAL PARA ABRIR/CERRAR MENÚ
+let touchTimer = null;
+let touchStartX = 0;
+let touchStartY = 0;
+let touchMoved = false;
+
+window.addEventListener('touchstart', e => {
+  if (e.touches.length !== 1) return;
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+  touchMoved = false;
+
+  clearTimeout(touchTimer);
+  touchTimer = setTimeout(() => {
+    if (!touchMoved) {
+      if (isSleeping) {
+        wakeFromSleep();
+      } else {
+        toggleSysMenu();
+      }
+    }
+  }, 450);
+}, { passive: true });
+
+window.addEventListener('touchmove', e => {
+  if (!touchStartX) return;
+  const dx = e.touches[0].clientX - touchStartX;
+  const dy = e.touches[0].clientY - touchStartY;
+  if (Math.abs(dx) > 16 || Math.abs(dy) > 16) {
+    touchMoved = true;
+    clearTimeout(touchTimer);
+  }
+}, { passive: true });
+
+window.addEventListener('touchend', e => {
+  clearTimeout(touchTimer);
+  if (!touchStartX) return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+
+  // Gesto Swipe Horizontal
+  if (Math.abs(dy) < 95) {
+    if (dx > 60) {
+      // Deslizar hacia la derecha -> Abrir menú
+      if (!isMenuOpen) openSysMenu();
+    } else if (dx < -60) {
+      // Deslizar hacia la izquierda -> Cerrar menú
+      if (isMenuOpen) closeSysMenu();
+    }
+  }
+  touchStartX = 0;
+  touchStartY = 0;
+}, { passive: true });
 
 // =========================================================================
 // 8. MOTOR WEBSOCKET SILENCIOSO (ESP32-C3 + FULLY KIOSK WIFI SYNC)
