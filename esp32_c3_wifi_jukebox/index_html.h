@@ -1,6 +1,6 @@
-﻿#pragma once
-#include <pgmspace.h>
-
+﻿#ifndef INDEX_HTML_H
+#define INDEX_HTML_H
+#include <Arduino.h>
 const char INDEX_HTML[] PROGMEM = R"rawliteral(
 <!DOCTYPE html>
 <html lang="es">
@@ -494,88 +494,159 @@ html, body {
 .vol-bars { color: var(--ac); letter-spacing: 0.08em; }
 .vol-bars u { text-decoration: none; color: rgba(255,255,255,0.2); }
 
-/* MENÚ DE SISTEMA CONTROLADO POR ENCODER (PULSACIÓN LARGA) */
+/* CAJÓN LATERAL IZQUIERDO OCULTO (ÁLBUMES + OPCIONES ESTILO SPOTIFY) */
 .sys-menu-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.88);
-  display: grid;
-  place-items: center;
   z-index: 80;
-  opacity: 0;
   pointer-events: none;
-  transform: scale(0.94);
-  transition: opacity 0.26s var(--snap), transform 0.28s var(--snap);
 }
 .sys-menu-backdrop.open {
-  opacity: 1;
   pointer-events: auto;
-  transform: scale(1);
 }
 .sys-menu-box {
-  width: min(88vw, 430px);
-  border: 1.5px solid rgba(255, 255, 255, 0.25);
-  background: #000000;
-  padding: 22px 24px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: min(80vw, 310px);
+  border-right: 1.5px solid rgba(255, 255, 255, 0.22);
+  background: rgba(0, 0, 0, 0.96);
+  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transform: translateX(-104%);
+  opacity: 0;
+  transition: transform 0.32s var(--snap), opacity 0.26s var(--snap);
+}
+.sys-menu-backdrop.open .sys-menu-box {
+  transform: translateX(0);
+  opacity: 1;
+}
+.view-wrap {
+  transition: transform 0.34s var(--snap), opacity 0.3s var(--snap), filter 0.3s ease;
+}
+.view-wrap.drawer-pushed {
+  transform: translateX(48px) scale(0.95);
+  opacity: 0.26;
+  filter: blur(1.5px);
 }
 .sys-menu-hdr {
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px dashed var(--dim);
-  padding-bottom: 12px;
-  margin-bottom: 14px;
-  font-size: 12px;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  font-size: 11px;
   letter-spacing: 0.18em;
   color: var(--ac);
 }
 .sys-menu-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
+  overflow-y: auto;
+  max-height: calc(100vh - 105px);
+  scrollbar-width: none;
+}
+.sys-menu-list::-webkit-scrollbar { display: none; }
+.sys-sep {
+  border-top: 1px dashed var(--dim);
+  margin: 6px 0;
 }
 .sys-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 12px;
+  padding: 8px 10px;
   border: 1px solid transparent;
-  font-size: 13px;
-  letter-spacing: 0.12em;
+  border-radius: 8px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
   color: var(--mid);
   cursor: pointer;
   transition: all 0.2s var(--snap);
+  gap: 10px;
 }
 .sys-item.active {
   color: var(--fg);
   border-color: rgba(255, 255, 255, 0.35);
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.08);
   transform: translateX(4px);
+}
+.sys-item .alb-thumb {
+  width: 34px;
+  height: 34px;
+  border-radius: 7px;
+  object-fit: cover;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: #161616;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  color: var(--fg);
+}
+.sys-item .alb-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sys-item .alb-name {
+  font-size: 11px;
+  color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sys-item .alb-sub {
+  font-size: 9px;
+  color: var(--ac);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .sys-item .item-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  min-width: 0;
 }
 .sys-item .item-arrow {
   color: var(--ac);
   opacity: 0;
+  flex-shrink: 0;
 }
 .sys-item.active .item-arrow {
   opacity: 1;
 }
 .sys-item .item-val {
   color: var(--ac);
-  font-size: 12px;
+  font-size: 10px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  flex-shrink: 0;
 }
 .color-dot {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   display: inline-block;
+}
+.sys-menu-ftr {
+  border-top: 1px dashed var(--dim);
+  padding-top: 8px;
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.35);
 }
 
 /* PANTALLA APAGADA (MODO SLEEP SILENCIOSO) */
@@ -615,14 +686,20 @@ html, body {
   <span id="vnum">70%</span>
 </div>
 
-<!-- Menú de Sistema (Se abre manteniendo presionado el encoder 2s) -->
+<!-- Cajón Lateral Izquierdo Oculto: Álbumes + Opciones (Se abre manteniendo 1.8s el encoder) -->
 <div class="sys-menu-backdrop" id="sysMenu">
   <div class="sys-menu-box">
-    <div class="sys-menu-hdr">
-      <span id="sysMenuTitle">SISTEMA // MENU</span>
-      <span style="color:var(--mid);font-size:10px">[GIRO / CLIC]</span>
+    <div>
+      <div class="sys-menu-hdr">
+        <span id="sysMenuTitle">BIBLIOTECA</span>
+        <span style="color:var(--mid);font-size:9px" id="sysMenuSub">[GIRO / CLIC]</span>
+      </div>
+      <div class="sys-menu-list" id="sysMenuList"></div>
     </div>
-    <div class="sys-menu-list" id="sysMenuList"></div>
+    <div class="sys-menu-ftr">
+      <span>AUTO-OCULTA</span>
+      <span>HOLD: CERRAR</span>
+    </div>
   </div>
 </div>
 
@@ -633,7 +710,7 @@ html, body {
 <div id="yt-wrap"><div id="yt-player"></div></div>
 
 <div class="stage" id="stage">
-  <div class="view-wrap">
+  <div class="view-wrap" id="viewWrap">
 
     <!-- ===================================================================
          SECCIÓN 1: RELOJ + FECHA + MENSAJE DEL DÍA + QR OFFLINE AUTOMÁTICO
@@ -1488,17 +1565,44 @@ applySavedVisualSettings();
 
 function getActiveMenuItems() {
   if (menuPage === 'root') {
-    return [
-      { label: "OPCIONES", val: "→", run: () => { menuPage = 'options'; menuSel = 0; renderSysMenu(); } },
-      { label: "APAGAR",   val: "REPOSO", run: () => enterSleepMode() },
-      { label: "VOLVER",   val: "SALIR",  run: () => closeSysMenu() }
+    const albumItems = DISCS.map((d, idx) => {
+      const firstTrack = (d.t && d.t[0]) || ["ALBUM", 200, ""];
+      const vid = firstTrack[2] || "";
+      const thumbUrl = vid ? `https://i.ytimg.com/vi/${vid}/default.jpg` : "";
+      const albumTitle = d.listId ? d.a : (firstTrack[0] || d.a);
+      const artistSub  = d.listId ? "PLAYLIST YT" : d.a;
+      return {
+        isAlbum: true,
+        idx,
+        title: albumTitle,
+        artist: artistSub,
+        thumb: thumbUrl,
+        playingNow: (idx === disc),
+        run: () => {
+          load(idx);
+          closeSysMenu();
+        }
+      };
+    });
+
+    const sysItems = [
+      { isSep: true },
+      { label: "⚙ OPCIONES", val: "→", run: () => { menuPage = 'options'; menuSel = 0; renderSysMenu(); } }
     ];
+    if (disc >= 0) {
+      sysItems.push({ label: "⌂ MODO RELOJ", val: "EJECT", run: () => { eject(); closeSysMenu(); } });
+    }
+    sysItems.push(
+      { label: "☾ APAGAR", val: "REPOSO", run: () => enterSleepMode() }
+    );
+    return [...albumItems, ...sysItems];
   }
   if (menuPage === 'options') {
     const ac = ACCENT_PALETTE[accentIdx];
+    const items = getActiveMenuItemsForRootCount();
     return [
       {
-        label: "COLOR DE ACENTO",
+        label: "COLOR ACENTO",
         val: ac.name,
         dot: ac.hex,
         run: () => {
@@ -1514,21 +1618,21 @@ function getActiveMenuItems() {
         run: () => { menuPage = 'screen'; menuSel = 0; renderSysMenu(); }
       },
       {
-        label: "CUENTA YOUTUBE",
+        label: "CUENTA YT",
         val: "→",
         run: () => { menuPage = 'account'; menuSel = 0; renderSysMenu(); }
       },
       {
-        label: "← ATRAS",
+        label: "← BIBLIOTECA",
         val: "",
-        run: () => { menuPage = 'root'; menuSel = 0; renderSysMenu(); }
+        run: () => { menuPage = 'root'; menuSel = items; renderSysMenu(); }
       }
     ];
   }
   if (menuPage === 'screen') {
     return [
       {
-        label: "MODO ESPEJO",
+        label: "ESPEJO",
         val: mirrorMode ? "ON" : "OFF",
         run: () => {
           mirrorMode = !mirrorMode;
@@ -1548,7 +1652,7 @@ function getActiveMenuItems() {
         }
       },
       {
-        label: "QR RED WIFI",
+        label: "QR WIFI",
         val: forceQrToggle ? "VISIBLE" : "MOSTRAR",
         run: () => {
           forceQrToggle = !forceQrToggle;
@@ -1566,7 +1670,7 @@ function getActiveMenuItems() {
   if (menuPage === 'account') {
     return [
       {
-        label: "INICIAR SESION YT",
+        label: "LOGIN YOUTUBE",
         val: "ABRIR",
         run: () => {
           closeSysMenu();
@@ -1578,8 +1682,8 @@ function getActiveMenuItems() {
         }
       },
       {
-        label: "ACTUALIZAR ROCOLA",
-        val: "SYNC",
+        label: "SYNC ROCOLA",
+        val: "RELOAD",
         run: () => { window.location.reload(); }
       },
       {
@@ -1592,38 +1696,82 @@ function getActiveMenuItems() {
   return [];
 }
 
+function getActiveMenuItemsForRootCount() {
+  return DISCS.length + 1; // Índice de "⚙ OPCIONES" en root (después del separador)
+}
+
+let menuAutoHideTimer = null;
+function resetMenuAutoHide() {
+  clearTimeout(menuAutoHideTimer);
+  if (isMenuOpen) {
+    menuAutoHideTimer = setTimeout(() => {
+      closeSysMenu();
+    }, 6500);
+  }
+}
+
 function renderSysMenu() {
   const titles = {
-    root:    "SISTEMA // MENU",
-    options: "MENU // OPCIONES",
-    screen:  "OPCIONES // PANTALLA",
-    account: "OPCIONES // CUENTA"
+    root:    "BIBLIOTECA",
+    options: "OPCIONES",
+    screen:  "PANTALLA",
+    account: "CUENTA YT"
   };
-  $('sysMenuTitle').textContent = titles[menuPage] || "MENU";
+  $('sysMenuTitle').textContent = titles[menuPage] || "BIBLIOTECA";
   const items = getActiveMenuItems();
   $('sysMenuList').innerHTML = items.map((it, idx) => {
+    if (it.isSep) {
+      return `<div class="sys-sep"></div>`;
+    }
     const act = idx === menuSel ? 'active' : '';
+    if (it.isAlbum) {
+      const thumbContent = it.thumb
+        ? `<img src="${it.thumb}" alt="" onerror="this.style.display='none'">`
+        : `<span>0${it.idx + 1}</span>`;
+      const playBadge = it.playingNow ? `<div class="item-val"><span>♪</span></div>` : '';
+      return `
+        <div class="sys-item album-item ${act}" data-idx="${idx}" onclick="menuSel=${idx};triggerMenuSelect()">
+          <div class="alb-thumb">${thumbContent}</div>
+          <div class="alb-meta">
+            <div class="alb-name">${it.title}</div>
+            <div class="alb-sub">${it.artist}</div>
+          </div>
+          ${playBadge}
+        </div>
+      `;
+    }
     const dot = it.dot ? `<i class="color-dot" style="background:${it.dot}"></i>` : '';
     return `
-      <div class="sys-item ${act}" onclick="menuSel=${idx};triggerMenuSelect()">
+      <div class="sys-item ${act}" data-idx="${idx}" onclick="menuSel=${idx};triggerMenuSelect()">
         <div class="item-left"><span class="item-arrow">▸</span><span>${it.label}</span></div>
         <div class="item-val">${dot}<span>${it.val || ''}</span></div>
       </div>
     `;
   }).join('');
+
+  // Asegurar que el ítem activo sea visible en el scroll del drawer lateral
+  const activeEl = $('sysMenuList').querySelector('.sys-item.active');
+  if (activeEl && typeof activeEl.scrollIntoView === 'function') {
+    activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+  resetMenuAutoHide();
 }
 
 function openSysMenu() {
   isMenuOpen = true;
   menuPage = 'root';
-  menuSel = 0;
+  menuSel = disc >= 0 ? disc : 0;
   renderSysMenu();
   $('sysMenu').classList.add('open');
+  $('viewWrap').classList.add('drawer-pushed');
+  resetMenuAutoHide();
 }
 
 function closeSysMenu() {
   isMenuOpen = false;
+  clearTimeout(menuAutoHideTimer);
   $('sysMenu').classList.remove('open');
+  $('viewWrap').classList.remove('drawer-pushed');
 }
 
 function toggleSysMenu() {
@@ -1638,15 +1786,41 @@ function toggleSysMenu() {
 function navigateSysMenu(dir) {
   const items = getActiveMenuItems();
   if (!items.length) return;
-  menuSel = (menuSel + dir + items.length) % items.length;
+  let next = menuSel;
+  for (let i = 0; i < items.length; i++) {
+    next = (next + dir + items.length) % items.length;
+    if (!items[next].isSep) break;
+  }
+  menuSel = next;
   renderSysMenu();
 }
 
 function triggerMenuSelect() {
+  resetMenuAutoHide();
   const items = getActiveMenuItems();
   if (items[menuSel] && typeof items[menuSel].run === 'function') {
     items[menuSel].run();
   }
+}
+
+// Detector de Multi-Toques (1 toque = Pausa/Play, 2 toques = Siguiente, 3 toques = Anterior)
+let multiTapCount = 0;
+let multiTapTimer = null;
+
+function registerEncoderTap() {
+  multiTapCount++;
+  clearTimeout(multiTapTimer);
+  multiTapTimer = setTimeout(() => {
+    const taps = multiTapCount;
+    multiTapCount = 0;
+    if (taps === 1) {
+      toggle();
+    } else if (taps === 2) {
+      step(1);
+    } else if (taps >= 3) {
+      step(-1);
+    }
+  }, 310);
 }
 
 function enterSleepMode() {
@@ -1724,7 +1898,7 @@ addEventListener('keyup', e => {
   if (e.key === ' ') {
     clearTimeout(spaceHoldTimer);
     if (!isMenuOpen && !spaceHeldTriggered && !isSleeping) {
-      toggle();
+      registerEncoderTap();
     }
     spaceHeldTriggered = false;
   }
@@ -1785,11 +1959,13 @@ function handleCommand(cmd) {
   }
 
   if (cmd === "BTN:HOLD") {
+    clearTimeout(multiTapTimer);
+    multiTapCount = 0;
     toggleSysMenu();
     return;
   }
 
-  // Si el menú está abierto, el encoder navega y selecciona las opciones
+  // Si el menú lateral está abierto, el encoder navega por álbumes/opciones y 1 clic selecciona al instante
   if (isMenuOpen) {
     if (cmd === "ENC:UP") {
       navigateSysMenu(1);
@@ -1806,7 +1982,7 @@ function handleCommand(cmd) {
   } else if (cmd === "ENC:DOWN") {
     changeVol(-5);
   } else if (cmd === "BTN:CLICK") {
-    toggle();
+    registerEncoderTap();
   } else if (cmd.startsWith("TAG:")) {
     const val = cmd.substring(4).trim();
     if (val === "EJECT") {
@@ -1838,6 +2014,7 @@ function handleCommand(cmd) {
         DISCS[dIdx] = { a: label, t: [[label, 240, parsed.id]] };
       }
       localStorage.setItem('holo_custom_discs', JSON.stringify(DISCS));
+      if (isMenuOpen) renderSysMenu();
       if (disc === dIdx) load(dIdx);
     }
   } else if (cmd.startsWith("MSG_TODAY:")) {
@@ -1893,4 +2070,5 @@ window.addEventListener('load', () => {
 
 
 )rawliteral";
+#endif
 
