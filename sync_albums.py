@@ -49,7 +49,7 @@ def clean_artist(raw: str) -> str:
 
 def clean_title(raw: str) -> str:
     if not raw:
-        return "ALBUM"
+        return "PLAYLIST"
     s = re.sub(r"^Album\s*-\s*", "", raw, flags=re.IGNORECASE)
     s = re.sub(r"\(Full Album.*?\)", "", s, flags=re.IGNORECASE)
     s = re.sub(r"\[Full Album.*?\]", "", s, flags=re.IGNORECASE)
@@ -57,7 +57,7 @@ def clean_title(raw: str) -> str:
     return s.strip().upper()
 
 
-def resolve_playlist_oembed(playlist_id: str) -> dict | None:
+def resolve_playlist_oembed(playlist_id: str) -> dict:
     clean_id = playlist_id[2:] if playlist_id.startswith("VL") else playlist_id
     pl_url = f"https://www.youtube.com/playlist?list={clean_id}"
     oembed_url = f"https://www.youtube.com/oembed?url={urllib.parse.quote(pl_url, safe='')}&format=json"
@@ -71,7 +71,8 @@ def resolve_playlist_oembed(playlist_id: str) -> dict | None:
             "cover": data.get("thumbnail_url", ""),
         }
     except Exception:
-        return None
+        # Si aún está en Privada (403), guarda la URL para que el navegador la resuelva apenas pase a Pública/No listada
+        return {"url": pl_url}
 
 
 def extract_playlists_from_channel(channel_line: str) -> list[str]:
@@ -86,13 +87,11 @@ def extract_playlists_from_channel(channel_line: str) -> list[str]:
         m_cid = re.search(r'"externalId":"(UC[a-zA-Z0-9_-]+)"', main_html)
         cid = m_cid.group(1) if m_cid else None
 
-        # 1. Buscar en /playlists de YouTube estándar
         pl_html = fetch_text(base_url + "/playlists")
         for pid in re.findall(r'"playlistId":"((?:PL|OLAK5uy_)[a-zA-Z0-9_-]+)"', pl_html):
             if pid not in seen:
                 seen.append(pid)
 
-        # 2. Buscar en el perfil de YouTube Music (WEB_REMIX Innertube)
         if cid:
             ytm_json = fetch_ytm_browse(cid)
             for pid in re.findall(r'"(?:playlistId|browseId)":"((?:VLPL|PL|OLAK5uy_)[a-zA-Z0-9_-]+)"', ytm_json):
@@ -105,8 +104,7 @@ def extract_playlists_from_channel(channel_line: str) -> list[str]:
 
 
 def main():
-    channel_playlists = []
-    fallback_playlists = []
+    all_playlists = []
 
     with open("canal_youtube.txt", "r", encoding="utf-8") as f:
         for line in f:
@@ -116,23 +114,17 @@ def main():
             m = re.search(r"[?&]list=([a-zA-Z0-9_-]+)", line)
             if m:
                 pid = m.group(1)
-                if pid not in fallback_playlists:
-                    fallback_playlists.append(pid)
+                if pid not in all_playlists:
+                    all_playlists.append(pid)
             elif re.match(r"^(?:PL|OLAK5uy_)[a-zA-Z0-9_-]+$", line):
-                if line not in fallback_playlists:
-                    fallback_playlists.append(line)
+                if line not in all_playlists:
+                    all_playlists.append(line)
             else:
                 for pid in extract_playlists_from_channel(line):
-                    if pid not in channel_playlists:
-                        channel_playlists.append(pid)
+                    if pid not in all_playlists:
+                        all_playlists.append(pid)
 
-    target_ids = channel_playlists if len(channel_playlists) > 0 else fallback_playlists
-
-    albums = []
-    for pid in target_ids:
-        meta = resolve_playlist_oembed(pid)
-        if meta:
-            albums.append(meta)
+    albums = [resolve_playlist_oembed(pid) for pid in all_playlists]
 
     if albums:
         with open("albumes.json", "w", encoding="utf-8") as out:

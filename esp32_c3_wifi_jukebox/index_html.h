@@ -935,43 +935,17 @@ setInterval(checkInternetConnection, 10000);
 // =========================================================================
 const DEFAULT_DISCS = [
   {
-    title: "RANDOM ACCESS MEMORIES",
-    a: "DAFT PUNK",
-    listId: "PLSbDLF8wQ3oKcstd9ybCSv2lNm_8NTYkI",
-    cover: "https://i.ytimg.com/vi/IluRBvnYMoY/hqdefault.jpg",
-    t: [["RANDOM ACCESS MEMORIES", 240, "IluRBvnYMoY"]]
-  },
-  {
-    title: "PLASTIC BEACH",
-    a: "GORILLAZ",
-    listId: "PLxzSZG7g8c8xYzHnxKrYxJ2FobX8rd2_C",
-    cover: "https://i.ytimg.com/vi/PSffezqR_XA/hqdefault.jpg",
-    t: [["PLASTIC BEACH", 240, "PSffezqR_XA"]]
-  },
-  {
-    title: "AFTER HOURS",
-    a: "THE WEEKND",
-    listId: "PLPRWtKgY2MOu8dPE7sMxQZ07PS1mLqid9",
-    cover: "https://i.ytimg.com/vi/JH398xAYpZA/hqdefault.jpg",
-    t: [["AFTER HOURS", 240, "JH398xAYpZA"]]
-  },
-  {
-    title: "CURRENTS",
-    a: "TAME IMPALA",
-    listId: "PL81_CtYCym28qkVe3nVMRG7hMR5_Ky3Hf",
-    cover: "https://i.ytimg.com/vi/10DJMW3XAZQ/hqdefault.jpg",
-    t: [["CURRENTS", 240, "10DJMW3XAZQ"]]
+    title: "MI PLAYLIST",
+    a: "ALESS OREO",
+    listId: "PLxclEHUe-orfaFetoCq9KsBRZD5-LDLzb",
+    cover: "",
+    t: [["MI PLAYLIST", 240, ""]]
   }
 ];
 
 function loadDiscsCatalog() {
-  try {
-    const saved = localStorage.getItem('holo_user_albums_v2');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch (e) {}
+  localStorage.removeItem('holo_user_albums_v2');
+  localStorage.removeItem('holo_custom_discs');
   return DEFAULT_DISCS;
 }
 
@@ -987,7 +961,7 @@ async function resolveYouTubeOembed(rawUrlOrId, customArtist) {
     ? `https://www.youtube.com/playlist?list=${parsed.id}`
     : `https://www.youtube.com/watch?v=${parsed.id}`;
 
-  let title = "ÁLBUM YOUTUBE";
+  let title = "MI PLAYLIST";
   let artist = (customArtist || "").trim().toUpperCase();
   let cover = parsed.type === 'video' ? `https://i.ytimg.com/vi/${parsed.id}/hqdefault.jpg` : "";
 
@@ -1236,9 +1210,16 @@ function syncDynamicMetadataFromYouTube() {
 
   const img = $('albumImg');
   const fb  = $('albumFallback');
+  const thumbUrl = `https://i.ytimg.com/vi/${vData.video_id}/hqdefault.jpg`;
   img.style.display = 'block';
   fb.style.display = 'none';
-  img.src = `https://i.ytimg.com/vi/${vData.video_id}/hqdefault.jpg`;
+  img.src = thumbUrl;
+
+  if (DISCS[disc] && !DISCS[disc].cover) {
+    DISCS[disc].cover = thumbUrl;
+    if (!DISCS[disc].a || DISCS[disc].a === "ALESS OREO") DISCS[disc].a = artist;
+    if (isMenuOpen) renderSysMenu();
+  }
 
   fetchLyricsForTrack(artist, title);
 }
