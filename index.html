@@ -2203,6 +2203,8 @@ function handleCommand(cmd, src = "ws") {
   } else if (cmd === "YT:LOGIN") {
     // Abre el login de Google/YouTube en Fully Kiosk para activar la sesión YouTube Premium
     window.location.href = "https://accounts.google.com/ServiceLogin?service=youtube&continue=https%3A%2F%2Fwww.youtube.com";
+  } else if (cmd === "RELOAD") {
+    window.location.reload(true);
   } else if (cmd.startsWith("DISC_CFG:")) {
     // Formato: DISC_CFG:1|NOMBRE ARTISTA O ALBUM|URL_O_ID_YT_MUSIC
     const p = cmd.substring(9).split('|');

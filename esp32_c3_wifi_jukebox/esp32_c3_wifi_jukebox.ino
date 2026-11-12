@@ -199,6 +199,8 @@ void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t leng
     txt.trim();
     if (txt.startsWith("CMD:") && txt.length() >= 5) {
       handleCharCommand(txt.charAt(4));
+    } else if (txt == "RELOAD") {
+      broadcastCommand("RELOAD\n");
     }
   }
 }
@@ -339,6 +341,7 @@ void setupWebServer() {
   <button onclick="send('1')">ALBUM 1</button>
   <button onclick="send('2')">ALBUM 2</button>
   <button onclick="send('3')">ALBUM 3</button>
+  <button onclick="ws.send('RELOAD')">RECARGAR ROCOLA</button>
   <button onclick="send('r')" style="color:#ff4444;border-color:#ff4444">RESETEAR TAGS (r)</button>
   <button onclick="document.getElementById('log').textContent=''">LIMPIAR</button>
 </div>
