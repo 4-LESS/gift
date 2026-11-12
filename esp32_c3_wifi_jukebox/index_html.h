@@ -1137,6 +1137,13 @@ window.onYouTubeIframeAPIReady = function() {
     events: {
       onReady: () => {
         ytReady = true;
+        try {
+          const ifr = ytPlayer.getIframe();
+          if (ifr) {
+            ifr.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; storage-access');
+            ifr.setAttribute('referrerpolicy', 'origin-when-cross-origin');
+          }
+        } catch(e) {}
         ytPlayer.setVolume(vol);
         if (disc >= 0 && playing) playCurrentYouTubeTrack();
       },
@@ -1162,10 +1169,16 @@ window.onYouTubeIframeAPIReady = function() {
   });
 };
 
+let trackLoadTimestamp = 0;
+let adBypassAttempts = 0;
+
 function playCurrentYouTubeTrack() {
   if (!isInternetOnline || !ytReady || !ytPlayer || disc < 0) return;
   const dObj = DISCS[disc];
   if (!dObj) return;
+
+  trackLoadTimestamp = Date.now();
+  adBypassAttempts = 0;
 
   // Si el disco está configurado como Álbum / Playlist / Mix de YouTube Music
   if (dObj.listId) {
@@ -1199,12 +1212,25 @@ setInterval(() => {
 
   if (isInternetOnline && ytReady && ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
     try {
-      const vData = ytPlayer.getVideoData ? ytPlayer.getVideoData() : null;
+      const pState = typeof ytPlayer.getPlayerState === 'function' ? ytPlayer.getPlayerState() : 1;
+      const cur = ytPlayer.getCurrentTime();
       const liveDur = ytPlayer.getDuration ? ytPlayer.getDuration() : 0;
+      const vData = ytPlayer.getVideoData ? ytPlayer.getVideoData() : null;
       const trackCfgDur = (DISCS[disc] && DISCS[disc].t && DISCS[disc].t[trk]) ? DISCS[disc].t[trk][1] : 180;
 
-      // Detector de anuncios por duración:
-      // Durante un anuncio de 15s o 30s getDuration() devuelve <= 65s mientras la canción dura > 100s
+      // Caso 1: Durante un anuncio pre-roll en YouTube IFrame API, getPlayerState() se queda en -1 (UNSTARTED)
+      // y getCurrentTime() se queda en 0 mientras suena el anuncio. Si pasa >1.6s así, abortamos el anuncio:
+      if (pState === -1 && cur === 0 && (Date.now() - trackLoadTimestamp > 1600) && adBypassAttempts < 3) {
+        adBypassAttempts++;
+        trackLoadTimestamp = Date.now();
+        if (expectedVideoId) {
+          ytPlayer.stopVideo();
+          ytPlayer.loadVideoById({ videoId: expectedVideoId, startSeconds: 1 });
+        }
+        return;
+      }
+
+      // Caso 2: Detector de anuncios por duración o ID distinto
       const isAdByDuration = (liveDur > 0 && liveDur <= 65 && trackCfgDur > 90);
       const isAdById = (!DISCS[disc]?.listId && vData && vData.video_id && expectedVideoId && vData.video_id !== expectedVideoId);
 
@@ -1217,6 +1243,7 @@ setInterval(() => {
             ytPlayer.seekTo(liveDur, true);
           }
           if (expectedVideoId) {
+            ytPlayer.stopVideo();
             ytPlayer.loadVideoById({ videoId: expectedVideoId, startSeconds: 1 });
           } else if (typeof ytPlayer.nextVideo === 'function') {
             ytPlayer.nextVideo();
@@ -1234,7 +1261,6 @@ setInterval(() => {
         syncDynamicMetadataFromYouTube();
       }
 
-      const cur = ytPlayer.getCurrentTime();
       if (cur > 0) pos = cur;
     } catch (err) {}
   } else {
