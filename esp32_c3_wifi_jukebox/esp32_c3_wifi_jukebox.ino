@@ -122,20 +122,38 @@ void IRAM_ATTR isrEncoder() {
   }
 }
 
-// ================= ENVÍO WEBSOCKET Y SERIAL USB =================
+// ================= ENVÍO CON PRIORIDAD USB SERIAL SOBRE WEBSOCKET =================
+unsigned long lastUsbDiagTime = 0;
+uint32_t usbTxCount = 0;
+uint32_t wsTxCount  = 0;
+
 void broadcastCommand(String cmd) {
-  // 1. Envío directo por USB Serial al celular (cable USB OTG)
-  Serial.print(cmd);
   if (!cmd.endsWith("\n")) {
-    Serial.println();
+    cmd += "\n";
   }
 
-  // 2. Envío por WebSocket (Wi-Fi)
-  webSocket.broadcastTXT(cmd);
+  bool usbPlugged = Serial.isPlugged();
+  bool usbActive  = Serial.isConnected();
+
+  if (usbActive) {
+    // PRIORIDAD 1: Conectado por USB Serial -> Envía el comando SOLO por el cable USB
+    Serial.print(cmd);
+    usbTxCount++;
+    String dbg = "DBG_TX:USB|" + String(usbPlugged ? 1 : 0) + "|" + String(usbActive ? 1 : 0) + "|" + cmd;
+    webSocket.broadcastTXT(dbg);
+  } else {
+    // PRIORIDAD 2 (Respaldo): Si el puerto serial USB no está abierto aún, despierta el FIFO y envía por WebSocket
+    if (usbPlugged) {
+      Serial.print(cmd);
+    }
+    webSocket.broadcastTXT(cmd);
+    wsTxCount++;
+    String dbg = "DBG_TX:WIFI|" + String(usbPlugged ? 1 : 0) + "|" + String(usbActive ? 1 : 0) + "|" + cmd;
+    webSocket.broadcastTXT(dbg);
+  }
 }
 
 void logWireless(String msg) {
-  Serial.println("[LOG] " + msg);
   String pkt = "LOG:" + msg + "\n";
   webSocket.broadcastTXT(pkt);
 }
@@ -283,6 +301,17 @@ void setupWebServer() {
 
   server.on("/jukebox", HTTP_GET, []() {
     server.send_P(200, "text/html", INDEX_HTML);
+  });
+
+  server.on("/status", HTTP_GET, []() {
+    bool plugged = Serial.isPlugged();
+    bool active  = Serial.isConnected();
+    String json = "{\"usbPlugged\":" + String(plugged ? "true" : "false") +
+                  ",\"usbConnected\":" + String(active ? "true" : "false") +
+                  ",\"usbTxCount\":" + String(usbTxCount) +
+                  ",\"wsTxCount\":" + String(wsTxCount) +
+                  ",\"uptimeMs\":" + String(millis()) + "}";
+    server.send(200, "application/json", json);
   });
 
   server.on("/monitor", HTTP_GET, []() {
@@ -587,6 +616,18 @@ void loop() {
   }
   server.handleClient();
   webSocket.loop();
+
+  // 2.1 Telemetría de estado USB cada 1.5s para la pantalla de Debug
+  if (millis() - lastUsbDiagTime >= 1500) {
+    lastUsbDiagTime = millis();
+    bool plugged = Serial.isPlugged();
+    bool active  = Serial.isConnected();
+    if (plugged && !active) {
+      Serial.print("PING\n"); // Despierta la interrupción IN_EMPTY apenas el celular lea el puerto
+    }
+    String hb = "DBG_USB:" + String(plugged ? 1 : 0) + "|" + String(active ? 1 : 0) + "\n";
+    webSocket.broadcastTXT(hb);
+  }
 
   // 3. Revisar lector NFC RC522
   checkNfcReader();

@@ -820,6 +820,18 @@ html, body {
       </div>
     </section>
 
+    <!-- PANTALLA DE DEBUG SERIAL / USB TEMPORAL -->
+    <div id="debugHud" style="position:absolute;bottom:10px;right:10px;z-index:9999;background:rgba(5,5,10,0.92);border:1px solid var(--ac);border-radius:6px;padding:8px 10px;font-family:monospace;font-size:10px;line-height:1.45;color:#ddd;width:255px;pointer-events:auto;box-shadow:0 0 14px rgba(0,0,0,0.85);">
+      <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #333;padding-bottom:3px;margin-bottom:4px;">
+        <strong style="color:var(--ac);letter-spacing:.08em;">DEBUG USB / SERIAL</strong>
+        <span onclick="document.getElementById('debugHud').style.display='none'" style="cursor:pointer;color:#888;padding:0 4px;">[X]</span>
+      </div>
+      <div>USB D+/D-: <span id="dbgPlug" style="color:#aaa;">ESPERANDO...</span></div>
+      <div>PUERTO CDC: <span id="dbgCdc" style="color:#aaa;">ESPERANDO...</span></div>
+      <div>RX CELULAR: <span id="dbgCounts" style="color:#fff;">USB: 0 | WIFI: 0</span></div>
+      <div id="dbgLog" style="margin-top:4px;padding-top:4px;border-top:1px dashed #2a2a2a;color:#00ff66;max-height:72px;overflow:hidden;white-space:pre-line;">Esperando eventos...</div>
+    </div>
+
   </div>
 </div>
 
@@ -2072,14 +2084,62 @@ function parseYouTubeInput(raw) {
 
 let usbActiveUntil = 0;
 let lastWsHwTime = 0;
+let dbgRxUsbCount = 0;
+let dbgRxWsCount = 0;
+let dbgLines = [];
+
+function pushDebugLog(text) {
+  const el = $('dbgLog');
+  if (!el) return;
+  const d = new Date();
+  const ts = pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+  dbgLines.unshift(`${ts} ${text}`);
+  if (dbgLines.length > 5) dbgLines.pop();
+  el.textContent = dbgLines.join('\n');
+}
+
+function updateUsbDebugState(plugged, cdcActive) {
+  const pEl = $('dbgPlug');
+  const cEl = $('dbgCdc');
+  if (pEl) {
+    pEl.textContent = plugged ? 'CONECTADO (OK)' : 'SIN DATOS USB';
+    pEl.style.color = plugged ? '#00ff66' : '#ff5555';
+  }
+  if (cEl) {
+    cEl.textContent = cdcActive ? 'ACTIVO (PRIORIDAD USB)' : 'RESPALDO WIFI';
+    cEl.style.color = cdcActive ? '#00ff66' : '#ffaa00';
+  }
+}
 
 function handleCommand(cmd, src = "ws") {
   cmd = cmd.trim();
+
+  if (cmd.startsWith("DBG_USB:")) {
+    const p = cmd.substring(8).split('|');
+    updateUsbDebugState(p[0] === '1', p[1] === '1');
+    return;
+  }
+  if (cmd.startsWith("DBG_TX:")) {
+    const p = cmd.substring(7).split('|');
+    updateUsbDebugState(p[1] === '1', p[2] === '1');
+    pushDebugLog(`[ESP TX->${p[0]}] ${p[3] || ''}`);
+    return;
+  }
+  if (cmd.startsWith("LOG:")) {
+    pushDebugLog(cmd.substring(4));
+    return;
+  }
+
   const isHwCmd = (cmd === "ENC:UP" || cmd === "ENC:DOWN" || cmd === "BTN:CLICK" || cmd === "BTN:HOLD" || cmd.startsWith("TAG:"));
   const now = Date.now();
 
   if (isHwCmd) {
     if (src === "usb") {
+      dbgRxUsbCount++;
+      const cEl = $('dbgCounts');
+      if (cEl) cEl.textContent = `USB: ${dbgRxUsbCount} | WIFI: ${dbgRxWsCount}`;
+      pushDebugLog(`[RX USB] ${cmd}`);
+
       const firstSwitch = (now >= usbActiveUntil);
       usbActiveUntil = now + 3600000; // Prioriza USB por 1 hora (se renueva con cada evento USB)
       if (firstSwitch && (now - lastWsHwTime < 350)) {
@@ -2090,6 +2150,10 @@ function handleCommand(cmd, src = "ws") {
       if (now < usbActiveUntil) {
         return; // Mientras el cable USB esté activo, ignora los duplicados por Wi-Fi
       }
+      dbgRxWsCount++;
+      const cEl = $('dbgCounts');
+      if (cEl) cEl.textContent = `USB: ${dbgRxUsbCount} | WIFI: ${dbgRxWsCount}`;
+      pushDebugLog(`[RX WIFI] ${cmd}`);
       lastWsHwTime = now;
     }
   }
