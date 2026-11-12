@@ -490,6 +490,105 @@ html, body {
 .vol-bars { color: var(--ac); letter-spacing: 0.08em; }
 .vol-bars u { text-decoration: none; color: rgba(255,255,255,0.2); }
 
+/* MENÚ DE SISTEMA CONTROLADO POR ENCODER (PULSACIÓN LARGA) */
+.sys-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  display: grid;
+  place-items: center;
+  z-index: 80;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.94);
+  transition: opacity 0.26s var(--snap), transform 0.28s var(--snap);
+}
+.sys-menu-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+}
+.sys-menu-box {
+  width: min(88vw, 430px);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  background: #000000;
+  padding: 22px 24px;
+}
+.sys-menu-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed var(--dim);
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  color: var(--ac);
+}
+.sys-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sys-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--mid);
+  cursor: pointer;
+  transition: all 0.2s var(--snap);
+}
+.sys-item.active {
+  color: var(--fg);
+  border-color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateX(4px);
+}
+.sys-item .item-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sys-item .item-arrow {
+  color: var(--ac);
+  opacity: 0;
+}
+.sys-item.active .item-arrow {
+  opacity: 1;
+}
+.sys-item .item-val {
+  color: var(--ac);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* PANTALLA APAGADA (MODO SLEEP SILENCIOSO) */
+.sleep-screen {
+  position: fixed;
+  inset: 0;
+  background: #000000;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.sleep-screen.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 /* REPRODUCTOR YOUTUBE OCULTO */
 #yt-wrap {
   position: fixed;
@@ -511,6 +610,20 @@ html, body {
   <span class="vol-bars" id="vbars"></span>
   <span id="vnum">70%</span>
 </div>
+
+<!-- Menú de Sistema (Se abre manteniendo presionado el encoder 2s) -->
+<div class="sys-menu-backdrop" id="sysMenu">
+  <div class="sys-menu-box">
+    <div class="sys-menu-hdr">
+      <span id="sysMenuTitle">SISTEMA // MENU</span>
+      <span style="color:var(--mid);font-size:10px">[GIRO / CLIC]</span>
+    </div>
+    <div class="sys-menu-list" id="sysMenuList"></div>
+  </div>
+</div>
+
+<!-- Pantalla negra de reposo total (Opción Apagar) -->
+<div class="sleep-screen" id="sleepScreen"></div>
 
 <!-- Contenedor invisible para YouTube IFrame API (Audio Stream) -->
 <div id="yt-wrap"><div id="yt-player"></div></div>
@@ -1284,8 +1397,235 @@ $('bNext').onclick = () => step(1);
 $('bShuf').onclick = () => { pulseButton($('bShuf')); shuf = !shuf; $('bShuf').classList.toggle('act', shuf); };
 $('bRep').onclick  = () => { pulseButton($('bRep')); rep = !rep; $('bRep').classList.toggle('act', rep); };
 
+// =========================================================================
+// 7B. MENÚ DE SISTEMA CONTROLADO POR ENCODER (HOLD 2S) + MODO APAGAR
+// =========================================================================
+const ACCENT_PALETTE = [
+  { name: "NARANJA",    hex: "#ff7722" },
+  { name: "ROSA CORAL", hex: "#ff4d88" },
+  { name: "CIAN VFD",   hex: "#00f0ff" },
+  { name: "VERDE CRT",  hex: "#00ff66" },
+  { name: "AMBAR",      hex: "#ffb800" },
+  { name: "VIOLETA",    hex: "#b566ff" }
+];
+
+let accentIdx = parseInt(localStorage.getItem('holo_accent_idx') || '0', 10) % ACCENT_PALETTE.length;
+let mirrorMode = localStorage.getItem('holo_mirror') === '1';
+let brightnessPct = parseInt(localStorage.getItem('holo_bright') || '100', 10);
+
+let isMenuOpen = false;
+let isSleeping = false;
+let menuPage = 'root'; // 'root' | 'options' | 'screen' | 'account'
+let menuSel = 0;
+
+function applySavedVisualSettings() {
+  const ac = ACCENT_PALETTE[accentIdx] || ACCENT_PALETTE[0];
+  document.documentElement.style.setProperty('--ac', ac.hex);
+  $('stage').classList.toggle('mirror', mirrorMode);
+  $('stage').style.opacity = (brightnessPct / 100);
+  if (window.fully && typeof window.fully.setScreenBrightness === 'function') {
+    try { window.fully.setScreenBrightness(Math.round((brightnessPct / 100) * 255)); } catch(e) {}
+  }
+}
+applySavedVisualSettings();
+
+function getActiveMenuItems() {
+  if (menuPage === 'root') {
+    return [
+      { label: "OPCIONES", val: "→", run: () => { menuPage = 'options'; menuSel = 0; renderSysMenu(); } },
+      { label: "APAGAR",   val: "REPOSO", run: () => enterSleepMode() },
+      { label: "VOLVER",   val: "SALIR",  run: () => closeSysMenu() }
+    ];
+  }
+  if (menuPage === 'options') {
+    const ac = ACCENT_PALETTE[accentIdx];
+    return [
+      {
+        label: "COLOR DE ACENTO",
+        val: ac.name,
+        dot: ac.hex,
+        run: () => {
+          accentIdx = (accentIdx + 1) % ACCENT_PALETTE.length;
+          localStorage.setItem('holo_accent_idx', String(accentIdx));
+          applySavedVisualSettings();
+          renderSysMenu();
+        }
+      },
+      {
+        label: "PANTALLA",
+        val: "→",
+        run: () => { menuPage = 'screen'; menuSel = 0; renderSysMenu(); }
+      },
+      {
+        label: "CUENTA YOUTUBE",
+        val: "→",
+        run: () => { menuPage = 'account'; menuSel = 0; renderSysMenu(); }
+      },
+      {
+        label: "← ATRAS",
+        val: "",
+        run: () => { menuPage = 'root'; menuSel = 0; renderSysMenu(); }
+      }
+    ];
+  }
+  if (menuPage === 'screen') {
+    return [
+      {
+        label: "MODO ESPEJO",
+        val: mirrorMode ? "ON" : "OFF",
+        run: () => {
+          mirrorMode = !mirrorMode;
+          localStorage.setItem('holo_mirror', mirrorMode ? '1' : '0');
+          applySavedVisualSettings();
+          renderSysMenu();
+        }
+      },
+      {
+        label: "BRILLO",
+        val: brightnessPct + "%",
+        run: () => {
+          brightnessPct = brightnessPct === 100 ? 75 : (brightnessPct === 75 ? 50 : (brightnessPct === 50 ? 25 : 100));
+          localStorage.setItem('holo_bright', String(brightnessPct));
+          applySavedVisualSettings();
+          renderSysMenu();
+        }
+      },
+      {
+        label: "QR RED WIFI",
+        val: forceQrToggle ? "VISIBLE" : "MOSTRAR",
+        run: () => {
+          forceQrToggle = !forceQrToggle;
+          $('sbLayout').classList.toggle('is-offline', !isInternetOnline || forceQrToggle);
+          closeSysMenu();
+        }
+      },
+      {
+        label: "← ATRAS",
+        val: "",
+        run: () => { menuPage = 'options'; menuSel = 1; renderSysMenu(); }
+      }
+    ];
+  }
+  if (menuPage === 'account') {
+    return [
+      {
+        label: "INICIAR SESION YT",
+        val: "ABRIR",
+        run: () => {
+          window.location.href = "https://accounts.google.com/ServiceLogin?service=youtube&continue=" + encodeURIComponent(window.location.href);
+        }
+      },
+      {
+        label: "ACTUALIZAR ROCOLA",
+        val: "SYNC",
+        run: () => { window.location.reload(); }
+      },
+      {
+        label: "← ATRAS",
+        val: "",
+        run: () => { menuPage = 'options'; menuSel = 2; renderSysMenu(); }
+      }
+    ];
+  }
+  return [];
+}
+
+function renderSysMenu() {
+  const titles = {
+    root:    "SISTEMA // MENU",
+    options: "MENU // OPCIONES",
+    screen:  "OPCIONES // PANTALLA",
+    account: "OPCIONES // CUENTA"
+  };
+  $('sysMenuTitle').textContent = titles[menuPage] || "MENU";
+  const items = getActiveMenuItems();
+  $('sysMenuList').innerHTML = items.map((it, idx) => {
+    const act = idx === menuSel ? 'active' : '';
+    const dot = it.dot ? `<i class="color-dot" style="background:${it.dot}"></i>` : '';
+    return `
+      <div class="sys-item ${act}" onclick="menuSel=${idx};triggerMenuSelect()">
+        <div class="item-left"><span class="item-arrow">▸</span><span>${it.label}</span></div>
+        <div class="item-val">${dot}<span>${it.val || ''}</span></div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openSysMenu() {
+  isMenuOpen = true;
+  menuPage = 'root';
+  menuSel = 0;
+  renderSysMenu();
+  $('sysMenu').classList.add('open');
+}
+
+function closeSysMenu() {
+  isMenuOpen = false;
+  $('sysMenu').classList.remove('open');
+}
+
+function toggleSysMenu() {
+  if (isSleeping) {
+    wakeFromSleep();
+    return;
+  }
+  if (isMenuOpen) closeSysMenu();
+  else openSysMenu();
+}
+
+function navigateSysMenu(dir) {
+  const items = getActiveMenuItems();
+  if (!items.length) return;
+  menuSel = (menuSel + dir + items.length) % items.length;
+  renderSysMenu();
+}
+
+function triggerMenuSelect() {
+  const items = getActiveMenuItems();
+  if (items[menuSel] && typeof items[menuSel].run === 'function') {
+    items[menuSel].run();
+  }
+}
+
+function enterSleepMode() {
+  closeSysMenu();
+  isSleeping = true;
+  // Silenciar y pausar cualquier reproducción activa
+  if (playing) setPlay(false);
+  $('sleepScreen').classList.add('active');
+  if (window.fully && typeof window.fully.setScreenBrightness === 'function') {
+    try { window.fully.setScreenBrightness(1); } catch(e) {}
+  }
+}
+
+function wakeFromSleep() {
+  if (!isSleeping) return;
+  isSleeping = false;
+  $('sleepScreen').classList.remove('active');
+  applySavedVisualSettings();
+}
+
+$('sleepScreen').onclick = () => wakeFromSleep();
+
 addEventListener('keydown', e => {
   const k = e.key;
+  if (isSleeping) {
+    e.preventDefault();
+    wakeFromSleep();
+    return;
+  }
+  if (k === 'h' || k === 'H' || k === 'Tab') {
+    e.preventDefault();
+    toggleSysMenu();
+    return;
+  }
+  if (isMenuOpen) {
+    if (k === 'ArrowUp' || k === 'ArrowLeft') { e.preventDefault(); navigateSysMenu(-1); }
+    else if (k === 'ArrowDown' || k === 'ArrowRight') { e.preventDefault(); navigateSysMenu(1); }
+    else if (k === ' ' || k === 'Enter') { e.preventDefault(); triggerMenuSelect(); }
+    else if (k === 'Escape') { e.preventDefault(); closeSysMenu(); }
+    return;
+  }
   if (k >= '1' && k <= '5') load(+k - 1);
   else if (k === ' ') { e.preventDefault(); toggle(); }
   else if (k === 'ArrowUp') { e.preventDefault(); changeVol(+5); }
@@ -1293,8 +1633,11 @@ addEventListener('keydown', e => {
   else if (k === 'ArrowRight') step(1);
   else if (k === 'ArrowLeft') step(-1);
   else if (k === '0' || k === 'Escape') eject();
-  else if (k === 'm' || k === 'M') $('stage').classList.toggle('mirror');
-  else if (k === 'q' || k === 'Q') {
+  else if (k === 'm' || k === 'M') {
+    mirrorMode = !mirrorMode;
+    localStorage.setItem('holo_mirror', mirrorMode ? '1' : '0');
+    applySavedVisualSettings();
+  } else if (k === 'q' || k === 'Q') {
     forceQrToggle = !forceQrToggle;
     $('sbLayout').classList.toggle('is-offline', !isInternetOnline || forceQrToggle);
   }
@@ -1347,6 +1690,30 @@ function parseYouTubeInput(raw) {
 
 function handleCommand(cmd) {
   cmd = cmd.trim();
+
+  // Si la pantalla está en modo Apagar (Sleep), cualquier interacción con el encoder la despierta
+  if (isSleeping && (cmd === "ENC:UP" || cmd === "ENC:DOWN" || cmd === "BTN:CLICK" || cmd === "BTN:HOLD" || cmd.startsWith("TAG:"))) {
+    wakeFromSleep();
+    return;
+  }
+
+  if (cmd === "BTN:HOLD") {
+    toggleSysMenu();
+    return;
+  }
+
+  // Si el menú está abierto, el encoder navega y selecciona las opciones
+  if (isMenuOpen) {
+    if (cmd === "ENC:UP") {
+      navigateSysMenu(1);
+    } else if (cmd === "ENC:DOWN") {
+      navigateSysMenu(-1);
+    } else if (cmd === "BTN:CLICK") {
+      triggerMenuSelect();
+    }
+    return;
+  }
+
   if (cmd === "ENC:UP") {
     changeVol(+5);
   } else if (cmd === "ENC:DOWN") {

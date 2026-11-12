@@ -46,8 +46,10 @@ const unsigned long RELE_BOOT_MS = 10000; // 10 segundos al encender
 
 // Variables Encoder
 volatile int encoderDelta = 0;
-unsigned long lastButtonPress = 0;
+unsigned long btnPressStart = 0;
 bool lastButtonState = HIGH;
+bool btnHoldSent = false;
+const unsigned long BTN_HOLD_MS = 1800; // 1.8s para abrir el menú de opciones
 
 // ================= CONTROL DEL RELÉ (HW-307) =================
 void encenderRele() {
@@ -106,20 +108,19 @@ String buildPortalHtml() {
   String html = R"rawliteral(
 <!DOCTYPE html><html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>HoloDeck // Panel de Control</title>
+<title>HoloDeck // Conexión Wi-Fi</title>
 <style>
-  body{background:#000;color:#fff;font-family:monospace;padding:18px;margin:0}
-  .box{max-width:400px;margin:0 auto 18px;border:1px solid #333;padding:18px}
-  h2{color:#ff7722;font-size:14px;letter-spacing:.15em;margin:0 0 12px;border-bottom:1px solid #222;padding-bottom:8px}
-  label{display:block;font-size:11px;color:#888;margin:12px 0 5px;letter-spacing:.08em}
+  body{background:#000;color:#fff;font-family:monospace;padding:24px;margin:0}
+  .box{max-width:380px;margin:0 auto;border:1px solid #333;padding:20px}
+  h2{color:#ff7722;font-size:15px;letter-spacing:.15em;margin:0 0 14px;border-bottom:1px solid #222;padding-bottom:10px}
+  label{display:block;font-size:11px;color:#888;margin:14px 0 6px;letter-spacing:.08em}
   select,input,button{width:100%;padding:10px;background:#111;border:1px solid #333;color:#fff;font-family:monospace;box-sizing:border-box;font-size:13px}
-  button{background:#ff7722;color:#000;font-weight:bold;border:none;margin-top:14px;cursor:pointer;letter-spacing:.1em}
-  button.sec{background:#1a1a1a;color:#fff;border:1px solid #ff7722}
-  .sub{font-size:11px;color:#777;margin-top:10px;line-height:1.4}
+  button{background:#ff7722;color:#000;font-weight:bold;border:none;margin-top:18px;cursor:pointer;letter-spacing:.12em}
+  .sub{font-size:11px;color:#777;margin-top:14px;line-height:1.4}
 </style></head><body>
 
 <div class="box">
-  <h2>1. CONEXION WI-FI</h2>
+  <h2>HOLODECK // CONEXION WI-FI</h2>
   <form action="/save" method="POST">
     <label>REDES DETECTADAS:</label>
     <select onchange="document.getElementById('ssid').value=this.value">
@@ -130,31 +131,9 @@ String buildPortalHtml() {
     <input type="text" id="ssid" name="ssid" placeholder="Nombre de tu Wi-Fi" required>
     <label>CONTRASEÑA:</label>
     <input type="password" name="pass" placeholder="Contraseña Wi-Fi">
-    <button type="submit">CONECTAR WIFI</button>
+    <button type="submit">CONECTAR ROCOLA</button>
   </form>
-</div>
-
-<div class="box">
-  <h2>2. YOUTUBE MUSIC // DISCOS & CUENTA</h2>
-  <form action="/disc" method="POST">
-    <label>DISCO A CONFIGURAR (1 AL 5):</label>
-    <select name="dnum">
-      <option value="1">DISCO 1</option>
-      <option value="2">DISCO 2</option>
-      <option value="3">DISCO 3</option>
-      <option value="4">DISCO 4</option>
-      <option value="5">DISCO 5</option>
-    </select>
-    <label>NOMBRE DEL ARTISTA / ALBUM:</label>
-    <input type="text" name="label" placeholder="Ej: DAFT PUNK" required>
-    <label>LINK DE ALBUM / PLAYLIST DE YT MUSIC:</label>
-    <input type="text" name="url" placeholder="https://music.youtube.com/playlist?list=..." required>
-    <button type="submit">GUARDAR EN DISCO</button>
-  </form>
-  <form action="/ytlogin" method="POST">
-    <button type="submit" class="sec">CAMBIAR CUENTA YOUTUBE EN ROCOLA</button>
-  </form>
-  <div class="sub">Nota: Tu cuenta YouTube Premium queda guardada en Fully Kiosk como fallback sin anuncios.</div>
+  <div class="sub">Para ajustes de Cuenta, Pantalla o Color de Acento, mantén presionada la perilla de la rocola durante 2 segundos.</div>
 </div>
 
 </body></html>
@@ -361,13 +340,24 @@ void loop() {
     }
   }
 
-  // 4. Procesar botón del Encoder (SW)
+  // 4. Procesar botón del Encoder (SW): Clic corto vs Mantener presionado 1.8s (Menú)
   bool btn = digitalRead(PIN_SW);
+  unsigned long now = millis();
+
   if (btn == LOW && lastButtonState == HIGH) {
-    unsigned long now = millis();
-    if (now - lastButtonPress > 200) {
+    // Recién presionado
+    btnPressStart = now;
+    btnHoldSent = false;
+  } else if (btn == LOW && lastButtonState == LOW) {
+    // Sigue presionado: si supera 1.8s, dispara BTN:HOLD inmediatamente
+    if (!btnHoldSent && (now - btnPressStart >= BTN_HOLD_MS)) {
+      broadcastCommand("BTN:HOLD\n");
+      btnHoldSent = true;
+    }
+  } else if (btn == HIGH && lastButtonState == LOW) {
+    // Soltado: si fue una pulsación corta (> 45ms y sin haber disparado HOLD), envía BTN:CLICK
+    if (!btnHoldSent && (now - btnPressStart >= 45)) {
       broadcastCommand("BTN:CLICK\n");
-      lastButtonPress = now;
     }
   }
   lastButtonState = btn;
@@ -385,6 +375,8 @@ void loop() {
       }
     } else if (c == 'w' || c == 'W') {
       startCaptivePortal();
+    } else if (c == 'h' || c == 'H') {
+      broadcastCommand("BTN:HOLD\n");
     } else if (c == '+') {
       broadcastCommand("ENC:UP\n");
     } else if (c == '-') {
