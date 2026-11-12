@@ -108,11 +108,43 @@ void IRAM_ATTR isrEncoder() {
   }
 }
 
-// ================= ENVÍO WEBSOCKET =================
+// ================= ENVÍO WEBSOCKET Y MONITOR WEB =================
 void broadcastCommand(String cmd) {
   Serial.print("[WS TX] ");
   Serial.print(cmd);
   webSocket.broadcastTXT(cmd);
+}
+
+void logWireless(String msg) {
+  Serial.println(msg);
+  String pkt = "LOG:" + msg + "\n";
+  webSocket.broadcastTXT(pkt);
+}
+
+void handleCharCommand(char c) {
+  if (c == 'o' || c == 'O') {
+    if (releActivo) {
+      apagarRele();
+      logWireless("[MANUAL] Rele APAGADO");
+    } else {
+      encenderRele();
+      logWireless("[MANUAL] Rele ENCENDIDO");
+    }
+  } else if (c == 'w' || c == 'W') {
+    startCaptivePortal();
+  } else if (c == 'h' || c == 'H') {
+    broadcastCommand("BTN:HOLD\n");
+  } else if (c == '+') {
+    broadcastCommand("ENC:UP\n");
+  } else if (c == '-') {
+    broadcastCommand("ENC:DOWN\n");
+  } else if (c == ' ') {
+    broadcastCommand("BTN:CLICK\n");
+  } else if (c >= '1' && c <= '5') {
+    broadcastCommand("TAG:0" + String(c) + "\n");
+  } else if (c == '0' || c == 'e') {
+    broadcastCommand("TAG:EJECT\n");
+  }
 }
 
 void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
@@ -123,6 +155,12 @@ void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t leng
     String currentIp = (WiFi.status() == WL_CONNECTED) ? WiFi.localIP().toString() : WiFi.softAPIP().toString();
     String msg = "ESP_IP:" + currentIp + "\n";
     webSocket.sendTXT(num, msg);
+  } else if (type == WStype_TEXT && length > 0) {
+    String txt = String((char*)payload);
+    txt.trim();
+    if (txt.startsWith("CMD:") && txt.length() >= 5) {
+      handleCharCommand(txt.charAt(4));
+    }
   }
 }
 
@@ -224,6 +262,46 @@ void setupWebServer() {
 
   server.on("/jukebox", HTTP_GET, []() {
     server.send_P(200, "text/html", INDEX_HTML);
+  });
+
+  server.on("/monitor", HTTP_GET, []() {
+    String monHtml = R"rawliteral(
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HoloDeck // Monitor Serial Wi-Fi</title>
+<style>
+  body{background:#08080a;color:#00ff66;font-family:monospace;padding:18px;margin:0}
+  h3{color:#a855f7;margin:0 0 10px;letter-spacing:.12em}
+  #log{background:#000;border:1px solid #222;height:360px;overflow-y:auto;padding:12px;font-size:13px;line-height:1.5;white-space:pre-wrap}
+  .bar{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  button{background:#15151a;color:#fff;border:1px solid #333;padding:8px 14px;font-family:monospace;cursor:pointer}
+  button:hover{border-color:#a855f7;color:#a855f7}
+</style></head><body>
+<h3>HOLODECK // MONITOR SERIAL WI-FI</h3>
+<div id="log">Conectando al WebSocket (:81)...
+</div>
+<div class="bar">
+  <button onclick="send('o')">RELE (o)</button>
+  <button onclick="send('+')">ENC UP (+)</button>
+  <button onclick="send('-')">ENC DOWN (-)</button>
+  <button onclick="send(' ')">CLICK</button>
+  <button onclick="send('h')">HOLD MENU (h)</button>
+  <button onclick="send('1')">ALBUM 1</button>
+  <button onclick="send('2')">ALBUM 2</button>
+  <button onclick="send('3')">ALBUM 3</button>
+  <button onclick="document.getElementById('log').textContent=''">LIMPIAR</button>
+</div>
+<script>
+  const logEl = document.getElementById('log');
+  const ws = new WebSocket('ws://' + location.hostname + ':81/');
+  function append(t){ logEl.textContent += t + '\n'; logEl.scrollTop = logEl.scrollHeight; }
+  ws.onopen = () => append('[CONECTADO A ' + location.hostname + ':81]');
+  ws.onmessage = (e) => append(e.data.trim());
+  ws.onclose = () => append('[DESCONECTADO]');
+  function send(c){ ws.send('CMD:' + c); }
+</script></body></html>
+    )rawliteral";
+    server.send(200, "text/html", monHtml);
   });
 
   server.on("/save", HTTP_POST, []() {
@@ -413,8 +491,7 @@ void checkNfcReader() {
   rfid.PICC_HaltA();
   rfid.PCD_StopCrypto1();
 
-  Serial.print("[NFC] Tag detectado UID: ");
-  Serial.println(uidStr);
+  logWireless("[NFC] Tag detectado UID: " + uidStr);
 
   // Buscar si el UID coincide con algún álbum configurado
   for (int i = 0; i < NFC_CATALOG_COUNT; i++) {
@@ -485,28 +562,6 @@ void loop() {
   // 5. Comandos por Monitor Serial (para pruebas rápidas)
   if (Serial.available() > 0) {
     char c = Serial.read();
-    if (c == 'o' || c == 'O') {
-      if (releActivo) {
-        apagarRele();
-        Serial.println("[MANUAL] Rele APAGADO");
-      } else {
-        encenderRele();
-        Serial.println("[MANUAL] Rele ENCENDIDO");
-      }
-    } else if (c == 'w' || c == 'W') {
-      startCaptivePortal();
-    } else if (c == 'h' || c == 'H') {
-      broadcastCommand("BTN:HOLD\n");
-    } else if (c == '+') {
-      broadcastCommand("ENC:UP\n");
-    } else if (c == '-') {
-      broadcastCommand("ENC:DOWN\n");
-    } else if (c == ' ') {
-      broadcastCommand("BTN:CLICK\n");
-    } else if (c >= '1' && c <= '5') {
-      broadcastCommand("TAG:0" + String(c) + "\n");
-    } else if (c == '0' || c == 'e') {
-      broadcastCommand("TAG:EJECT\n");
-    }
+    handleCharCommand(c);
   }
 }
