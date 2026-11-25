@@ -1,4 +1,4 @@
-const CACHE_NAME = 'holodeck-cache-v3.7';
+const CACHE_NAME = 'holodeck-cache-v3.8';
 const ASSETS = [
   './',
   './index.html',
@@ -45,7 +45,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  if (event.request.method !== 'GET' || !url.startsWith(self.location.origin)) {
+  if (event.request.method !== 'GET' || !url.startsWith(self.location.origin) || url.includes('/cgi-bin/') || url.includes('/setup')) {
     return;
   }
 

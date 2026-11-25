@@ -46,7 +46,7 @@ html, body {
 /* CONTENEDOR DE VISTAS CON TRANSICIÓN SNAPPY */
 .view-wrap {
   position: relative;
-  width: min(92vw, 760px);
+  width: min(95vw, 840px);
   display: grid;
   place-items: center;
 }
@@ -88,7 +88,7 @@ html, body {
 }
 
 .clock-row {
-  font-size: clamp(54px, 11vw, 96px);
+  font-size: clamp(64px, 12.5vw, 108px);
   line-height: 1;
   letter-spacing: 0.06em;
   display: flex;
@@ -117,9 +117,9 @@ html, body {
 
 .date-txt {
   margin-top: 14px;
-  font-size: clamp(12px, 1.8vw, 16px);
-  letter-spacing: 0.26em;
-  color: var(--mid);
+  font-size: clamp(15px, 2.4vw, 21px);
+  letter-spacing: 0.22em;
+  color: rgba(255, 255, 255, 0.76);
   text-transform: uppercase;
 }
 
@@ -135,21 +135,21 @@ html, body {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  max-width: 480px;
+  max-width: 540px;
   transform: translateY(8px);
   transition: all 0.38s var(--snap);
 }
 .daily-msg.show {
-  max-height: 90px;
+  max-height: 125px;
   opacity: 1;
-  margin-top: 28px;
-  padding-top: 18px;
+  margin-top: 24px;
+  padding-top: 16px;
   border-top-color: var(--dim);
   transform: translateY(0);
 }
 .daily-msg .heart {
   color: var(--ac);
-  font-size: clamp(13px, 1.8vw, 17px);
+  font-size: clamp(16px, 2.5vw, 22px);
   display: inline-block;
   animation: heartPulse 1.6s ease-in-out infinite;
   flex-shrink: 0;
@@ -159,9 +159,9 @@ html, body {
   50% { transform: scale(1.22); }
 }
 .daily-msg .msg-text {
-  font-size: clamp(11px, 1.5vw, 14px);
-  letter-spacing: 0.12em;
-  line-height: 1.5;
+  font-size: clamp(14px, 2.2vw, 19px);
+  letter-spacing: 0.1em;
+  line-height: 1.45;
   color: var(--fg);
   text-transform: uppercase;
 }
@@ -296,9 +296,9 @@ html, body {
 }
 
 .song-title {
-  font-size: clamp(12px, 1.8vw, 16px);
+  font-size: clamp(15px, 2.3vw, 20px);
   color: var(--fg);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   width: 100%;
   white-space: nowrap;
@@ -307,9 +307,9 @@ html, body {
   transition: transform 0.24s var(--snap), opacity 0.24s ease;
 }
 .song-artist {
-  font-size: clamp(10px, 1.4vw, 13px);
+  font-size: clamp(12px, 1.8vw, 15px);
   color: var(--ac);
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   margin-top: 6px;
   width: 100%;
@@ -320,7 +320,7 @@ html, body {
 
 .pl-divider {
   width: 1px;
-  height: clamp(160px, 28vw, 220px);
+  height: clamp(180px, 30vw, 235px);
   border-left: 1px dashed var(--dim);
   flex-shrink: 0;
 }
@@ -332,12 +332,12 @@ html, body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: clamp(175px, 29vw, 225px);
+  height: clamp(195px, 32vw, 245px);
 }
 
 /* Visor de Lyrics Sincronizados */
 .lyrics-box {
-  height: 92px;
+  height: 112px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -347,16 +347,16 @@ html, body {
   overflow: hidden;
 }
 .lyr-line {
-  font-size: clamp(10px, 1.35vw, 13px);
-  color: rgba(255, 255, 255, 0.28);
-  letter-spacing: 0.08em;
+  font-size: clamp(13px, 1.85vw, 16px);
+  color: rgba(255, 255, 255, 0.36);
+  letter-spacing: 0.06em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   transition: transform 0.26s var(--snap), opacity 0.26s ease, color 0.26s ease;
 }
 .lyr-line.curr {
-  font-size: clamp(12px, 1.65vw, 15px);
+  font-size: clamp(15px, 2.3vw, 20px);
   color: var(--fg);
   white-space: normal;
   display: -webkit-box;
@@ -410,9 +410,9 @@ html, body {
 .tl-times {
   display: flex;
   justify-content: space-between;
-  font-size: clamp(10px, 1.3vw, 12px);
+  font-size: clamp(13px, 1.8vw, 15px);
   letter-spacing: 0.14em;
-  color: var(--mid);
+  color: rgba(255, 255, 255, 0.72);
 }
 .tl-times #tc { color: var(--fg); }
 
@@ -430,8 +430,8 @@ html, body {
   color: var(--mid);
   display: grid;
   place-items: center;
-  width: clamp(32px, 5vw, 40px);
-  height: clamp(32px, 5vw, 38px);
+  width: clamp(38px, 5.8vw, 46px);
+  height: clamp(36px, 5.5vw, 44px);
   transition: transform 0.18s var(--pop), color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
 }
 .ctl button:hover { color: var(--fg); }
@@ -439,11 +439,11 @@ html, body {
   transform: scale(0.84);
 }
 .ctl svg {
-  width: 58%;
-  height: 58%;
+  width: 60%;
+  height: 60%;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.9;
+  stroke-width: 2;
   stroke-linecap: square;
 }
 .ctl .tog.act {
@@ -451,14 +451,14 @@ html, body {
   border-color: var(--dim);
 }
 .ctl .pp {
-  width: clamp(44px, 6.5vw, 52px);
-  height: clamp(36px, 5.5vw, 42px);
+  width: clamp(50px, 7.2vw, 58px);
+  height: clamp(40px, 6vw, 48px);
   color: var(--ac);
   border: 1.5px solid var(--ac);
 }
 .pl.paused .ctl .pp {
   color: var(--fg);
-  border-color: var(--fg);
+  border: 1.5px solid var(--fg);
 }
 .pp .ic-play { display: none; }
 .pl.paused .pp .ic-play { display: block; }
@@ -471,12 +471,12 @@ html, body {
   left: 50%;
   transform: translateX(-50%) translateY(-16px) scale(0.92);
   background: #000000;
-  border: 1px solid var(--ac);
-  padding: 8px 18px;
+  border: 1.5px solid var(--ac);
+  padding: 10px 22px;
   display: flex;
   align-items: center;
   gap: 14px;
-  font-size: 13px;
+  font-size: clamp(15px, 2.2vw, 18px);
   letter-spacing: 0.16em;
   opacity: 0;
   pointer-events: none;
@@ -505,13 +505,13 @@ html, body {
   left: 0;
   top: 0;
   bottom: 0;
-  width: min(80vw, 310px);
-  border-right: 1.5px solid rgba(255, 255, 255, 0.22);
-  background: rgba(0, 0, 0, 0.96);
-  padding: 22px 18px;
+  width: min(86vw, 375px);
+  border-right: 1.5px solid rgba(255, 255, 255, 0.24);
+  background: rgba(0, 0, 0, 0.97);
+  padding: 18px 16px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   transform: translateX(-104%);
   opacity: 0;
   transition: transform 0.32s var(--snap), opacity 0.26s var(--snap);
@@ -534,17 +534,17 @@ html, body {
   align-items: center;
   border-bottom: 1px dashed var(--dim);
   padding-bottom: 10px;
-  margin-bottom: 12px;
-  font-size: 11px;
-  letter-spacing: 0.18em;
+  margin-bottom: 10px;
+  font-size: clamp(13px, 1.9vw, 15px);
+  letter-spacing: 0.14em;
   color: var(--ac);
 }
 .sys-menu-list {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
   overflow-y: auto;
-  max-height: calc(100vh - 105px);
+  max-height: calc(100vh - 36px);
   scrollbar-width: none;
 }
 .sys-menu-list::-webkit-scrollbar { display: none; }
@@ -552,42 +552,51 @@ html, body {
   border-top: 1px dashed var(--dim);
   margin: 6px 0;
 }
+.sys-offline-note {
+  font-size: clamp(12px, 1.7vw, 14px);
+  color: var(--ac);
+  letter-spacing: 0.1em;
+  padding: 6px 10px 8px;
+  border-bottom: 1px dashed var(--dim);
+  margin-bottom: 4px;
+}
 .sys-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 7px 10px;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  color: var(--mid);
+  padding: 10px 12px;
+  border: 1.5px solid transparent;
+  border-radius: 9px;
+  font-size: clamp(14px, 2.05vw, 17px);
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.72);
   cursor: pointer;
   transition: all 0.2s var(--snap);
-  gap: 10px;
+  gap: 12px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 .sys-item.active {
   color: var(--fg);
-  border-color: rgba(255, 255, 255, 0.35);
-  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.1);
   transform: translateX(4px);
 }
 .sys-item .alb-thumb {
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
-  min-height: 34px;
-  max-width: 34px;
-  max-height: 34px;
-  border-radius: 7px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  max-width: 44px;
+  max-height: 44px;
+  border-radius: 8px;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.22);
+  border: 1px solid rgba(255,255,255,0.26);
   background: #141414;
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  font-size: 10px;
+  font-size: 13px;
   color: var(--fg);
   position: relative;
 }
@@ -602,17 +611,17 @@ html, body {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 .sys-item .alb-name {
-  font-size: 11px;
+  font-size: clamp(13px, 1.95vw, 16px);
   color: var(--fg);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .sys-item .alb-sub {
-  font-size: 9px;
+  font-size: clamp(11px, 1.55vw, 13px);
   color: var(--ac);
   white-space: nowrap;
   overflow: hidden;
@@ -634,17 +643,102 @@ html, body {
 }
 .sys-item .item-val {
   color: var(--ac);
-  font-size: 10px;
+  font-size: clamp(13px, 1.85vw, 15px);
   display: flex;
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
 }
 .color-dot {
-  width: 9px;
-  height: 9px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   display: inline-block;
+}
+
+/* MODAL HOLOGRÁFICO DE CONEXIÓN WI-FI POR QR (SE ABRE DESDE EL MENÚ) */
+.wifi-qr-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.96);
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4vh 5vw;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s var(--snap);
+}
+.wifi-qr-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.wifi-qr-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(22px, 4.5vw, 44px);
+  max-width: 780px;
+  width: 100%;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  border-radius: 16px;
+  padding: clamp(16px, 3.5vh, 28px) clamp(18px, 4vw, 34px);
+  background: #000000;
+}
+.wifi-qr-svg-wrap {
+  width: clamp(135px, 38vh, 185px);
+  height: clamp(135px, 38vh, 185px);
+  background: #ffffff;
+  padding: 9px;
+  border: 2.5px solid var(--ac);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+.wifi-qr-svg-wrap svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.wifi-qr-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+.wifi-qr-hdr {
+  font-size: clamp(16px, 2.5vw, 22px);
+  color: var(--ac);
+  letter-spacing: 0.12em;
+}
+.wifi-qr-step {
+  font-size: clamp(13px, 1.95vw, 16px);
+  color: var(--fg);
+  line-height: 1.45;
+  letter-spacing: 0.06em;
+}
+.wifi-qr-step b {
+  color: var(--ac);
+  font-weight: normal;
+}
+.wifi-qr-status {
+  font-size: clamp(12px, 1.75vw, 15px);
+  color: rgba(255, 255, 255, 0.68);
+  letter-spacing: 0.08em;
+  margin-top: 2px;
+}
+.wifi-qr-close {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid var(--ac);
+  border-radius: 8px;
+  color: var(--fg);
+  font-family: var(--font);
+  font-size: clamp(13px, 1.85vw, 15px);
+  letter-spacing: 0.12em;
+  cursor: pointer;
 }
 /* PANTALLA APAGADA (MODO SLEEP SILENCIOSO) */
 .sleep-screen {
@@ -676,18 +770,6 @@ html, body {
 </head>
 <body>
 
-<!-- Barra flotante de volumen (solo al girar el encoder) -->
-<div class="vol-toast" id="vol">
-  <span class="vol-bars" id="vbars"></span>
-</div>
-
-<!-- Cajón Lateral Izquierdo Oculto: Álbumes + Opciones (Se abre manteniendo presionado el encoder) -->
-<div class="sys-menu-backdrop" id="sysMenu">
-  <div class="sys-menu-box">
-    <div class="sys-menu-list" id="sysMenuList"></div>
-  </div>
-</div>
-
 <!-- Pantalla negra de reposo total (Opción Apagar) -->
 <div class="sleep-screen" id="sleepScreen"></div>
 
@@ -695,6 +777,18 @@ html, body {
 <div id="yt-wrap"><div id="yt-player"></div></div>
 
 <div class="stage" id="stage">
+  <!-- Barra flotante de volumen (solo al girar el encoder) -->
+  <div class="vol-toast" id="vol">
+    <span class="vol-bars" id="vbars"></span>
+  </div>
+
+  <!-- Cajón Lateral Izquierdo Oculto: Álbumes + Opciones (Se abre manteniendo presionado el encoder) -->
+  <div class="sys-menu-backdrop" id="sysMenu">
+    <div class="sys-menu-box">
+      <div class="sys-menu-list" id="sysMenuList"></div>
+    </div>
+  </div>
+
   <div class="view-wrap" id="viewWrap">
 
     <!-- ===================================================================
@@ -727,25 +821,28 @@ html, body {
           </div>
         </div>
 
-        <!-- Panel Derecho Offline (Solo aparece cuando NO hay conexión a Internet) -->
-        <div class="offline-side" id="offlineSide">
-          <div class="v-divider"></div>
-          <div class="qr-card">
-            <div class="qr-frame">
-              <!-- QR SVG embebido de WIFI:T:WPA;S:HoloJukebox-Setup;P:12345678;; -->
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 174 174">
-                <rect fill="#ffffff" x="0" y="0" width="174" height="174"/>
-                <path fill="#000000" d="M 0,0 l 6,0 0,6 -6,0 z M 6,0 l 6,0 0,6 -6,0 z M 12,0 l 6,0 0,6 -6,0 z M 18,0 l 6,0 0,6 -6,0 z M 24,0 l 6,0 0,6 -6,0 z M 30,0 l 6,0 0,6 -6,0 z M 36,0 l 6,0 0,6 -6,0 z M 60,0 l 6,0 0,6 -6,0 z M 72,0 l 6,0 0,6 -6,0 z M 108,0 l 6,0 0,6 -6,0 z M 132,0 l 6,0 0,6 -6,0 z M 138,0 l 6,0 0,6 -6,0 z M 144,0 l 6,0 0,6 -6,0 z M 150,0 l 6,0 0,6 -6,0 z M 156,0 l 6,0 0,6 -6,0 z M 162,0 l 6,0 0,6 -6,0 z M 168,0 l 6,0 0,6 -6,0 z M 0,6 l 6,0 0,6 -6,0 z M 36,6 l 6,0 0,6 -6,0 z M 48,6 l 6,0 0,6 -6,0 z M 60,6 l 6,0 0,6 -6,0 z M 78,6 l 6,0 0,6 -6,0 z M 90,6 l 6,0 0,6 -6,0 z M 96,6 l 6,0 0,6 -6,0 z M 102,6 l 6,0 0,6 -6,0 z M 108,6 l 6,0 0,6 -6,0 z M 114,6 l 6,0 0,6 -6,0 z M 120,6 l 6,0 0,6 -6,0 z M 132,6 l 6,0 0,6 -6,0 z M 168,6 l 6,0 0,6 -6,0 z M 0,12 l 6,0 0,6 -6,0 z M 12,12 l 6,0 0,6 -6,0 z M 18,12 l 6,0 0,6 -6,0 z M 24,12 l 6,0 0,6 -6,0 z M 36,12 l 6,0 0,6 -6,0 z M 72,12 l 6,0 0,6 -6,0 z M 96,12 l 6,0 0,6 -6,0 z M 102,12 l 6,0 0,6 -6,0 z M 108,12 l 6,0 0,6 -6,0 z M 114,12 l 6,0 0,6 -6,0 z M 120,12 l 6,0 0,6 -6,0 z M 132,12 l 6,0 0,6 -6,0 z M 144,12 l 6,0 0,6 -6,0 z M 150,12 l 6,0 0,6 -6,0 z M 156,12 l 6,0 0,6 -6,0 z M 168,12 l 6,0 0,6 -6,0 z M 0,18 l 6,0 0,6 -6,0 z M 12,18 l 6,0 0,6 -6,0 z M 18,18 l 6,0 0,6 -6,0 z M 24,18 l 6,0 0,6 -6,0 z M 36,18 l 6,0 0,6 -6,0 z M 48,18 l 6,0 0,6 -6,0 z M 54,18 l 6,0 0,6 -6,0 z M 60,18 l 6,0 0,6 -6,0 z M 72,18 l 6,0 0,6 -6,0 z M 78,18 l 6,0 0,6 -6,0 z M 84,18 l 6,0 0,6 -6,0 z M 90,18 l 6,0 0,6 -6,0 z M 96,18 l 6,0 0,6 -6,0 z M 120,18 l 6,0 0,6 -6,0 z M 132,18 l 6,0 0,6 -6,0 z M 144,18 l 6,0 0,6 -6,0 z M 150,18 l 6,0 0,6 -6,0 z M 156,18 l 6,0 0,6 -6,0 z M 168,18 l 6,0 0,6 -6,0 z M 0,24 l 6,0 0,6 -6,0 z M 12,24 l 6,0 0,6 -6,0 z M 18,24 l 6,0 0,6 -6,0 z M 24,24 l 6,0 0,6 -6,0 z M 36,24 l 6,0 0,6 -6,0 z M 54,24 l 6,0 0,6 -6,0 z M 84,24 l 6,0 0,6 -6,0 z M 114,24 l 6,0 0,6 -6,0 z M 120,24 l 6,0 0,6 -6,0 z M 132,24 l 6,0 0,6 -6,0 z M 144,24 l 6,0 0,6 -6,0 z M 150,24 l 6,0 0,6 -6,0 z M 156,24 l 6,0 0,6 -6,0 z M 168,24 l 6,0 0,6 -6,0 z M 0,30 l 6,0 0,6 -6,0 z M 36,30 l 6,0 0,6 -6,0 z M 48,30 l 6,0 0,6 -6,0 z M 54,30 l 6,0 0,6 -6,0 z M 66,30 l 6,0 0,6 -6,0 z M 72,30 l 6,0 0,6 -6,0 z M 78,30 l 6,0 0,6 -6,0 z M 96,30 l 6,0 0,6 -6,0 z M 114,30 l 6,0 0,6 -6,0 z M 132,30 l 6,0 0,6 -6,0 z M 168,30 l 6,0 0,6 -6,0 z M 0,36 l 6,0 0,6 -6,0 z M 6,36 l 6,0 0,6 -6,0 z M 12,36 l 6,0 0,6 -6,0 z M 18,36 l 6,0 0,6 -6,0 z M 24,36 l 6,0 0,6 -6,0 z M 30,36 l 6,0 0,6 -6,0 z M 36,36 l 6,0 0,6 -6,0 z M 48,36 l 6,0 0,6 -6,0 z M 60,36 l 6,0 0,6 -6,0 z M 72,36 l 6,0 0,6 -6,0 z M 84,36 l 6,0 0,6 -6,0 z M 96,36 l 6,0 0,6 -6,0 z M 108,36 l 6,0 0,6 -6,0 z M 120,36 l 6,0 0,6 -6,0 z M 132,36 l 6,0 0,6 -6,0 z M 138,36 l 6,0 0,6 -6,0 z M 144,36 l 6,0 0,6 -6,0 z M 150,36 l 6,0 0,6 -6,0 z M 156,36 l 6,0 0,6 -6,0 z M 162,36 l 6,0 0,6 -6,0 z M 168,36 l 6,0 0,6 -6,0 z M 54,42 l 6,0 0,6 -6,0 z M 60,42 l 6,0 0,6 -6,0 z M 66,42 l 6,0 0,6 -6,0 z M 96,42 l 6,0 0,6 -6,0 z M 114,42 l 6,0 0,6 -6,0 z M 120,42 l 6,0 0,6 -6,0 z M 0,48 l 6,0 0,6 -6,0 z M 6,48 l 6,0 0,6 -6,0 z M 12,48 l 6,0 0,6 -6,0 z M 18,48 l 6,0 0,6 -6,0 z M 24,48 l 6,0 0,6 -6,0 z M 36,48 l 6,0 0,6 -6,0 z M 42,48 l 6,0 0,6 -6,0 z M 48,48 l 6,0 0,6 -6,0 z M 54,48 l 6,0 0,6 -6,0 z M 66,48 l 6,0 0,6 -6,0 z M 90,48 l 6,0 0,6 -6,0 z M 102,48 l 6,0 0,6 -6,0 z M 108,48 l 6,0 0,6 -6,0 z M 126,48 l 6,0 0,6 -6,0 z M 138,48 l 6,0 0,6 -6,0 z M 150,48 l 6,0 0,6 -6,0 z M 162,48 l 6,0 0,6 -6,0 z M 48,54 l 6,0 0,6 -6,0 z M 60,54 l 6,0 0,6 -6,0 z M 72,54 l 6,0 0,6 -6,0 z M 90,54 l 6,0 0,6 -6,0 z M 114,54 l 6,0 0,6 -6,0 z M 126,54 l 6,0 0,6 -6,0 z M 150,54 l 6,0 0,6 -6,0 z M 168,54 l 6,0 0,6 -6,0 z M 24,60 l 6,0 0,6 -6,0 z M 36,60 l 6,0 0,6 -6,0 z M 42,60 l 6,0 0,6 -6,0 z M 60,60 l 6,0 0,6 -6,0 z M 90,60 l 6,0 0,6 -6,0 z M 102,60 l 6,0 0,6 -6,0 z M 144,60 l 6,0 0,6 -6,0 z M 156,60 l 6,0 0,6 -6,0 z M 168,60 l 6,0 0,6 -6,0 z M 0,66 l 6,0 0,6 -6,0 z M 12,66 l 6,0 0,6 -6,0 z M 18,66 l 6,0 0,6 -6,0 z M 24,66 l 6,0 0,6 -6,0 z M 30,66 l 6,0 0,6 -6,0 z M 48,66 l 6,0 0,6 -6,0 z M 72,66 l 6,0 0,6 -6,0 z M 84,66 l 6,0 0,6 -6,0 z M 108,66 l 6,0 0,6 -6,0 z M 114,66 l 6,0 0,6 -6,0 z M 120,66 l 6,0 0,6 -6,0 z M 126,66 l 6,0 0,6 -6,0 z M 132,66 l 6,0 0,6 -6,0 z M 138,66 l 6,0 0,6 -6,0 z M 144,66 l 6,0 0,6 -6,0 z M 150,66 l 6,0 0,6 -6,0 z M 168,66 l 6,0 0,6 -6,0 z M 12,72 l 6,0 0,6 -6,0 z M 24,72 l 6,0 0,6 -6,0 z M 36,72 l 6,0 0,6 -6,0 z M 54,72 l 6,0 0,6 -6,0 z M 60,72 l 6,0 0,6 -6,0 z M 72,72 l 6,0 0,6 -6,0 z M 90,72 l 6,0 0,6 -6,0 z M 120,72 l 6,0 0,6 -6,0 z M 132,72 l 6,0 0,6 -6,0 z M 150,72 l 6,0 0,6 -6,0 z M 156,72 l 6,0 0,6 -6,0 z M 162,72 l 6,0 0,6 -6,0 z M 168,72 l 6,0 0,6 -6,0 z M 12,78 l 6,0 0,6 -6,0 z M 42,78 l 6,0 0,6 -6,0 z M 48,78 l 6,0 0,6 -6,0 z M 54,78 l 6,0 0,6 -6,0 z M 78,78 l 6,0 0,6 -6,0 z M 84,78 l 6,0 0,6 -6,0 z M 90,78 l 6,0 0,6 -6,0 z M 120,78 l 6,0 0,6 -6,0 z M 132,78 l 6,0 0,6 -6,0 z M 150,78 l 6,0 0,6 -6,0 z M 156,78 l 6,0 0,6 -6,0 z M 162,78 l 6,0 0,6 -6,0 z M 168,78 l 6,0 0,6 -6,0 z M 12,84 l 6,0 0,6 -6,0 z M 18,84 l 6,0 0,6 -6,0 z M 30,84 l 6,0 0,6 -6,0 z M 36,84 l 6,0 0,6 -6,0 z M 54,84 l 6,0 0,6 -6,0 z M 66,84 l 6,0 0,6 -6,0 z M 72,84 l 6,0 0,6 -6,0 z M 84,84 l 6,0 0,6 -6,0 z M 90,84 l 6,0 0,6 -6,0 z M 96,84 l 6,0 0,6 -6,0 z M 102,84 l 6,0 0,6 -6,0 z M 138,84 l 6,0 0,6 -6,0 z M 156,84 l 6,0 0,6 -6,0 z M 0,90 l 6,0 0,6 -6,0 z M 18,90 l 6,0 0,6 -6,0 z M 48,90 l 6,0 0,6 -6,0 z M 54,90 l 6,0 0,6 -6,0 z M 66,90 l 6,0 0,6 -6,0 z M 78,90 l 6,0 0,6 -6,0 z M 84,90 l 6,0 0,6 -6,0 z M 90,90 l 6,0 0,6 -6,0 z M 114,90 l 6,0 0,6 -6,0 z M 120,90 l 6,0 0,6 -6,0 z M 126,90 l 6,0 0,6 -6,0 z M 132,90 l 6,0 0,6 -6,0 z M 144,90 l 6,0 0,6 -6,0 z M 150,90 l 6,0 0,6 -6,0 z M 156,90 l 6,0 0,6 -6,0 z M 6,96 l 6,0 0,6 -6,0 z M 30,96 l 6,0 0,6 -6,0 z M 36,96 l 6,0 0,6 -6,0 z M 42,96 l 6,0 0,6 -6,0 z M 48,96 l 6,0 0,6 -6,0 z M 54,96 l 6,0 0,6 -6,0 z M 66,96 l 6,0 0,6 -6,0 z M 90,96 l 6,0 0,6 -6,0 z M 96,96 l 6,0 0,6 -6,0 z M 120,96 l 6,0 0,6 -6,0 z M 132,96 l 6,0 0,6 -6,0 z M 138,96 l 6,0 0,6 -6,0 z M 156,96 l 6,0 0,6 -6,0 z M 0,102 l 6,0 0,6 -6,0 z M 6,102 l 6,0 0,6 -6,0 z M 12,102 l 6,0 0,6 -6,0 z M 18,102 l 6,0 0,6 -6,0 z M 24,102 l 6,0 0,6 -6,0 z M 42,102 l 6,0 0,6 -6,0 z M 54,102 l 6,0 0,6 -6,0 z M 72,102 l 6,0 0,6 -6,0 z M 78,102 l 6,0 0,6 -6,0 z M 84,102 l 6,0 0,6 -6,0 z M 90,102 l 6,0 0,6 -6,0 z M 108,102 l 6,0 0,6 -6,0 z M 114,102 l 6,0 0,6 -6,0 z M 126,102 l 6,0 0,6 -6,0 z M 144,102 l 6,0 0,6 -6,0 z M 150,102 l 6,0 0,6 -6,0 z M 162,102 l 6,0 0,6 -6,0 z M 168,102 l 6,0 0,6 -6,0 z M 0,108 l 6,0 0,6 -6,0 z M 12,108 l 6,0 0,6 -6,0 z M 18,108 l 6,0 0,6 -6,0 z M 24,108 l 6,0 0,6 -6,0 z M 30,108 l 6,0 0,6 -6,0 z M 36,108 l 6,0 0,6 -6,0 z M 48,108 l 6,0 0,6 -6,0 z M 54,108 l 6,0 0,6 -6,0 z M 60,108 l 6,0 0,6 -6,0 z M 84,108 l 6,0 0,6 -6,0 z M 90,108 l 6,0 0,6 -6,0 z M 96,108 l 6,0 0,6 -6,0 z M 102,108 l 6,0 0,6 -6,0 z M 114,108 l 6,0 0,6 -6,0 z M 138,108 l 6,0 0,6 -6,0 z M 144,108 l 6,0 0,6 -6,0 z M 162,108 l 6,0 0,6 -6,0 z M 0,114 l 6,0 0,6 -6,0 z M 12,114 l 6,0 0,6 -6,0 z M 42,114 l 6,0 0,6 -6,0 z M 48,114 l 6,0 0,6 -6,0 z M 72,114 l 6,0 0,6 -6,0 z M 78,114 l 6,0 0,6 -6,0 z M 84,114 l 6,0 0,6 -6,0 z M 90,114 l 6,0 0,6 -6,0 z M 114,114 l 6,0 0,6 -6,0 z M 120,114 l 6,0 0,6 -6,0 z M 126,114 l 6,0 0,6 -6,0 z M 132,114 l 6,0 0,6 -6,0 z M 138,114 l 6,0 0,6 -6,0 z M 144,114 l 6,0 0,6 -6,0 z M 150,114 l 6,0 0,6 -6,0 z M 168,114 l 6,0 0,6 -6,0 z M 0,120 l 6,0 0,6 -6,0 z M 18,120 l 6,0 0,6 -6,0 z M 36,120 l 6,0 0,6 -6,0 z M 42,120 l 6,0 0,6 -6,0 z M 54,120 l 6,0 0,6 -6,0 z M 60,120 l 6,0 0,6 -6,0 z M 72,120 l 6,0 0,6 -6,0 z M 120,120 l 6,0 0,6 -6,0 z M 126,120 l 6,0 0,6 -6,0 z M 132,120 l 6,0 0,6 -6,0 z M 138,120 l 6,0 0,6 -6,0 z M 144,120 l 6,0 0,6 -6,0 z M 156,120 l 6,0 0,6 -6,0 z M 162,120 l 6,0 0,6 -6,0 z M 168,120 l 6,0 0,6 -6,0 z M 48,126 l 6,0 0,6 -6,0 z M 54,126 l 6,0 0,6 -6,0 z M 90,126 l 6,0 0,6 -6,0 z M 96,126 l 6,0 0,6 -6,0 z M 114,126 l 6,0 0,6 -6,0 z M 120,126 l 6,0 0,6 -6,0 z M 144,126 l 6,0 0,6 -6,0 z M 150,126 l 6,0 0,6 -6,0 z M 156,126 l 6,0 0,6 -6,0 z M 0,132 l 6,0 0,6 -6,0 z M 6,132 l 6,0 0,6 -6,0 z M 12,132 l 6,0 0,6 -6,0 z M 18,132 l 6,0 0,6 -6,0 z M 24,132 l 6,0 0,6 -6,0 z M 30,132 l 6,0 0,6 -6,0 z M 36,132 l 6,0 0,6 -6,0 z M 48,132 l 6,0 0,6 -6,0 z M 54,132 l 6,0 0,6 -6,0 z M 66,132 l 6,0 0,6 -6,0 z M 72,132 l 6,0 0,6 -6,0 z M 90,132 l 6,0 0,6 -6,0 z M 96,132 l 6,0 0,6 -6,0 z M 102,132 l 6,0 0,6 -6,0 z M 120,132 l 6,0 0,6 -6,0 z M 132,132 l 6,0 0,6 -6,0 z M 144,132 l 6,0 0,6 -6,0 z M 150,132 l 6,0 0,6 -6,0 z M 156,132 l 6,0 0,6 -6,0 z M 0,138 l 6,0 0,6 -6,0 z M 36,138 l 6,0 0,6 -6,0 z M 60,138 l 6,0 0,6 -6,0 z M 66,138 l 6,0 0,6 -6,0 z M 90,138 l 6,0 0,6 -6,0 z M 114,138 l 6,0 0,6 -6,0 z M 120,138 l 6,0 0,6 -6,0 z M 144,138 l 6,0 0,6 -6,0 z M 150,138 l 6,0 0,6 -6,0 z M 0,144 l 6,0 0,6 -6,0 z M 12,144 l 6,0 0,6 -6,0 z M 18,144 l 6,0 0,6 -6,0 z M 24,144 l 6,0 0,6 -6,0 z M 36,144 l 6,0 0,6 -6,0 z M 48,144 l 6,0 0,6 -6,0 z M 66,144 l 6,0 0,6 -6,0 z M 90,144 l 6,0 0,6 -6,0 z M 108,144 l 6,0 0,6 -6,0 z M 120,144 l 6,0 0,6 -6,0 z M 126,144 l 6,0 0,6 -6,0 z M 132,144 l 6,0 0,6 -6,0 z M 138,144 l 6,0 0,6 -6,0 z M 144,144 l 6,0 0,6 -6,0 z M 0,150 l 6,0 0,6 -6,0 z M 12,150 l 6,0 0,6 -6,0 z M 18,150 l 6,0 0,6 -6,0 z M 24,150 l 6,0 0,6 -6,0 z M 36,150 l 6,0 0,6 -6,0 z M 48,150 l 6,0 0,6 -6,0 z M 60,150 l 6,0 0,6 -6,0 z M 72,150 l 6,0 0,6 -6,0 z M 78,150 l 6,0 0,6 -6,0 z M 90,150 l 6,0 0,6 -6,0 z M 108,150 l 6,0 0,6 -6,0 z M 114,150 l 6,0 0,6 -6,0 z M 120,150 l 6,0 0,6 -6,0 z M 132,150 l 6,0 0,6 -6,0 z M 138,150 l 6,0 0,6 -6,0 z M 162,150 l 6,0 0,6 -6,0 z M 0,156 l 6,0 0,6 -6,0 z M 12,156 l 6,0 0,6 -6,0 z M 18,156 l 6,0 0,6 -6,0 z M 24,156 l 6,0 0,6 -6,0 z M 36,156 l 6,0 0,6 -6,0 z M 48,156 l 6,0 0,6 -6,0 z M 54,156 l 6,0 0,6 -6,0 z M 78,156 l 6,0 0,6 -6,0 z M 84,156 l 6,0 0,6 -6,0 z M 90,156 l 6,0 0,6 -6,0 z M 102,156 l 6,0 0,6 -6,0 z M 108,156 l 6,0 0,6 -6,0 z M 114,156 l 6,0 0,6 -6,0 z M 132,156 l 6,0 0,6 -6,0 z M 150,156 l 6,0 0,6 -6,0 z M 162,156 l 6,0 0,6 -6,0 z M 0,162 l 6,0 0,6 -6,0 z M 36,162 l 6,0 0,6 -6,0 z M 48,162 l 6,0 0,6 -6,0 z M 60,162 l 6,0 0,6 -6,0 z M 72,162 l 6,0 0,6 -6,0 z M 78,162 l 6,0 0,6 -6,0 z M 102,162 l 6,0 0,6 -6,0 z M 120,162 l 6,0 0,6 -6,0 z M 138,162 l 6,0 0,6 -6,0 z M 150,162 l 6,0 0,6 -6,0 z M 162,162 l 6,0 0,6 -6,0 z M 168,162 l 6,0 0,6 -6,0 z M 0,168 l 6,0 0,6 -6,0 z M 6,168 l 6,0 0,6 -6,0 z M 12,168 l 6,0 0,6 -6,0 z M 18,168 l 6,0 0,6 -6,0 z M 24,168 l 6,0 0,6 -6,0 z M 30,168 l 6,0 0,6 -6,0 z M 36,168 l 6,0 0,6 -6,0 z M 48,168 l 6,0 0,6 -6,0 z M 54,168 l 6,0 0,6 -6,0 z M 60,168 l 6,0 0,6 -6,0 z M 72,168 l 6,0 0,6 -6,0 z M 84,168 l 6,0 0,6 -6,0 z M 90,168 l 6,0 0,6 -6,0 z M 96,168 l 6,0 0,6 -6,0 z M 102,168 l 6,0 0,6 -6,0 z M 108,168 l 6,0 0,6 -6,0 z M 120,168 l 6,0 0,6 -6,0 z M 126,168 l 6,0 0,6 -6,0 z M 144,168 l 6,0 0,6 -6,0 z M 150,168 l 6,0 0,6 -6,0 z M 162,168 l 6,0 0,6 -6,0 z"/>
-              </svg>
-            </div>
-            <div class="qr-meta">
-              <div class="qr-title">192.168.4.1</div>
-            </div>
-          </div>
-        </div>
-
       </div>
     </section>
+
+  <!-- Modal Holográfico de Conexión Wi-Fi por QR (Se abre desde el Menú) -->
+  <div class="wifi-qr-modal" id="wifiSetupModal">
+    <div class="wifi-qr-box">
+      <div class="wifi-qr-svg-wrap">
+        <!-- QR SVG embebido de WIFI:T:WPA;S:HoloJukebox-Setup;P:12345678;; -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 174 174">
+                <rect fill="#ffffff" x="0" y="0" width="174" height="174"/>
+                <path fill="#000000" d="M 0,0 l 6,0 0,6 -6,0 z M 6,0 l 6,0 0,6 -6,0 z M 12,0 l 6,0 0,6 -6,0 z M 18,0 l 6,0 0,6 -6,0 z M 24,0 l 6,0 0,6 -6,0 z M 30,0 l 6,0 0,6 -6,0 z M 36,0 l 6,0 0,6 -6,0 z M 60,0 l 6,0 0,6 -6,0 z M 72,0 l 6,0 0,6 -6,0 z M 108,0 l 6,0 0,6 -6,0 z M 132,0 l 6,0 0,6 -6,0 z M 138,0 l 6,0 0,6 -6,0 z M 144,0 l 6,0 0,6 -6,0 z M 150,0 l 6,0 0,6 -6,0 z M 156,0 l 6,0 0,6 -6,0 z M 162,0 l 6,0 0,6 -6,0 z M 168,0 l 6,0 0,6 -6,0 z M 0,6 l 6,0 0,6 -6,0 z M 36,6 l 6,0 0,6 -6,0 z M 48,6 l 6,0 0,6 -6,0 z M 60,6 l 6,0 0,6 -6,0 z M 78,6 l 6,0 0,6 -6,0 z M 90,6 l 6,0 0,6 -6,0 z M 96,6 l 6,0 0,6 -6,0 z M 102,6 l 6,0 0,6 -6,0 z M 108,6 l 6,0 0,6 -6,0 z M 114,6 l 6,0 0,6 -6,0 z M 120,6 l 6,0 0,6 -6,0 z M 132,6 l 6,0 0,6 -6,0 z M 168,6 l 6,0 0,6 -6,0 z M 0,12 l 6,0 0,6 -6,0 z M 12,12 l 6,0 0,6 -6,0 z M 18,12 l 6,0 0,6 -6,0 z M 24,12 l 6,0 0,6 -6,0 z M 36,12 l 6,0 0,6 -6,0 z M 72,12 l 6,0 0,6 -6,0 z M 96,12 l 6,0 0,6 -6,0 z M 102,12 l 6,0 0,6 -6,0 z M 108,12 l 6,0 0,6 -6,0 z M 114,12 l 6,0 0,6 -6,0 z M 120,12 l 6,0 0,6 -6,0 z M 132,12 l 6,0 0,6 -6,0 z M 144,12 l 6,0 0,6 -6,0 z M 150,12 l 6,0 0,6 -6,0 z M 156,12 l 6,0 0,6 -6,0 z M 168,12 l 6,0 0,6 -6,0 z M 0,18 l 6,0 0,6 -6,0 z M 12,18 l 6,0 0,6 -6,0 z M 18,18 l 6,0 0,6 -6,0 z M 24,18 l 6,0 0,6 -6,0 z M 36,18 l 6,0 0,6 -6,0 z M 48,18 l 6,0 0,6 -6,0 z M 54,18 l 6,0 0,6 -6,0 z M 60,18 l 6,0 0,6 -6,0 z M 72,18 l 6,0 0,6 -6,0 z M 78,18 l 6,0 0,6 -6,0 z M 84,18 l 6,0 0,6 -6,0 z M 90,18 l 6,0 0,6 -6,0 z M 96,18 l 6,0 0,6 -6,0 z M 120,18 l 6,0 0,6 -6,0 z M 132,18 l 6,0 0,6 -6,0 z M 144,18 l 6,0 0,6 -6,0 z M 150,18 l 6,0 0,6 -6,0 z M 156,18 l 6,0 0,6 -6,0 z M 168,18 l 6,0 0,6 -6,0 z M 0,24 l 6,0 0,6 -6,0 z M 12,24 l 6,0 0,6 -6,0 z M 18,24 l 6,0 0,6 -6,0 z M 24,24 l 6,0 0,6 -6,0 z M 36,24 l 6,0 0,6 -6,0 z M 54,24 l 6,0 0,6 -6,0 z M 84,24 l 6,0 0,6 -6,0 z M 114,24 l 6,0 0,6 -6,0 z M 120,24 l 6,0 0,6 -6,0 z M 132,24 l 6,0 0,6 -6,0 z M 144,24 l 6,0 0,6 -6,0 z M 150,24 l 6,0 0,6 -6,0 z M 156,24 l 6,0 0,6 -6,0 z M 168,24 l 6,0 0,6 -6,0 z M 0,30 l 6,0 0,6 -6,0 z M 36,30 l 6,0 0,6 -6,0 z M 48,30 l 6,0 0,6 -6,0 z M 54,30 l 6,0 0,6 -6,0 z M 66,30 l 6,0 0,6 -6,0 z M 72,30 l 6,0 0,6 -6,0 z M 78,30 l 6,0 0,6 -6,0 z M 96,30 l 6,0 0,6 -6,0 z M 114,30 l 6,0 0,6 -6,0 z M 132,30 l 6,0 0,6 -6,0 z M 168,30 l 6,0 0,6 -6,0 z M 0,36 l 6,0 0,6 -6,0 z M 6,36 l 6,0 0,6 -6,0 z M 12,36 l 6,0 0,6 -6,0 z M 18,36 l 6,0 0,6 -6,0 z M 24,36 l 6,0 0,6 -6,0 z M 30,36 l 6,0 0,6 -6,0 z M 36,36 l 6,0 0,6 -6,0 z M 48,36 l 6,0 0,6 -6,0 z M 60,36 l 6,0 0,6 -6,0 z M 72,36 l 6,0 0,6 -6,0 z M 84,36 l 6,0 0,6 -6,0 z M 96,36 l 6,0 0,6 -6,0 z M 108,36 l 6,0 0,6 -6,0 z M 120,36 l 6,0 0,6 -6,0 z M 132,36 l 6,0 0,6 -6,0 z M 138,36 l 6,0 0,6 -6,0 z M 144,36 l 6,0 0,6 -6,0 z M 150,36 l 6,0 0,6 -6,0 z M 156,36 l 6,0 0,6 -6,0 z M 162,36 l 6,0 0,6 -6,0 z M 168,36 l 6,0 0,6 -6,0 z M 54,42 l 6,0 0,6 -6,0 z M 60,42 l 6,0 0,6 -6,0 z M 66,42 l 6,0 0,6 -6,0 z M 96,42 l 6,0 0,6 -6,0 z M 114,42 l 6,0 0,6 -6,0 z M 120,42 l 6,0 0,6 -6,0 z M 0,48 l 6,0 0,6 -6,0 z M 6,48 l 6,0 0,6 -6,0 z M 12,48 l 6,0 0,6 -6,0 z M 18,48 l 6,0 0,6 -6,0 z M 24,48 l 6,0 0,6 -6,0 z M 36,48 l 6,0 0,6 -6,0 z M 42,48 l 6,0 0,6 -6,0 z M 48,48 l 6,0 0,6 -6,0 z M 54,48 l 6,0 0,6 -6,0 z M 66,48 l 6,0 0,6 -6,0 z M 90,48 l 6,0 0,6 -6,0 z M 102,48 l 6,0 0,6 -6,0 z M 108,48 l 6,0 0,6 -6,0 z M 126,48 l 6,0 0,6 -6,0 z M 138,48 l 6,0 0,6 -6,0 z M 150,48 l 6,0 0,6 -6,0 z M 162,48 l 6,0 0,6 -6,0 z M 48,54 l 6,0 0,6 -6,0 z M 60,54 l 6,0 0,6 -6,0 z M 72,54 l 6,0 0,6 -6,0 z M 90,54 l 6,0 0,6 -6,0 z M 114,54 l 6,0 0,6 -6,0 z M 126,54 l 6,0 0,6 -6,0 z M 150,54 l 6,0 0,6 -6,0 z M 168,54 l 6,0 0,6 -6,0 z M 24,60 l 6,0 0,6 -6,0 z M 36,60 l 6,0 0,6 -6,0 z M 42,60 l 6,0 0,6 -6,0 z M 60,60 l 6,0 0,6 -6,0 z M 90,60 l 6,0 0,6 -6,0 z M 102,60 l 6,0 0,6 -6,0 z M 144,60 l 6,0 0,6 -6,0 z M 156,60 l 6,0 0,6 -6,0 z M 168,60 l 6,0 0,6 -6,0 z M 0,66 l 6,0 0,6 -6,0 z M 12,66 l 6,0 0,6 -6,0 z M 18,66 l 6,0 0,6 -6,0 z M 24,66 l 6,0 0,6 -6,0 z M 30,66 l 6,0 0,6 -6,0 z M 48,66 l 6,0 0,6 -6,0 z M 72,66 l 6,0 0,6 -6,0 z M 84,66 l 6,0 0,6 -6,0 z M 108,66 l 6,0 0,6 -6,0 z M 114,66 l 6,0 0,6 -6,0 z M 120,66 l 6,0 0,6 -6,0 z M 126,66 l 6,0 0,6 -6,0 z M 132,66 l 6,0 0,6 -6,0 z M 138,66 l 6,0 0,6 -6,0 z M 144,66 l 6,0 0,6 -6,0 z M 150,66 l 6,0 0,6 -6,0 z M 168,66 l 6,0 0,6 -6,0 z M 12,72 l 6,0 0,6 -6,0 z M 24,72 l 6,0 0,6 -6,0 z M 36,72 l 6,0 0,6 -6,0 z M 54,72 l 6,0 0,6 -6,0 z M 60,72 l 6,0 0,6 -6,0 z M 72,72 l 6,0 0,6 -6,0 z M 90,72 l 6,0 0,6 -6,0 z M 120,72 l 6,0 0,6 -6,0 z M 132,72 l 6,0 0,6 -6,0 z M 150,72 l 6,0 0,6 -6,0 z M 156,72 l 6,0 0,6 -6,0 z M 162,72 l 6,0 0,6 -6,0 z M 168,72 l 6,0 0,6 -6,0 z M 12,78 l 6,0 0,6 -6,0 z M 42,78 l 6,0 0,6 -6,0 z M 48,78 l 6,0 0,6 -6,0 z M 54,78 l 6,0 0,6 -6,0 z M 78,78 l 6,0 0,6 -6,0 z M 84,78 l 6,0 0,6 -6,0 z M 90,78 l 6,0 0,6 -6,0 z M 120,78 l 6,0 0,6 -6,0 z M 132,78 l 6,0 0,6 -6,0 z M 150,78 l 6,0 0,6 -6,0 z M 156,78 l 6,0 0,6 -6,0 z M 162,78 l 6,0 0,6 -6,0 z M 168,78 l 6,0 0,6 -6,0 z M 12,84 l 6,0 0,6 -6,0 z M 18,84 l 6,0 0,6 -6,0 z M 30,84 l 6,0 0,6 -6,0 z M 36,84 l 6,0 0,6 -6,0 z M 54,84 l 6,0 0,6 -6,0 z M 66,84 l 6,0 0,6 -6,0 z M 72,84 l 6,0 0,6 -6,0 z M 84,84 l 6,0 0,6 -6,0 z M 90,84 l 6,0 0,6 -6,0 z M 96,84 l 6,0 0,6 -6,0 z M 102,84 l 6,0 0,6 -6,0 z M 138,84 l 6,0 0,6 -6,0 z M 156,84 l 6,0 0,6 -6,0 z M 0,90 l 6,0 0,6 -6,0 z M 18,90 l 6,0 0,6 -6,0 z M 48,90 l 6,0 0,6 -6,0 z M 54,90 l 6,0 0,6 -6,0 z M 66,90 l 6,0 0,6 -6,0 z M 78,90 l 6,0 0,6 -6,0 z M 84,90 l 6,0 0,6 -6,0 z M 90,90 l 6,0 0,6 -6,0 z M 114,90 l 6,0 0,6 -6,0 z M 120,90 l 6,0 0,6 -6,0 z M 126,90 l 6,0 0,6 -6,0 z M 132,90 l 6,0 0,6 -6,0 z M 144,90 l 6,0 0,6 -6,0 z M 150,90 l 6,0 0,6 -6,0 z M 156,90 l 6,0 0,6 -6,0 z M 6,96 l 6,0 0,6 -6,0 z M 30,96 l 6,0 0,6 -6,0 z M 36,96 l 6,0 0,6 -6,0 z M 42,96 l 6,0 0,6 -6,0 z M 48,96 l 6,0 0,6 -6,0 z M 54,96 l 6,0 0,6 -6,0 z M 66,96 l 6,0 0,6 -6,0 z M 90,96 l 6,0 0,6 -6,0 z M 96,96 l 6,0 0,6 -6,0 z M 120,96 l 6,0 0,6 -6,0 z M 132,96 l 6,0 0,6 -6,0 z M 138,96 l 6,0 0,6 -6,0 z M 156,96 l 6,0 0,6 -6,0 z M 0,102 l 6,0 0,6 -6,0 z M 6,102 l 6,0 0,6 -6,0 z M 12,102 l 6,0 0,6 -6,0 z M 18,102 l 6,0 0,6 -6,0 z M 24,102 l 6,0 0,6 -6,0 z M 42,102 l 6,0 0,6 -6,0 z M 54,102 l 6,0 0,6 -6,0 z M 72,102 l 6,0 0,6 -6,0 z M 78,102 l 6,0 0,6 -6,0 z M 84,102 l 6,0 0,6 -6,0 z M 90,102 l 6,0 0,6 -6,0 z M 108,102 l 6,0 0,6 -6,0 z M 114,102 l 6,0 0,6 -6,0 z M 126,102 l 6,0 0,6 -6,0 z M 144,102 l 6,0 0,6 -6,0 z M 150,102 l 6,0 0,6 -6,0 z M 162,102 l 6,0 0,6 -6,0 z M 168,102 l 6,0 0,6 -6,0 z M 0,108 l 6,0 0,6 -6,0 z M 12,108 l 6,0 0,6 -6,0 z M 18,108 l 6,0 0,6 -6,0 z M 24,108 l 6,0 0,6 -6,0 z M 30,108 l 6,0 0,6 -6,0 z M 36,108 l 6,0 0,6 -6,0 z M 48,108 l 6,0 0,6 -6,0 z M 54,108 l 6,0 0,6 -6,0 z M 60,108 l 6,0 0,6 -6,0 z M 84,108 l 6,0 0,6 -6,0 z M 90,108 l 6,0 0,6 -6,0 z M 96,108 l 6,0 0,6 -6,0 z M 102,108 l 6,0 0,6 -6,0 z M 114,108 l 6,0 0,6 -6,0 z M 138,108 l 6,0 0,6 -6,0 z M 144,108 l 6,0 0,6 -6,0 z M 162,108 l 6,0 0,6 -6,0 z M 0,114 l 6,0 0,6 -6,0 z M 12,114 l 6,0 0,6 -6,0 z M 42,114 l 6,0 0,6 -6,0 z M 48,114 l 6,0 0,6 -6,0 z M 72,114 l 6,0 0,6 -6,0 z M 78,114 l 6,0 0,6 -6,0 z M 84,114 l 6,0 0,6 -6,0 z M 90,114 l 6,0 0,6 -6,0 z M 114,114 l 6,0 0,6 -6,0 z M 120,114 l 6,0 0,6 -6,0 z M 126,114 l 6,0 0,6 -6,0 z M 132,114 l 6,0 0,6 -6,0 z M 138,114 l 6,0 0,6 -6,0 z M 144,114 l 6,0 0,6 -6,0 z M 150,114 l 6,0 0,6 -6,0 z M 168,114 l 6,0 0,6 -6,0 z M 0,120 l 6,0 0,6 -6,0 z M 18,120 l 6,0 0,6 -6,0 z M 36,120 l 6,0 0,6 -6,0 z M 42,120 l 6,0 0,6 -6,0 z M 54,120 l 6,0 0,6 -6,0 z M 60,120 l 6,0 0,6 -6,0 z M 72,120 l 6,0 0,6 -6,0 z M 120,120 l 6,0 0,6 -6,0 z M 126,120 l 6,0 0,6 -6,0 z M 132,120 l 6,0 0,6 -6,0 z M 138,120 l 6,0 0,6 -6,0 z M 144,120 l 6,0 0,6 -6,0 z M 156,120 l 6,0 0,6 -6,0 z M 162,120 l 6,0 0,6 -6,0 z M 168,120 l 6,0 0,6 -6,0 z M 48,126 l 6,0 0,6 -6,0 z M 54,126 l 6,0 0,6 -6,0 z M 90,126 l 6,0 0,6 -6,0 z M 96,126 l 6,0 0,6 -6,0 z M 114,126 l 6,0 0,6 -6,0 z M 120,126 l 6,0 0,6 -6,0 z M 144,126 l 6,0 0,6 -6,0 z M 150,126 l 6,0 0,6 -6,0 z M 156,126 l 6,0 0,6 -6,0 z M 0,132 l 6,0 0,6 -6,0 z M 6,132 l 6,0 0,6 -6,0 z M 12,132 l 6,0 0,6 -6,0 z M 18,132 l 6,0 0,6 -6,0 z M 24,132 l 6,0 0,6 -6,0 z M 30,132 l 6,0 0,6 -6,0 z M 36,132 l 6,0 0,6 -6,0 z M 48,132 l 6,0 0,6 -6,0 z M 54,132 l 6,0 0,6 -6,0 z M 66,132 l 6,0 0,6 -6,0 z M 72,132 l 6,0 0,6 -6,0 z M 90,132 l 6,0 0,6 -6,0 z M 96,132 l 6,0 0,6 -6,0 z M 102,132 l 6,0 0,6 -6,0 z M 120,132 l 6,0 0,6 -6,0 z M 132,132 l 6,0 0,6 -6,0 z M 144,132 l 6,0 0,6 -6,0 z M 150,132 l 6,0 0,6 -6,0 z M 156,132 l 6,0 0,6 -6,0 z M 0,138 l 6,0 0,6 -6,0 z M 36,138 l 6,0 0,6 -6,0 z M 60,138 l 6,0 0,6 -6,0 z M 66,138 l 6,0 0,6 -6,0 z M 90,138 l 6,0 0,6 -6,0 z M 114,138 l 6,0 0,6 -6,0 z M 120,138 l 6,0 0,6 -6,0 z M 144,138 l 6,0 0,6 -6,0 z M 150,138 l 6,0 0,6 -6,0 z M 0,144 l 6,0 0,6 -6,0 z M 12,144 l 6,0 0,6 -6,0 z M 18,144 l 6,0 0,6 -6,0 z M 24,144 l 6,0 0,6 -6,0 z M 36,144 l 6,0 0,6 -6,0 z M 48,144 l 6,0 0,6 -6,0 z M 66,144 l 6,0 0,6 -6,0 z M 90,144 l 6,0 0,6 -6,0 z M 108,144 l 6,0 0,6 -6,0 z M 120,144 l 6,0 0,6 -6,0 z M 126,144 l 6,0 0,6 -6,0 z M 132,144 l 6,0 0,6 -6,0 z M 138,144 l 6,0 0,6 -6,0 z M 144,144 l 6,0 0,6 -6,0 z M 0,150 l 6,0 0,6 -6,0 z M 12,150 l 6,0 0,6 -6,0 z M 18,150 l 6,0 0,6 -6,0 z M 24,150 l 6,0 0,6 -6,0 z M 36,150 l 6,0 0,6 -6,0 z M 48,150 l 6,0 0,6 -6,0 z M 60,150 l 6,0 0,6 -6,0 z M 72,150 l 6,0 0,6 -6,0 z M 78,150 l 6,0 0,6 -6,0 z M 90,150 l 6,0 0,6 -6,0 z M 108,150 l 6,0 0,6 -6,0 z M 114,150 l 6,0 0,6 -6,0 z M 120,150 l 6,0 0,6 -6,0 z M 132,150 l 6,0 0,6 -6,0 z M 138,150 l 6,0 0,6 -6,0 z M 162,150 l 6,0 0,6 -6,0 z M 0,156 l 6,0 0,6 -6,0 z M 12,156 l 6,0 0,6 -6,0 z M 18,156 l 6,0 0,6 -6,0 z M 24,156 l 6,0 0,6 -6,0 z M 36,156 l 6,0 0,6 -6,0 z M 48,156 l 6,0 0,6 -6,0 z M 54,156 l 6,0 0,6 -6,0 z M 78,156 l 6,0 0,6 -6,0 z M 84,156 l 6,0 0,6 -6,0 z M 90,156 l 6,0 0,6 -6,0 z M 102,156 l 6,0 0,6 -6,0 z M 108,156 l 6,0 0,6 -6,0 z M 114,156 l 6,0 0,6 -6,0 z M 132,156 l 6,0 0,6 -6,0 z M 150,156 l 6,0 0,6 -6,0 z M 162,156 l 6,0 0,6 -6,0 z M 0,162 l 6,0 0,6 -6,0 z M 36,162 l 6,0 0,6 -6,0 z M 48,162 l 6,0 0,6 -6,0 z M 60,162 l 6,0 0,6 -6,0 z M 72,162 l 6,0 0,6 -6,0 z M 78,162 l 6,0 0,6 -6,0 z M 102,162 l 6,0 0,6 -6,0 z M 120,162 l 6,0 0,6 -6,0 z M 138,162 l 6,0 0,6 -6,0 z M 150,162 l 6,0 0,6 -6,0 z M 162,162 l 6,0 0,6 -6,0 z M 168,162 l 6,0 0,6 -6,0 z M 0,168 l 6,0 0,6 -6,0 z M 6,168 l 6,0 0,6 -6,0 z M 12,168 l 6,0 0,6 -6,0 z M 18,168 l 6,0 0,6 -6,0 z M 24,168 l 6,0 0,6 -6,0 z M 30,168 l 6,0 0,6 -6,0 z M 36,168 l 6,0 0,6 -6,0 z M 48,168 l 6,0 0,6 -6,0 z M 54,168 l 6,0 0,6 -6,0 z M 60,168 l 6,0 0,6 -6,0 z M 72,168 l 6,0 0,6 -6,0 z M 84,168 l 6,0 0,6 -6,0 z M 90,168 l 6,0 0,6 -6,0 z M 96,168 l 6,0 0,6 -6,0 z M 102,168 l 6,0 0,6 -6,0 z M 108,168 l 6,0 0,6 -6,0 z M 120,168 l 6,0 0,6 -6,0 z M 126,168 l 6,0 0,6 -6,0 z M 144,168 l 6,0 0,6 -6,0 z M 150,168 l 6,0 0,6 -6,0 z M 162,168 l 6,0 0,6 -6,0 z"/>
+        </svg>
+      </div>
+      <div class="wifi-qr-info">
+        <div class="wifi-qr-hdr">CONECTAR WI-FI</div>
+        <div class="wifi-qr-step">1. Escanea el QR para unirte a <b>HoloJukebox-Setup</b> (Clave: <b>12345678</b>)</div>
+        <div class="wifi-qr-step">2. Si no abre solo, entra a <b id="wifiPortalUrl">http://192.168.4.1</b> e ingresa tu Wi-Fi</div>
+        <div class="wifi-qr-status" id="wifiModalStatus">Activando red de configuración...</div>
+        <button class="wifi-qr-close" onclick="closeWifiQrModal()">← VOLVER (CLICK)</button>
+      </div>
+    </div>
+  </div>
 
     <!-- ===================================================================
          SECCIÓN 2: REPRODUCTOR HORIZONTAL (ÁLBUM FLOTANDO | LYRICS + CONTROLES)
@@ -893,14 +990,35 @@ checkDailyMessage();
 setInterval(checkDailyMessage, 60000);
 
 // =========================================================================
-// 3. DETECCIÓN ONLINE / OFFLINE AUTOMÁTICA
+// 3. DETECCIÓN ONLINE / OFFLINE + COPIA LOCAL <-> GITHUB PAGES + PORTAL QR
 // =========================================================================
-let isInternetOnline = navigator.onLine;
-let forceQrToggle = false;
+const ONLINE_APP_URL = 'https://4-less.github.io/gift/';
+const LOCAL_APP_URL  = 'http://127.0.0.1:8088/';
+const LOCAL_API_BASE = 'http://127.0.0.1:8088/cgi-bin/wifi_ctl';
+const IS_LOCAL_COPY  = (location.hostname === '127.0.0.1' || location.hostname === 'localhost' || location.protocol === 'file:');
+
+let isInternetOnline = IS_LOCAL_COPY ? false : navigator.onLine;
+let hasLocalHelper = IS_LOCAL_COPY;
+let offlineStreak = 0;
+let isWifiModalOpen = false;
+let wifiPollTimer = null;
+let wifiModalTimeout = null;
+
+async function detectLocalHelper() {
+  if (IS_LOCAL_COPY) { hasLocalHelper = true; return; }
+  try {
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), 1200);
+    const r = await fetch(LOCAL_API_BASE + '?cmd=ping&t=' + Date.now(), { cache: 'no-store', signal: ctrl.signal });
+    clearTimeout(tid);
+    if (r.ok) hasLocalHelper = true;
+  } catch (e) {}
+}
 
 async function checkInternetConnection() {
-  if (!navigator.onLine) {
-    setInternetStatus(false);
+  if (isWifiModalOpen) return;
+  if (!navigator.onLine && !IS_LOCAL_COPY) {
+    handleConnectivityResult(false);
     return;
   }
   try {
@@ -912,26 +1030,107 @@ async function checkInternetConnection() {
       signal: ctrl.signal
     });
     clearTimeout(tid);
-    setInternetStatus(true);
+    handleConnectivityResult(true);
   } catch (e) {
-    setInternetStatus(false);
+    handleConnectivityResult(false);
   }
 }
 
-function setInternetStatus(online) {
+function handleConnectivityResult(online) {
+  const changed = (isInternetOnline !== online);
   isInternetOnline = online;
-  const showQr = !online || forceQrToggle;
-  $('sbLayout').classList.toggle('is-offline', showQr);
 
   if (online) {
+    offlineStreak = 0;
     recordOnlineSync();
+    // Si estamos en la copia local del celular y ya volvió el Wi-Fi, redirigir a GitHub Pages
+    if (IS_LOCAL_COPY && !isWifiModalOpen) {
+      window.location.replace(ONLINE_APP_URL);
+      return;
+    }
     if (!ytApiLoaded) loadYouTubeApi();
+  } else {
+    offlineStreak++;
+    // Si estamos en GitHub Pages en el celular y perdimos el Wi-Fi, caer suave a la copia local
+    if (!IS_LOCAL_COPY && hasLocalHelper && offlineStreak >= 2 && !playing && !isWifiModalOpen) {
+      window.location.replace(LOCAL_APP_URL);
+      return;
+    }
   }
+
+  if (changed && isMenuOpen) {
+    menuSel = 0;
+    renderSysMenu();
+  }
+}
+
+async function openWifiQrModal() {
+  closeSysMenu();
+  isWifiModalOpen = true;
+  $('wifiSetupModal').classList.add('open');
+  $('wifiModalStatus').textContent = 'Activando red HoloJukebox-Setup...';
+  $('wifiPortalUrl').textContent = 'http://192.168.4.1';
+
+  try {
+    const r = await fetch(LOCAL_API_BASE + '?cmd=start&t=' + Date.now(), { cache: 'no-store' });
+    if (r.ok) {
+      const data = await r.json();
+      if (data.apIp && data.apIp !== '192.168.4.1') {
+        $('wifiPortalUrl').textContent = 'http://192.168.4.1 (o ' + data.apIp + ')';
+      }
+      $('wifiModalStatus').textContent = 'Escanea el QR desde tu celular para ingresar el Wi-Fi';
+    } else {
+      $('wifiModalStatus').textContent = 'Conéctate a HoloJukebox-Setup (Clave: 12345678)';
+    }
+  } catch (e) {
+    $('wifiModalStatus').textContent = 'Conéctate a HoloJukebox-Setup (Clave: 12345678)';
+  }
+
+  clearInterval(wifiPollTimer);
+  wifiPollTimer = setInterval(async () => {
+    if (!isWifiModalOpen) return;
+    try {
+      const r = await fetch(LOCAL_API_BASE + '?cmd=status&t=' + Date.now(), { cache: 'no-store' });
+      if (!r.ok) return;
+      const st = await r.json();
+      if (st.phase === 'connecting') {
+        $('wifiModalStatus').textContent = 'Conectando a "' + (st.targetSsid || 'Wi-Fi') + '"...';
+      } else if (st.online) {
+        $('wifiModalStatus').textContent = '¡Conectado a "' + (st.ssid || 'Wi-Fi') + '"! Cargando rocola...';
+        clearInterval(wifiPollTimer);
+        clearTimeout(wifiModalTimeout);
+        setTimeout(() => {
+          isWifiModalOpen = false;
+          $('wifiSetupModal').classList.remove('open');
+          if (IS_LOCAL_COPY) {
+            window.location.replace(ONLINE_APP_URL);
+          } else {
+            handleConnectivityResult(true);
+          }
+        }, 900);
+      }
+    } catch (e) {}
+  }, 2500);
+
+  clearTimeout(wifiModalTimeout);
+  wifiModalTimeout = setTimeout(() => {
+    if (isWifiModalOpen) closeWifiQrModal();
+  }, 240000); // Auto-cierre de seguridad a los 4 minutos
+}
+
+function closeWifiQrModal() {
+  if (!isWifiModalOpen) return;
+  isWifiModalOpen = false;
+  clearInterval(wifiPollTimer);
+  clearTimeout(wifiModalTimeout);
+  $('wifiSetupModal').classList.remove('open');
+  fetch(LOCAL_API_BASE + '?cmd=stop&t=' + Date.now(), { cache: 'no-store' }).catch(() => {});
+  setTimeout(checkInternetConnection, 3500);
 }
 
 window.addEventListener('online',  () => checkInternetConnection());
-window.addEventListener('offline', () => setInternetStatus(false));
-setInterval(checkInternetConnection, 10000);
+window.addEventListener('offline', () => handleConnectivityResult(false));
+setInterval(checkInternetConnection, 8000);
 
 // =========================================================================
 // 4. CATÁLOGO DE ÁLBUMES Y PLAYLISTS DE YOUTUBE MUSIC (CON AUTO-CARÁTULA OEMBED)
@@ -1710,6 +1909,19 @@ function saveCurrentPlayingTrackFromEncoder() {
 
 function getActiveMenuItems() {
   if (menuPage === 'root') {
+    // MODO SIN WI-FI: Ocultar álbumes y destacar CONECTAR WIFI (QR)
+    if (!isInternetOnline) {
+      return [
+        { isNote: true, text: "SIN CONEXIÓN WI-FI" },
+        { label: "CONECTAR WIFI", val: "QR", run: () => openWifiQrModal() },
+        { isSep: true },
+        { label: "ROTAR FOTO", val: photoRotation + "°", run: () => rotatePhoto() },
+        { label: "PANTALLA", val: "", run: () => { menuPage = 'screen'; menuSel = 0; renderSysMenu(); } },
+        { label: "APAGAR", val: "", run: () => enterSleepMode() }
+      ];
+    }
+
+    // MODO CONECTADO: Mostrar todo el menú completo y todos los álbumes
     const albumItems = DISCS.map((d, idx) => {
       const firstTrack = (d.t && d.t[0]) || ["", 200, ""];
       const vid = firstTrack[2] || "";
@@ -1752,6 +1964,11 @@ function getActiveMenuItems() {
     const ac = ACCENT_PALETTE[accentIdx];
     const items = getActiveMenuItemsForRootCount();
     return [
+      {
+        label: "WIFI / QR",
+        val: "",
+        run: () => openWifiQrModal()
+      },
       {
         label: "COLOR",
         val: "",
@@ -1813,18 +2030,18 @@ function getActiveMenuItems() {
         }
       },
       {
-        label: "QR",
-        val: forceQrToggle ? "ON" : "OFF",
-        run: () => {
-          forceQrToggle = !forceQrToggle;
-          $('sbLayout').classList.toggle('is-offline', !isInternetOnline || forceQrToggle);
-          closeSysMenu();
-        }
-      },
-      {
         label: "←",
         val: "",
-        run: () => { menuPage = 'options'; menuSel = 1; renderSysMenu(); }
+        run: () => {
+          if (!isInternetOnline) {
+            menuPage = 'root';
+            menuSel = 4;
+          } else {
+            menuPage = 'options';
+            menuSel = 2;
+          }
+          renderSysMenu();
+        }
       }
     ];
   }
@@ -1867,13 +2084,16 @@ function resetMenuAutoHide() {
   if (isMenuOpen) {
     menuAutoHideTimer = setTimeout(() => {
       closeSysMenu();
-    }, 6500);
+    }, 10000);
   }
 }
 
 function renderSysMenu() {
   const items = getActiveMenuItems();
   $('sysMenuList').innerHTML = items.map((it, idx) => {
+    if (it.isNote) {
+      return `<div class="sys-offline-note">⚠ ${it.text}</div>`;
+    }
     if (it.isSep) {
       return `<div class="sys-sep"></div>`;
     }
@@ -1912,9 +2132,13 @@ function renderSysMenu() {
 }
 
 function openSysMenu() {
+  if (isWifiModalOpen) {
+    closeWifiQrModal();
+    return;
+  }
   isMenuOpen = true;
   menuPage = 'root';
-  menuSel = disc >= 0 ? disc : 0;
+  menuSel = !isInternetOnline ? 1 : (disc >= 0 ? disc : 0);
   renderSysMenu();
   $('sysMenu').classList.add('open');
   $('viewWrap').classList.add('drawer-pushed');
@@ -1933,17 +2157,26 @@ function toggleSysMenu() {
     wakeFromSleep();
     return;
   }
+  if (isWifiModalOpen) {
+    closeWifiQrModal();
+    return;
+  }
   if (isMenuOpen) closeSysMenu();
   else openSysMenu();
 }
 
+let lastMenuNavMs = 0;
 function navigateSysMenu(dir) {
+  const now = Date.now();
+  if (now - lastMenuNavMs < 120) return; // Control suave: evita saltarse ítems al girar el encoder
+  lastMenuNavMs = now;
+
   const items = getActiveMenuItems();
   if (!items.length) return;
   let next = menuSel;
   for (let i = 0; i < items.length; i++) {
     next = (next + dir + items.length) % items.length;
-    if (!items[next].isSep) break;
+    if (!items[next].isSep && !items[next].isNote) break;
   }
   menuSel = next;
   renderSysMenu();
@@ -2056,8 +2289,8 @@ addEventListener('keydown', e => {
     localStorage.setItem('holo_mirror', mirrorMode ? '1' : '0');
     applySavedVisualSettings();
   } else if (k === 'q' || k === 'Q') {
-    forceQrToggle = !forceQrToggle;
-    $('sbLayout').classList.toggle('is-offline', !isInternetOnline || forceQrToggle);
+    if (isWifiModalOpen) closeWifiQrModal();
+    else openWifiQrModal();
   }
 });
 
@@ -2263,6 +2496,13 @@ function handleCommand(cmd, src = "ws") {
     return;
   }
 
+  if (isWifiModalOpen) {
+    if (cmd === "BTN:CLICK" || cmd === "BTN:HOLD" || cmd === "TAG:EJECT") {
+      closeWifiQrModal();
+    }
+    return;
+  }
+
   if (cmd === "BTN:HOLD") {
     clearTimeout(multiTapTimer);
     multiTapCount = 0;
@@ -2283,12 +2523,16 @@ function handleCommand(cmd, src = "ws") {
   }
 
   if (cmd === "ENC:UP") {
-    changeVol(+5);
+    changeVol(+4);
   } else if (cmd === "ENC:DOWN") {
-    changeVol(-5);
+    changeVol(-4);
   } else if (cmd === "BTN:CLICK") {
     registerEncoderTap();
   } else if (cmd.startsWith("TAG:")) {
+    if (!isInternetOnline) {
+      openWifiQrModal();
+      return;
+    }
     const val = cmd.substring(4).trim();
     if (val === "EJECT") {
       eject();
@@ -2442,11 +2686,10 @@ async function connectToSerialPort(port) {
 }
 
 window.addEventListener('load', () => {
+  detectLocalHelper();
   checkInternetConnection();
-  if (navigator.onLine) loadYouTubeApi();
+  if (navigator.onLine && !IS_LOCAL_COPY) loadYouTubeApi();
   initFullyBroadcastReceiver();
-  initWebSerial();
-  initWebSocket();
 });
 </script>
 </body>
