@@ -755,13 +755,13 @@ html, body {
   pointer-events: auto;
 }
 
-/* REPRODUCTOR YOUTUBE OCULTO */
+/* REPRODUCTOR YOUTUBE OCULTO (DENTRO DEL VIEWPORT PARA EVITAR PAUSA DE CHROMIUM) */
 #yt-wrap {
   position: fixed;
-  width: 1px;
-  height: 1px;
-  bottom: -10px;
-  left: -10px;
+  width: 2px;
+  height: 2px;
+  bottom: 0;
+  right: 0;
   opacity: 0.01;
   pointer-events: none;
   overflow: hidden;
@@ -1533,8 +1533,7 @@ function playCurrentYouTubeTrack() {
     ytPlayer.loadPlaylist({
       list: dObj.listId,
       listType: 'playlist',
-      index: trk,
-      startSeconds: 1
+      index: trk
     });
     ytPlayer.setVolume(vol);
     if (shuf && typeof ytPlayer.setShuffle === 'function') ytPlayer.setShuffle(true);

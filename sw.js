@@ -1,4 +1,4 @@
-const CACHE_NAME = 'holodeck-cache-v3.8';
+const CACHE_NAME = 'holodeck-cache-v3.9';
 const ASSETS = [
   './',
   './index.html',
